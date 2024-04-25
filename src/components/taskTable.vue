@@ -1,17 +1,25 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getTask } from '../libs/fetchs.js'
+import modalNaja from "../components/taskDetail.vue"
+
 let taskData = ref([])
-// let taskData = ref([
-//     { id: 1, title: "task1", assignees: "Takoo", status: "Doing" },{ id: 1, title: "task1", assignees: "Takoo", status: "Doing" }
-// ])
+let modalCheck = ref(false)
+let taskId = ref(null)
 
 async function fetchData() {
-  taskData.value = await getTask()
+    taskData.value = await getTask("tasks")
   // console.log(orderListData.value)
 }
+console.log(taskData.value);
 onMounted(fetchData)
-console.log(taskData)
+
+function openModal(taskid) {
+    modalCheck.value = !modalCheck.value
+    taskId.value = taskid
+    console.log(taskId.value);
+
+}
 </script>
 
 <template>
@@ -32,6 +40,7 @@ console.log(taskData)
       </thead>
       <tbody class="text-base">
         <tr
+        @click="openModal(task.id)"
           v-show="taskData.length > 0"
           v-for="(task, index) in taskData"
           :key="index"
@@ -49,6 +58,38 @@ console.log(taskData)
       </tbody>
     </table>
   </div>
+
+  <!-- <button type="submit" class="button" @click="modalCheck = !modalCheck">Submit Naja</button> -->
+  <modalNaja :prop_modalCheck="modalCheck" :prop_taskId="taskId" v-show="modalCheck" @close="modalCheck = false">
+    
+  </modalNaja>
+
 </template>
 
-<style scoped></style>
+<style scoped>
+.button {
+ appearance: none;
+ outline: none;
+ border: none;
+ background: none;
+ cursor: pointer;
+ 
+ display: inline-block;
+ padding: 15px 25px;
+ background-image: linear-gradient(to right, #CC2E5D, #FF5858);
+ border-radius: 8px;
+ 
+ color: #FFF;
+ font-size: 15px;
+ font-weight: 700;
+ 
+ box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
+ transition: 0.4s ease-out;
+
+&:hover {
+  background-image: linear-gradient(to top, #008000, #5863ff);
+  box-shadow: 6px 6px rgba(253, 5, 199, 0.6);
+ }
+}
+
+</style>
