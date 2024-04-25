@@ -13,6 +13,11 @@ const router = createRouter({
       path: '/',
       redirect: "/task"
     }
+    ,
+  {
+    path: "/:catchAll(.*)",
+    redirect: "/task"
+  }
   ]
 })
 

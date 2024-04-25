@@ -31,7 +31,7 @@ function convertToBrowserTimezone(utcTime) {
     let date = new Date(utcTime)
 
     // แปลงเวลาให้เป็น timezone ของ browser
-    const browserTime = date.toLocaleString("sv-SE", options)
+    const browserTime = date.toLocaleString("en-AU", options)
     return browserTime
 }
 
@@ -55,101 +55,59 @@ watch(
         fetchData()
     }
 )
-
-// onMounted(fetchData)
-
-// let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-
-// let options = {
-//     year: "numeric",
-//     month: "numeric",
-//     day: "numeric",
-//     hour: "numeric",
-//     minute: "numeric",
-//     second: "numeric",
-//     hour12: false,
-//     timeZone: browserTimeZone
-
-// }
 </script>
 <template>
-    <div
-        class="fixed w-screen h-screen top-0 left-0 flex justify-center items-center"
-    >
-        <div
-            class="bg-black bg-opacity-50 w-screen h-screen"
-            @click="emit('close')"
-        ></div>
-        <div
-            class="fixed bg-white w-[55%] h-[80%] indicator flex flex-col rounded-2xl"
-        >
-            <h1 class=" itbkk-title border-b">{{ taskData.title }}</h1>
+    <div class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center">
+        <div class="bg-black bg-opacity-50 w-screen h-screen" @click="emit('close')"></div>
+        <div class="fixed bg-white w-[55%] h-[80%] indicator flex flex-col rounded-2xl">
+            <h1 class="itbkk-title border-b">{{ taskData.title }}</h1>
             <div class="flex justify-between">
                 <div class="w-1/2">
                     <p class="ml-7">Description</p>
+                    <textarea v-if="taskData.description !== null" disabled
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7">{{ taskData.description }}</textarea>
 
-                    <textarea
-                        class=" itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7"
-                        disabled
-                        :style="{
-                            color:
-                                !taskData.description ||
-                                taskData.description.trim() === ''
-                                    ? 'grey'
-                                    : 'black',
-                        }"
-                        :value="
-                            !taskData.description ||
-                            taskData.description.trim() === ''
-                                ? 'Description Provided'
-                                : taskData.description
-                        "
-                        >{{ taskData.description }}</textarea
-                    >
+                    <textarea v-else disabled
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7 italic"
+                        style="color: grey">No Description Provided</textarea>
+
                 </div>
                 <div class="w-1/2">
                     <div>Assignees</div>
-                    <textarea
-                        class="  itbkk-assignees border-2 border-red-700 w-80 h-24 resize-none"
-                        disabled
-                        >{{ taskData.assignees }}
-                    </textarea>
+                    <textarea disabled
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7"
+                        v-if="taskData.assignees === null" style="font-style: italic; color: grey">
+                                Unassigned
+                                </textarea>
+                    <textarea v-else disabled
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7">{{ taskData.assignees }}</textarea>
+
                     <div>Status</div>
-                    <!-- <input class="border-2 border-red-700 w-auto h-8" value="`{{taskData.status}}`"> -->
-                    <input
-                        class="  itbkk-status border-2 border-red-700 w-auto h-8"
-                        v-model="taskData.status"
-                        disabled
-                    />
+                    <input class="itbkk-status border-2 border-red-700 w-auto h-8" v-model="taskData.status" disabled />
 
                     <div>timeZone</div>
-                    <p class=" itbkk-timezone border-2 border-red-700 w-80 h-8">
+                    <p class="itbkk-timezone border-2 border-red-700 w-80 h-8">
                         {{ browserTimeZone }}
                     </p>
                     <div>Created On</div>
-                    <p class=" itbkk-created-on border-2 border-red-700 w-80 h-8">
+                    <p class="itbkk-created-on border-2 border-red-700 w-80 h-8">
                         {{ createTimeInBrowserTimezone }}
                     </p>
                     <div>Updated On</div>
-                    <p class=" itbkk-updated-on border-2 border-red-700 w-80 h-8">
+                    <p class="itbkk-updated-on border-2 border-red-700 w-80 h-8">
                         {{ updateTimeInBrowserTimezone }}
                     </p>
                     <div class="flex">
                         <div class="box">
-                            <button
-                                type="submit"
-                                class=" itbkk-button mt-auto self-start p-2 bg-white btn"
-                                @click="emit('close')"
-                            >
+                            <button type="submit" class="itbkk-button mt-auto self-start p-2 bg-white btn"
+                                @click="emit('close')">
                                 close
                             </button>
                         </div>
                         <div class="box">
-                            <button
-                                type="submit"
-                                class=" itbkk-button mt-auto self-start p-2 bg-green-50 btn btn-success"
-                                @click="emit('close')"
-                            >
+                            <button type="submit"
+                                class="itbkk-button mt-auto self-start p-2 bg-green-50 btn btn-success"
+                                @click="emit('close')">
                                 OK
                             </button>
                         </div>
@@ -163,6 +121,7 @@ watch(
 .box {
     margin-right: auto;
 }
+
 .modal-overlay {
     position: absolute;
     top: 0;
@@ -172,6 +131,7 @@ watch(
     z-index: 98;
     background-color: rgba(0, 0, 0, 0.3);
 }
+
 h1 {
     color: #e91f1f;
     font-size: 32px;
