@@ -4,8 +4,7 @@ import taskTable from "../src/components/taskTable.vue"
 </script>
 
 <template>
-<taskTable/>
-
+<router-view/>
 </template>
 
 <style scoped>

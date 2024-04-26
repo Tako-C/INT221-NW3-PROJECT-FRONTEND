@@ -1,11 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue"
+import { useRouter} from "vue-router"
 import { getTask } from "../libs/fetchs.js"
-import modalNaja from "../components/taskDetail.vue"
-
+import taskDetail from '../components/taskDetail.vue'
 let taskData = ref([])
-let modalCheck = ref(false)
 let taskId = ref(null)
+let modalCheck = ref(false)
+const router = useRouter()
 
 async function fetchData() {
     taskData.value = await getTask("tasks")
@@ -14,10 +15,10 @@ async function fetchData() {
 console.log(taskData.value)
 onMounted(fetchData)
 
-function openModal(taskid) {
+function openModal(taskId) {
     modalCheck.value = !modalCheck.value
-    taskId.value = taskid
-    console.log(taskId.value)
+    router.push(`/task/${taskId}`) 
+    // console.log(taskId.value)
 }
 </script>
 
@@ -51,12 +52,10 @@ function openModal(taskid) {
                         <td>{{ task.id }}</td>
                         <td class="itbkk-title">{{ task.title }}</td>
                         <td>
-                            <span class="itbkk-assignees"
-                                v-if="task.assignees === null"
-                                style="font-style: italic; color: grey"
-                                >Unassigned</span
+                            <span class="itbkk-assignees" :class="{ 'italic text-gray-400' : !task.assignees }"
+                                > {{ !task.assignees ? "Unassigned" : task.assignees }}</span
                             >
-                            <span v-else class="itbkk-assignees">{{ task.assignees }}</span>
+                           
                         </td>
                         <td class="itbkk-status">{{ task.status }}</td>
                     </tr>
@@ -68,15 +67,14 @@ function openModal(taskid) {
                 </tbody>
             </table>
         </div>
-
-        <!-- <button type="submit" class="button" @click="modalCheck = !modalCheck">Submit Naja</button> -->
-        <modalNaja
+    <!-- <taskDetail
             :prop_modalCheck="modalCheck"
-            :prop_taskId="taskId"
             v-show="modalCheck"
-            @close="modalCheck = false"
+            @close="modalCheck = !modalCheck "
         >
-        </modalNaja>
+        </taskDetail> -->
+    <router-view/>
+    <!-- <router-view name="taskTable"/> -->
     </div>
 </template>
 

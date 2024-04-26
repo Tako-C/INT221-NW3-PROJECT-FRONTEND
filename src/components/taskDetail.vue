@@ -1,7 +1,8 @@
 <script setup>
-import { ref, watch, defineProps } from "vue"
+import { ref, onUpdated, onMounted, defineProps } from "vue"
 import { getTask } from "../libs/fetchs.js"
-const emit = defineEmits(["close"])
+import { useRoute, useRouter } from "vue-router"
+
 let taskData = ref([])
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
@@ -11,8 +12,10 @@ const props = defineProps({
     prop_taskId: Number,
 })
 
-// console.log(props.prop_modalCheck)
-// console.log(props.prop_taskId)
+const route = useRoute()
+const router = useRouter()
+
+// console.warn("rout taskId" ,taskId.value)
 
 //Option datetime
 const options = {
@@ -26,17 +29,21 @@ const options = {
 }
 
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+console.log(browserTimeZone);
 function convertToBrowserTimezone(utcTime) {
     // สร้าง Date object จากเวลา UTC
+    // console.log(utcTime);
     let date = new Date(utcTime)
-
+    // console.log(date);
     // แปลงเวลาให้เป็น timezone ของ browser
     const browserTime = date.toLocaleString("en-AU", options)
+    // console.log(browserTime);
     return browserTime
 }
 
 async function fetchData() {
-    taskData.value = await getTask(`tasks/${props.prop_taskId}`)
+    try{
+    taskData.value = await getTask(`tasks/${route.params.id}`)
 
     // เรียกใช้งานฟังก์ชันในการแปลงเวลา
     createTimeInBrowserTimezone = convertToBrowserTimezone(
@@ -45,69 +52,91 @@ async function fetchData() {
     updateTimeInBrowserTimezone = convertToBrowserTimezone(
         taskData.value.update_Time
     )
+    } catch (error){
+        console.error("Error fetching task data:", error)
+        router.push('/task')
 
-    // console.log("Create Time in Browser Timezone:",createTimeInBrowserTimezone,browserTimeZone)
-    // console.log("Update Time in Browser Timezone:", updateTimeInBrowserTimezone,browserTimeZone)
-}
-watch(
-    () => props.prop_modalCheck,
-    () => {
-        fetchData()
     }
-)
+}
+//เรียกใช้function fetchdata
+onMounted(fetchData)
 </script>
 <template>
-    <div class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center">
-        <div class="bg-black bg-opacity-50 w-screen h-screen" @click="emit('close')"></div>
-        <div class="fixed bg-white w-[55%] h-[80%] indicator flex flex-col rounded-2xl">
+    <div
+        class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center"
+    >
+        <div
+            class="bg-black bg-opacity-50 w-screen h-screen"
+            @click="router.push('/task')"
+        ></div>
+        <div
+            class="fixed bg-white w-[55%] h-[80%] indicator flex flex-col rounded-2xl"
+        >
             <h1 class="itbkk-title border-b">{{ taskData.title }}</h1>
             <div class="flex justify-between">
                 <div class="w-1/2">
                     <p class="ml-7">Description</p>
-                    <textarea v-if="taskData.description !== null" disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7">{{ taskData.description }}</textarea>
+                    <textarea
+                        v-if="taskData.description !== null"
+                        disabled
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7"
+                        >{{ taskData.description }}</textarea
+                    >
 
-                    <textarea v-else disabled
+                    <textarea
+                        v-else
+                        disabled
                         class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7 italic"
-                        style="color: grey">No Description Provided</textarea>
-
+                        style="color: grey"
+                    >
+No Description Provided</textarea
+                    >
                 </div>
                 <div class="w-1/2">
                     <div>Assignees</div>
-                    <textarea disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7"
-                        v-if="taskData.assignees === null" style="font-style: italic; color: grey">
-                                Unassigned
-                                </textarea>
-                    <textarea v-else disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7">{{ taskData.assignees }}</textarea>
+                    <textarea
+                        disabled
+                        class="itbkk-assignees border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7  "
+                        :class="{ 'italic text-gray-400' : !taskData.assignees }"
+                    >
+                               {{ !taskData.assignees ? "Unassigned" : taskData.assignees }} </textarea
+                    >
+                  
 
                     <div>Status</div>
-                    <input class="itbkk-status border-2 border-red-700 w-auto h-8" v-model="taskData.status" disabled />
-
+                    <!-- <input type="text" class="itbkk-status border-2 border-red-700 w-auto h-8" v-model="taskData.status" disabled /> -->
+                    <select class="itbkk-status border-2 border-red-700 w-auto h-8">
+                        <option>
+                            {{ taskData.status }}</option>
+                    </select>
                     <div>timeZone</div>
                     <p class="itbkk-timezone border-2 border-red-700 w-80 h-8">
                         {{ browserTimeZone }}
                     </p>
                     <div>Created On</div>
-                    <p class="itbkk-created-on border-2 border-red-700 w-80 h-8">
-                        {{ createTimeInBrowserTimezone }}
+                    <p class="itbkk-created-on border-2 border-red-700 w-80 h-8">{{ createTimeInBrowserTimezone }}
                     </p>
                     <div>Updated On</div>
-                    <p class="itbkk-updated-on border-2 border-red-700 w-80 h-8">
+                    <p class="itbkk-updated-on border-2 border-red-700 w-80 h-8"
+                    >
                         {{ updateTimeInBrowserTimezone }}
                     </p>
                     <div class="flex">
                         <div class="box">
-                            <button type="submit" class="itbkk-button mt-auto self-start p-2 bg-white btn"
-                                @click="emit('close')">
+                            <button
+                                type="submit"
+                                class="itbkk-button mt-auto self-start p-2 bg-white btn"
+                                @click="router.push('/task')"
+                            >
                                 close
                             </button>
                         </div>
                         <div class="box">
-                            <button type="submit"
+                            <button
+                                type="submit"
                                 class="itbkk-button mt-auto self-start p-2 bg-green-50 btn btn-success"
-                                @click="emit('close')">
+                                @click="router.push('/task')"
+                            >
                                 OK
                             </button>
                         </div>
