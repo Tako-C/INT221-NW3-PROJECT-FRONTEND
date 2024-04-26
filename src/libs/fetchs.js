@@ -5,6 +5,7 @@
 async function getTask(path) {
   try {
     const res = await fetch(`http://localhost:8080/itb-kk/v1/${path}`)
+    console.log(path);
     if (!res.ok) {
       throw new Error('Failed to fetch data')
     }

@@ -1,7 +1,8 @@
 <script setup>
-import { ref, watch, defineProps } from "vue"
+import { ref, onUpdated, onMounted, defineProps } from "vue"
 import { getTask } from "../libs/fetchs.js"
-const emit = defineEmits(["close"])
+import { useRoute, useRouter } from "vue-router"
+
 let taskData = ref([])
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
@@ -11,9 +12,16 @@ const props = defineProps({
     prop_taskId: Number,
 })
 
-// console.log(props.prop_modalCheck)
-// console.log(props.prop_taskId)
+const route = useRoute()
+const router = useRouter()
 
+// console.warn("rout taskId" ,taskId.value)
+const status = {
+    TO_DO : "To Do",
+    NO_STATUS : "No Status",
+    DONE : "Done",
+    DOING : "Doing"
+}
 //Option datetime
 const options = {
     year: "numeric",
@@ -26,98 +34,163 @@ const options = {
 }
 
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+console.log(browserTimeZone)
 function convertToBrowserTimezone(utcTime) {
     // สร้าง Date object จากเวลา UTC
     let date = new Date(utcTime)
-
     // แปลงเวลาให้เป็น timezone ของ browser
     const browserTime = date.toLocaleString("en-AU", options)
     return browserTime
 }
 
 async function fetchData() {
-    taskData.value = await getTask(`tasks/${props.prop_taskId}`)
+    try {
+        taskData.value = await getTask(`tasks/${route.params.id}`)
 
-    // เรียกใช้งานฟังก์ชันในการแปลงเวลา
-    createTimeInBrowserTimezone = convertToBrowserTimezone(
-        taskData.value.create_Time
-    )
-    updateTimeInBrowserTimezone = convertToBrowserTimezone(
-        taskData.value.update_Time
-    )
-
-    // console.log("Create Time in Browser Timezone:",createTimeInBrowserTimezone,browserTimeZone)
-    // console.log("Update Time in Browser Timezone:", updateTimeInBrowserTimezone,browserTimeZone)
-}
-watch(
-    () => props.prop_modalCheck,
-    () => {
-        fetchData()
+        // เรียกใช้งานฟังก์ชันในการแปลงเวลา
+        createTimeInBrowserTimezone = convertToBrowserTimezone(
+            taskData.value.create_Time
+        )
+        updateTimeInBrowserTimezone = convertToBrowserTimezone(
+            taskData.value.update_Time
+        )
+    } catch (error) {
+        console.error("Error fetching task data:", error)
+        router.push("/task")
     }
-)
+}
+//เรียกใช้function fetchdata
+onMounted(fetchData)
 </script>
 <template>
-    <div class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center">
-        <div class="bg-black bg-opacity-50 w-screen h-screen" @click="emit('close')"></div>
-        <div class="fixed bg-white w-[55%] h-[80%] indicator flex flex-col rounded-2xl">
-            <h1 class="itbkk-title border-b">{{ taskData.title }}</h1>
-            <div class="flex justify-between">
+    <div
+        class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center"
+    >
+        <div
+            class="bg-black bg-opacity-50 w-screen h-screen"
+            @click="router.push('/task')"
+        ></div>
+        <div
+            class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl"
+        >
+            <h1 class="itbkk-title break-words w-[79%] ">{{ taskData.title }}</h1>
+            <p class="border-b mt-2"></p>
+            <div class="flex mt-3 mb-20 ml-7">
                 <div class="w-1/2">
-                    <p class="ml-7">Description</p>
-                    <textarea v-if="taskData.description !== null" disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7">{{ taskData.description }}</textarea>
+                    <p class="font-bold">Description</p>
+                    <textarea
+                        v-if="taskData.description !== null"
+                        disabled
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none bg-gray-400 bg-opacity-15 rounded-lg p-2 overflow-hidden hover:overflow-y-scroll"
+                        >{{ taskData.description }}</textarea
+                    >
 
-                    <textarea v-else disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7 italic"
-                        style="color: grey">No Description Provided</textarea>
-
+                    <textarea
+                        v-else
+                        disabled
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
+                        style="color: grey"
+                        >{{ !taskData.description? 'No Description Provided': taskData.assignees }}</textarea
+                    >
                 </div>
                 <div class="w-1/2">
-                    <div>Assignees</div>
-                    <textarea disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7"
-                        v-if="taskData.assignees === null" style="font-style: italic; color: grey">
-                                Unassigned
-                                </textarea>
-                    <textarea v-else disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7">{{ taskData.assignees }}</textarea>
+                    <div class="font-bold">Assignees</div>
+                    <textarea
+                        disabled
+                        class="itbkk-assignees border-2 border-red-700 w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                        :class="{ 'italic text-gray-400': !taskData.assignees }"
+                        type="text"
+                    >{{ !taskData.assignees? 'Unassigned': taskData.assignees }}</textarea>
 
-                    <div>Status</div>
-                    <input class="itbkk-status border-2 border-red-700 w-auto h-8" v-model="taskData.status" disabled />
-
-                    <div>timeZone</div>
-                    <p class="itbkk-timezone border-2 border-red-700 w-80 h-8">
+                    <div class="font-bold">Status</div>
+                    <select
+                        class="itbkk-status border-2 border-red-700 w-auto h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2" 
+                    >
+                        <option>
+                            {{ status[taskData.status] }}
+                        </option>
+                    </select>
+                    <div class="font-bold pt-1">TimeZone</div>
+                    <p
+                        class="itbkk-timezone border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                    >
                         {{ browserTimeZone }}
                     </p>
-                    <div>Created On</div>
-                    <p class="itbkk-created-on border-2 border-red-700 w-80 h-8">
+                    <div class="font-bold pt-1">Created On</div>
+                    <p
+                        class="itbkk-created-on border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                    >
                         {{ createTimeInBrowserTimezone }}
                     </p>
-                    <div>Updated On</div>
-                    <p class="itbkk-updated-on border-2 border-red-700 w-80 h-8">
+                    <div class="font-bold pt-1">Updated On</div>
+                    <p
+                        class="itbkk-updated-on border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                    >
                         {{ updateTimeInBrowserTimezone }}
                     </p>
-                    <div class="flex">
-                        <div class="box">
-                            <button type="submit" class="itbkk-button mt-auto self-start p-2 bg-white btn"
-                                @click="emit('close')">
-                                close
-                            </button>
-                        </div>
-                        <div class="box">
-                            <button type="submit"
-                                class="itbkk-button mt-auto self-start p-2 bg-green-50 btn btn-success"
-                                @click="emit('close')">
-                                OK
-                            </button>
-                        </div>
-                    </div>
                 </div>
+            </div>
+            <div class="boxButton m-3">
+                <button
+                    type="submit"
+                    class="itbkk-button button buttonClose btn"
+                    @click="router.push('/task')"
+                >
+                    close
+                </button>
+
+                <button
+                    type="submit"
+                    class="itbkk-button button buttonOK btn"
+                    @click="router.push('/task')"
+                >
+                    OK
+                </button>
             </div>
         </div>
     </div>
 </template>
 <style scoped>
+.boxButton {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    margin-right: 25px;
+}
+.button {
+    margin-top: auto;
+    background-color: #04aa6d;
+    border: none;
+    color: white;
+    padding: 10px 50px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.buttonClose {
+    background-color: white;
+    color: black;
+    border: 2px solid red;
+}
+.buttonClose:hover {
+    background-color: red;
+    color: white;
+}
+.buttonOK {
+    background-color: white;
+    color: black;
+    border: 2px solid #04aa6d;
+}
+.buttonOK:hover {
+    background-color: #04aa6d;
+    color: white;
+}
+
 .box {
     margin-right: auto;
 }
