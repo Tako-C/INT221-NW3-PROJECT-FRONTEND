@@ -1,12 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import { useRouter} from "vue-router"
+import { useRoute, useRouter} from "vue-router"
 import { getTask } from "../libs/fetchs.js"
 import taskDetail from '../components/taskDetail.vue'
 let taskData = ref([])
 let taskId = ref(null)
 let modalCheck = ref(false)
 const router = useRouter()
+const route = useRoute()
 
 async function fetchData() {
     taskData.value = await getTask("tasks")
@@ -52,7 +53,7 @@ function openModal(taskId) {
                         <td>{{ task.id }}</td>
                         <td class="itbkk-title">{{ task.title }}</td>
                         <td>
-                            <span class="itbkk-assignees" :class="{ 'italic text-gray-400' : !task.assignees }"
+                            <span class="" :class="{ 'italic text-gray-400' : !task.assignees ,'itbkk-assignees' : !route.params.id }"
                                 > {{ !task.assignees ? "Unassigned" : task.assignees }}</span
                             >
                            
