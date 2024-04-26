@@ -8,7 +8,12 @@ let taskId = ref(null)
 let modalCheck = ref(false)
 const router = useRouter()
 const route = useRoute()
-
+const status = {
+    TO_DO : "To Do",
+    NO_STATUS : "No Status",
+    DONE : "Done",
+    DOING : "Doing"
+}
 async function fetchData() {
     taskData.value = await getTask("tasks")
     // console.log(orderListData.value)
@@ -32,7 +37,7 @@ function openModal(taskId) {
         </div>
         <div class="flex justify-center">
             <table
-                class="table table-auto table-zebra w-[80%] h-[10%] max-h-10"
+                class="table table-auto table-zebra w-[80%] h-[10%] max-h-10 mt-2"
             >
                 <thead class="text-xl">
                     <tr>
@@ -58,7 +63,7 @@ function openModal(taskId) {
                             >
                            
                         </td>
-                        <td class="itbkk-status">{{ task.status }}</td>
+                        <td class="itbkk-status">{{ status[task.status] }}</td>
                     </tr>
                 </tbody>
                 <tbody v-show="taskData.length == 0" class="w-screen">

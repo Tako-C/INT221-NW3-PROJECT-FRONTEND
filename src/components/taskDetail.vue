@@ -16,7 +16,12 @@ const route = useRoute()
 const router = useRouter()
 
 // console.warn("rout taskId" ,taskId.value)
-
+const status = {
+    TO_DO : "To Do",
+    NO_STATUS : "No Status",
+    DONE : "Done",
+    DOING : "Doing"
+}
 //Option datetime
 const options = {
     year: "numeric",
@@ -29,33 +34,29 @@ const options = {
 }
 
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-console.log(browserTimeZone);
+console.log(browserTimeZone)
 function convertToBrowserTimezone(utcTime) {
     // สร้าง Date object จากเวลา UTC
-    // console.log(utcTime);
     let date = new Date(utcTime)
-    // console.log(date);
     // แปลงเวลาให้เป็น timezone ของ browser
     const browserTime = date.toLocaleString("en-AU", options)
-    // console.log(browserTime);
     return browserTime
 }
 
 async function fetchData() {
-    try{
-    taskData.value = await getTask(`tasks/${route.params.id}`)
+    try {
+        taskData.value = await getTask(`tasks/${route.params.id}`)
 
-    // เรียกใช้งานฟังก์ชันในการแปลงเวลา
-    createTimeInBrowserTimezone = convertToBrowserTimezone(
-        taskData.value.create_Time
-    )
-    updateTimeInBrowserTimezone = convertToBrowserTimezone(
-        taskData.value.update_Time
-    )
-    } catch (error){
+        // เรียกใช้งานฟังก์ชันในการแปลงเวลา
+        createTimeInBrowserTimezone = convertToBrowserTimezone(
+            taskData.value.create_Time
+        )
+        updateTimeInBrowserTimezone = convertToBrowserTimezone(
+            taskData.value.update_Time
+        )
+    } catch (error) {
         console.error("Error fetching task data:", error)
-        router.push('/task')
-
+        router.push("/task")
     }
 }
 //เรียกใช้function fetchdata
@@ -70,83 +71,126 @@ onMounted(fetchData)
             @click="router.push('/task')"
         ></div>
         <div
-            class="fixed bg-white w-[55%] h-[80%] indicator flex flex-col rounded-2xl"
+            class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl"
         >
-            <h1 class="itbkk-title border-b">{{ taskData.title }}</h1>
-            <div class="flex justify-between">
+            <h1 class="itbkk-title break-words w-[79%] ">{{ taskData.title }}</h1>
+            <p class="border-b mt-2"></p>
+            <div class="flex mt-3 mb-20 ml-7">
                 <div class="w-1/2">
-                    <p class="ml-7">Description</p>
+                    <p class="font-bold">Description</p>
                     <textarea
                         v-if="taskData.description !== null"
                         disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7"
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none bg-gray-400 bg-opacity-15 rounded-lg p-2 overflow-hidden hover:overflow-y-scroll"
                         >{{ taskData.description }}</textarea
                     >
 
                     <textarea
                         v-else
                         disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7 italic"
+                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
-                    >
-No Description Provided</textarea
+                        >{{ !taskData.description? 'No Description Provided': taskData.assignees }}</textarea
                     >
                 </div>
                 <div class="w-1/2">
-                    <div>Assignees</div>
+                    <div class="font-bold">Assignees</div>
                     <textarea
                         disabled
-                        class="itbkk-assignees border-2 border-red-700 w-[80%] h-[50%] resize-none ml-7  "
-                        :class="{ 'italic text-gray-400' : !taskData.assignees }"
-                    >
-                               {{ !taskData.assignees ? "Unassigned" : taskData.assignees }} </textarea
-                    >
-                  
+                        class="itbkk-assignees border-2 border-red-700 w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                        :class="{ 'italic text-gray-400': !taskData.assignees }"
+                        type="text"
+                    >{{ !taskData.assignees? 'Unassigned': taskData.assignees }}</textarea>
 
-                    <div>Status</div>
-                    <!-- <input type="text" class="itbkk-status border-2 border-red-700 w-auto h-8" v-model="taskData.status" disabled /> -->
-                    <select class="itbkk-status border-2 border-red-700 w-auto h-8">
+                    <div class="font-bold">Status</div>
+                    <select
+                        class="itbkk-status border-2 border-red-700 w-auto h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2" 
+                    >
                         <option>
-                            {{ taskData.status }}</option>
+                            {{ status[taskData.status] }}
+                        </option>
                     </select>
-                    <div>timeZone</div>
-                    <p class="itbkk-timezone border-2 border-red-700 w-80 h-8">
+                    <div class="font-bold pt-1">TimeZone</div>
+                    <p
+                        class="itbkk-timezone border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                    >
                         {{ browserTimeZone }}
                     </p>
-                    <div>Created On</div>
-                    <p class="itbkk-created-on border-2 border-red-700 w-80 h-8">{{ createTimeInBrowserTimezone }}
+                    <div class="font-bold pt-1">Created On</div>
+                    <p
+                        class="itbkk-created-on border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                    >
+                        {{ createTimeInBrowserTimezone }}
                     </p>
-                    <div>Updated On</div>
-                    <p class="itbkk-updated-on border-2 border-red-700 w-80 h-8"
+                    <div class="font-bold pt-1">Updated On</div>
+                    <p
+                        class="itbkk-updated-on border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
                     >
                         {{ updateTimeInBrowserTimezone }}
                     </p>
-                    <div class="flex">
-                        <div class="box">
-                            <button
-                                type="submit"
-                                class="itbkk-button mt-auto self-start p-2 bg-white btn"
-                                @click="router.push('/task')"
-                            >
-                                close
-                            </button>
-                        </div>
-                        <div class="box">
-                            <button
-                                type="submit"
-                                class="itbkk-button mt-auto self-start p-2 bg-green-50 btn btn-success"
-                                @click="router.push('/task')"
-                            >
-                                OK
-                            </button>
-                        </div>
-                    </div>
                 </div>
+            </div>
+            <div class="boxButton m-3">
+                <button
+                    type="submit"
+                    class="itbkk-button button buttonClose btn"
+                    @click="router.push('/task')"
+                >
+                    close
+                </button>
+
+                <button
+                    type="submit"
+                    class="itbkk-button button buttonOK btn"
+                    @click="router.push('/task')"
+                >
+                    OK
+                </button>
             </div>
         </div>
     </div>
 </template>
 <style scoped>
+.boxButton {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    margin-right: 25px;
+}
+.button {
+    margin-top: auto;
+    background-color: #04aa6d;
+    border: none;
+    color: white;
+    padding: 10px 50px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.buttonClose {
+    background-color: white;
+    color: black;
+    border: 2px solid red;
+}
+.buttonClose:hover {
+    background-color: red;
+    color: white;
+}
+.buttonOK {
+    background-color: white;
+    color: black;
+    border: 2px solid #04aa6d;
+}
+.buttonOK:hover {
+    background-color: #04aa6d;
+    color: white;
+}
+
 .box {
     margin-right: auto;
 }
