@@ -6,25 +6,17 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: "/task",
+            path: "/tasks",
             name: "taskTable",
-            // component: taskTable,
             component: taskTable, children:[{ path: ":id", component: taskDetail}],
         },
-            // component: taskTable, children:[{ path: ":id", component: taskDetail,props:true }],
-    //     {
-    //       path: "/task/:taskid",
-    //       name: "taskTable",
-    //       component: taskTable,
-    //       props: true
-    //   },
         {
             path: "/",
-            redirect: "/task",
+            redirect: "/tasks",
         },
         {
-            path: "/task:catchAll(.*)",
-            redirect: "/task",
+            path: "/:catchAll(.*)",
+            redirect: "/tasks",
         },
     ]
 })

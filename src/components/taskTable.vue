@@ -16,15 +16,11 @@ const status = {
 }
 async function fetchData() {
     taskData.value = await getTask("tasks")
-    // console.log(orderListData.value)
 }
-console.log(taskData.value)
 onMounted(fetchData)
-
 function openModal(taskId) {
     modalCheck.value = !modalCheck.value
-    router.push(`/task/${taskId}`) 
-    // console.log(taskId.value)
+    router.push(`/tasks/${taskId}`) 
 }
 </script>
 
@@ -73,14 +69,8 @@ function openModal(taskId) {
                 </tbody>
             </table>
         </div>
-    <!-- <taskDetail
-            :prop_modalCheck="modalCheck"
-            v-show="modalCheck"
-            @close="modalCheck = !modalCheck "
-        >
-        </taskDetail> -->
+
     <router-view/>
-    <!-- <router-view name="taskTable"/> -->
     </div>
 </template>
 
