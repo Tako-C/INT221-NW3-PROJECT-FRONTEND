@@ -48,7 +48,7 @@ async function fetchData() {
         )
     } catch (error) {
         console.error("Error fetching task data:", error)
-        router.push("/tasks")
+        router.push("/task")
     }
 }
 //เรียกใช้function fetchdata
@@ -60,7 +60,7 @@ onMounted(fetchData)
     >
         <div
             class="bg-black bg-opacity-50 w-screen h-screen"
-            @click="router.push('/tasks')"
+            @click="router.push('/task')"
         ></div>
         <div
             class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl"
@@ -126,7 +126,7 @@ onMounted(fetchData)
                 <button
                     type="submit"
                     class="itbkk-button button buttonClose btn"
-                    @click="router.push('/tasks')"
+                    @click="router.push('/task')"
                 >
                     close
                 </button>
@@ -134,7 +134,7 @@ onMounted(fetchData)
                 <button
                     type="submit"
                     class="itbkk-button button buttonOK btn"
-                    @click="router.push('/tasks')"
+                    @click="router.push('/task')"
                 >
                     OK
                 </button>

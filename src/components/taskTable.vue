@@ -20,7 +20,7 @@ async function fetchData() {
 onMounted(fetchData)
 function openModal(taskId) {
     modalCheck.value = !modalCheck.value
-    router.push(`/tasks/${taskId}`) 
+    router.push(`/task/${taskId}`) 
 }
 </script>
 
