@@ -6,16 +6,10 @@ import { useRoute, useRouter } from "vue-router"
 let taskData = ref([])
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
-
-const props = defineProps({
-    prop_modalCheck: Boolean,
-    prop_taskId: Number,
-})
-
+let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 const route = useRoute()
 const router = useRouter()
 
-// console.warn("rout taskId" ,taskId.value)
 const status = {
     TO_DO : "To Do",
     NO_STATUS : "No Status",
@@ -33,8 +27,6 @@ const options = {
     hour12: false,
 }
 
-let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-console.log(browserTimeZone)
 function convertToBrowserTimezone(utcTime) {
     // สร้าง Date object จากเวลา UTC
     let date = new Date(utcTime)

@@ -8,22 +8,14 @@ const router = createRouter({
         {
             path: "/task",
             name: "taskTable",
-            // component: taskTable,
             component: taskTable, children:[{ path: ":id", component: taskDetail}],
         },
-            // component: taskTable, children:[{ path: ":id", component: taskDetail,props:true }],
-    //     {
-    //       path: "/task/:taskid",
-    //       name: "taskTable",
-    //       component: taskTable,
-    //       props: true
-    //   },
+        // {
+        //     path: "/",
+        //     redirect: "/task",
+        // },
         {
-            path: "/",
-            redirect: "/task",
-        },
-        {
-            path: "/task:catchAll(.*)",
+            path: "/:catchAll(.*)",
             redirect: "/task",
         },
     ]
