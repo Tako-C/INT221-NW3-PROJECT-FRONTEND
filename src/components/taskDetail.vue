@@ -48,6 +48,7 @@ async function fetchData() {
         )
     } catch (error) {
         console.error("Error fetching task data:", error)
+        window.alert("The requested task does not exist");
         router.push("/task")
     }
 }

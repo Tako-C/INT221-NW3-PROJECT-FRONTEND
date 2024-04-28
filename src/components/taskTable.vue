@@ -5,7 +5,7 @@ import { getTask } from "../libs/fetchs.js"
 import taskDetail from '../components/taskDetail.vue'
 let taskData = ref([])
 let taskId = ref(null)
-let modalCheck = ref(false)
+//let modalCheck = ref(false)
 const router = useRouter()
 const route = useRoute()
 const status = {
@@ -19,9 +19,10 @@ async function fetchData() {
 }
 onMounted(fetchData)
 function openModal(taskId) {
-    modalCheck.value = !modalCheck.value
     router.push(`/task/${taskId}`) 
 }
+
+
 </script>
 
 <template>
@@ -62,7 +63,7 @@ function openModal(taskId) {
                         <td class="itbkk-status">{{ status[task.status] }}</td>
                     </tr>
                 </tbody>
-                <tbody v-show="taskData.length == 0" class="w-screen">
+                <tbody v-show="taskData.length === 0" class="w-screen">
                     <tr>
                         <td>Don't Have Task ??</td>
                     </tr>
