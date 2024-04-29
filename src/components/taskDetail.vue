@@ -41,10 +41,10 @@ async function fetchData() {
 
         // เรียกใช้งานฟังก์ชันในการแปลงเวลา
         createTimeInBrowserTimezone = convertToBrowserTimezone(
-            taskData.value.create_Time
+            taskData.value.createdOn
         )
         updateTimeInBrowserTimezone = convertToBrowserTimezone(
-            taskData.value.update_Time
+            taskData.value.updatedOn
         )
     } catch (error) {
         console.error("Error fetching task data:", error)
