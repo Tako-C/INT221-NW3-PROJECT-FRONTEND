@@ -1,26 +1,35 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRoute, useRouter} from "vue-router"
-import { getTask } from "../libs/fetchs.js"
-import taskDetail from '../components/taskDetail.vue'
+// import { getTask } from "../libs/fetchs.js"
+import { useTaskStore } from '../stores/store.js'
+
+const taskStore = useTaskStore()
 let taskData = ref([])
-let taskId = ref(null)
-//let modalCheck = ref(false)
 const router = useRouter()
 const route = useRoute()
+
 const status = {
     TO_DO : "To Do",
     NO_STATUS : "No Status",
     DONE : "Done",
     DOING : "Doing"
 }
+// async function fetchData() {
+//     taskData.value = await getTask("tasks")
+// }
 async function fetchData() {
-    taskData.value = await getTask("tasks")
+    await taskStore.fetchTasks()
+    console.warn(taskStore.tasks)
+    console.warn(taskStore.tasks.length)
 }
-onMounted(fetchData)
+
+
 function openModal(taskId) {
     router.push(`/task/${taskId}`) 
 }
+
+onMounted(fetchData)
 
 
 </script>
@@ -45,11 +54,11 @@ function openModal(taskId) {
                     </tr>
                 </thead>
                 <tbody class="text-base">
-                    <tr
+                 <tr
                         class="itbkk-item"
                         @click="openModal(task.id)"
-                        v-show="taskData.length > 0"
-                        v-for="(task, index) in taskData"
+                        v-show="taskStore.tasks.length > 0"
+                        v-for="(task, index) in taskStore.tasks"
                         :key="index"
                     >
                         <td>{{ task.id }}</td>
@@ -63,9 +72,9 @@ function openModal(taskId) {
                         <td class="itbkk-status">{{ status[task.status] }}</td>
                     </tr>
                 </tbody>
-                <tbody v-show="taskData.length === 0" class="w-screen">
+                <tbody v-show="taskStore.tasks.length === 0">
                     <tr>
-                        <td>Don't Have Task ??</td>
+                        <td class="text-center" colspan="4"> Don't Have Task ??</td>
                     </tr>
                 </tbody>
             </table>

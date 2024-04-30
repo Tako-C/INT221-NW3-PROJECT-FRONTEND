@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUpdated, onMounted, defineProps } from "vue"
+import { ref, onMounted } from "vue"
 import { getTask } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 
@@ -7,14 +7,15 @@ let taskData = ref([])
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
 
 const status = {
-    TO_DO : "To Do",
-    NO_STATUS : "No Status",
-    DONE : "Done",
-    DOING : "Doing"
+    TO_DO: "To Do",
+    NO_STATUS: "No Status",
+    DONE: "Done",
+    DOING: "Doing",
 }
 //Option datetime
 const options = {
@@ -46,27 +47,38 @@ async function fetchData() {
         updateTimeInBrowserTimezone = convertToBrowserTimezone(
             taskData.value.updatedOn
         )
+        fetchHaveData.value = !fetchHaveData.value
     } catch (error) {
-        console.error("Error fetching task data:", error)
-        window.alert("The requested task does not exist");
         router.push("/task")
+        window.onload = function () {
+            setTimeout(async function () {
+                window.alert("The requested task does not exist")
+            }, 100)
+        }
     }
+}
+function closeModal() {
+    router.push("/task")
+    fetchHaveData.value = !fetchHaveData.value
 }
 //เรียกใช้function fetchdata
 onMounted(fetchData)
 </script>
 <template>
     <div
+        v-show="fetchHaveData"
         class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center"
     >
         <div
             class="bg-black bg-opacity-50 w-screen h-screen"
-            @click="router.push('/task')"
+            @click="closeModal()"
         ></div>
         <div
             class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl"
         >
-            <h1 class="itbkk-title break-words w-[79%] ">{{ taskData.title }}</h1>
+            <h1 class="itbkk-title break-words w-[79%]">
+                {{ taskData.title }}
+            </h1>
             <p class="border-b mt-2"></p>
             <div class="flex mt-3 mb-20 ml-7">
                 <div class="w-1/2">
@@ -83,7 +95,11 @@ onMounted(fetchData)
                         disabled
                         class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
-                        >{{ !taskData.description? 'No Description Provided': taskData.assignees }}</textarea
+                        >{{
+                            !taskData.description
+                                ? "No Description Provided"
+                                : taskData.assignees
+                        }}</textarea
                     >
                 </div>
                 <div class="w-1/2">
@@ -93,16 +109,19 @@ onMounted(fetchData)
                         class="itbkk-assignees border-2 border-red-700 w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3"
                         :class="{ 'italic text-gray-400': !taskData.assignees }"
                         type="text"
-                    >{{ !taskData.assignees? 'Unassigned': taskData.assignees }}</textarea>
+                        >{{
+                            !taskData.assignees
+                                ? "Unassigned"
+                                : taskData.assignees
+                        }}</textarea
+                    >
 
                     <div class="font-bold">Status</div>
-                    <select
-                        class="itbkk-status border-2 border-red-700 w-auto h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2" 
+                    <p
+                        class="itbkk-status border-2 border-red-700 w-1/6 h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
                     >
-                        <option>
                             {{ status[taskData.status] }}
-                        </option>
-                    </select>
+                    </p>
                     <div class="font-bold pt-1">TimeZone</div>
                     <p
                         class="itbkk-timezone border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
@@ -127,16 +146,13 @@ onMounted(fetchData)
                 <button
                     type="submit"
                     class="itbkk-button button buttonClose btn"
-                    @click="router.push('/task')"
+                    @click="closeModal()"
                 >
                     close
                 </button>
 
-                <button
-                    type="submit"
-                    class="itbkk-button button buttonOK btn"
-                    @click="router.push('/task')"
-                >
+                <button type="submit"class="itbkk-button button buttonClose btn"
+                 @click="closeModal()">
                     OK
                 </button>
             </div>
