@@ -2,7 +2,9 @@
 // GetData
 async function getTask(path) {
   try {
-    const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th/v1/${path}`)
+
+    const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v1/${path}`)
+
     if (!res.ok) {
       throw new Error('Failed to fetch data')
     }

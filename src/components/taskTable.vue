@@ -48,7 +48,7 @@ onMounted(fetchData)
                 <thead class="text-xl">
                     <tr>
                         <th>ID</th>
-                        <th>TItle</th>
+                        <th>Title</th>
                         <th>Assignees</th>
                         <th>Status</th>
                     </tr>
