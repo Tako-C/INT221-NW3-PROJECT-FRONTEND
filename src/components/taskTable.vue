@@ -43,11 +43,12 @@ async function removeTask(taskId) {
   const confirmed = window.confirm('Are you sure to delete task?')
   if (confirmed) {
     removeTaskById(taskId)
-    await fetchData()
+    taskStore.tasks = taskStore.tasks.filter(task => task.id !== taskId)
+    // await fetchData()
   }
 }
 
-onMounted(fetchData)
+fetchData()
 </script>
 
 <template>
