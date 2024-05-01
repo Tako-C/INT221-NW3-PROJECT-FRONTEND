@@ -17,7 +17,7 @@ async function getTask(path) {
 
 async function removeTaskById(id) {
   try {
-    const res = await fetch(`http:/localhost:8080/v1/tasks/${id}`, {
+    const res = await fetch(`http://localhost:8080/v1/tasks/${id}`, {
       method: 'DELETE',
     })
 
