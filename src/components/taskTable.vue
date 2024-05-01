@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRoute, useRouter} from "vue-router"
-// import { getTask } from "../libs/fetchs.js"
+import { getTask } from "../libs/fetchs.js"
 import { useTaskStore } from '../stores/store.js'
 
 const taskStore = useTaskStore()
@@ -15,15 +15,11 @@ const status = {
     DONE : "Done",
     DOING : "Doing"
 }
-// async function fetchData() {
-//     taskData.value = await getTask("tasks")
-// }
 async function fetchData() {
-    await taskStore.fetchTasks()
-    console.warn(taskStore.tasks)
-    console.warn(taskStore.tasks.length)
+    taskData.value = await getTask("tasks")
+    taskStore.tasks.push(...taskData.value)
+    console.log(taskStore.tasks);
 }
-
 
 function openModal(taskId) {
     router.push(`/task/${taskId}`) 
