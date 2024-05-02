@@ -74,26 +74,29 @@ onMounted(fetchData)
             @click="closeModal()"
         ></div>
         <div
-            class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl"
+            class="fixed bg-[#f0ede6] w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
         >
-            <h1 class="itbkk-title break-words w-[79%]">
+            <div class=" bg-gradient-to-b from-[#6a746b] rounded-2xl">
+                <h1 class="itbkk-title break-words w-[79%]">
                 {{ taskData.title }}
             </h1>
             <p class="border-b mt-2"></p>
+            </div>
+
             <div class="flex mt-3 mb-20 ml-7">
                 <div class="w-1/2">
                     <p class="font-bold">Description</p>
                     <textarea
                         v-if="taskData.description !== null"
                         disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none bg-gray-400 bg-opacity-15 rounded-lg p-2 overflow-hidden hover:overflow-y-scroll"
+                        class="itbkk-description border-2 w-[80%] h-[105%] resize-none bg-gray-400 bg-opacity-15 rounded-lg p-2 overflow-hidden hover:overflow-y-scroll"
                         >{{ taskData.description }}</textarea
                     >
 
                     <textarea
                         v-else
                         disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
+                        class="itbkk-description border-2 w-[80%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
                         >{{
                             !taskData.description
@@ -106,7 +109,7 @@ onMounted(fetchData)
                     <div class="font-bold">Assignees</div>
                     <textarea
                         disabled
-                        class="itbkk-assignees border-2 border-red-700 w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                        class="itbkk-assignees border-2 w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3"
                         :class="{ 'italic text-gray-400': !taskData.assignees }"
                         type="text"
                         >{{
@@ -118,25 +121,25 @@ onMounted(fetchData)
 
                     <div class="font-bold">Status</div>
                     <p
-                        class="itbkk-status border-2 border-red-700 w-1/6 h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
+                        class="itbkk-status border-2 w-[25%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
                     >
                             {{ status[taskData.status] }}
                     </p>
                     <div class="font-bold pt-1">TimeZone</div>
                     <p
-                        class="itbkk-timezone border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                        class="itbkk-timezone border-2 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
                     >
                         {{ browserTimeZone }}
                     </p>
                     <div class="font-bold pt-1">Created On</div>
                     <p
-                        class="itbkk-created-on border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                        class="itbkk-created-on border-2 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
                     >
                         {{ createTimeInBrowserTimezone }}
                     </p>
                     <div class="font-bold pt-1">Updated On</div>
                     <p
-                        class="itbkk-updated-on border-2 border-red-700 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
+                        class="itbkk-updated-on border-2 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
                     >
                         {{ updateTimeInBrowserTimezone }}
                     </p>
@@ -151,7 +154,7 @@ onMounted(fetchData)
                     close
                 </button>
 
-                <button type="submit"class="itbkk-button button buttonClose btn"
+                <button type="submit"class="itbkk-button button buttonOK btn"
                  @click="closeModal()">
                     OK
                 </button>
@@ -215,11 +218,12 @@ onMounted(fetchData)
 }
 
 h1 {
-    color: #e91f1f;
+    color: black;
     font-size: 32px;
     font-weight: 900;
     margin-top: 15px;
     margin-left: 25px;
+    font-family: sans-serif;
 }
 
 .modal {
