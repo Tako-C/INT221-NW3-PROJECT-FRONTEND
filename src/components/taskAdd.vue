@@ -8,51 +8,41 @@ const route = useRoute()
 const router = useRouter()
 let taskData = ref({})
 const taskStore = useTaskStore()
-
+const ID = ref(0)
 
 
 function closeModal() {
     router.push("/task")
-    
-    taskStore.tasks = taskStore.tasks.filter(task => task.id !== taskId)
-    taskStore.tasks.push(taskData.value)
-    console.log(taskStore.tasks);
 }
 
 function addtostore() {
-    // const lastTaskId = taskStore.tasks[taskStore.tasks.length - 1].id
-    // console.log(lastTaskId);
-    // taskData.value.id = lastTaskId +1
+    taskData.value.id = ID.value
+    console.log(taskData.value);
     taskStore.tasks.push(taskData.value)
 
 }
 async function save() {
     
     if(taskData.value.status === "No Status"){
-        taskData.value.status = "NO_STATUS"
-        console.log(taskData.value)
-        addTask(taskData.value)
-        addtostore()
-        closeModal()
+        taskData.value.status = "NO_STATUS"  
     }
     if(taskData.value.status === "To Do"){
         taskData.value.status = "TO_DO"
-         addTask(taskData.value)
-         closeModal()
     }
     if(taskData.value.status === "Doing"){
         taskData.value.status = "DOING"
-         addTask(taskData.value)
-         closeModal()
     }
     if(taskData.value.status === "Done"){
         taskData.value.status = "DONE"
-         addTask(taskData.value)
-         closeModal()
     }
+
+    console.log(taskData.value)
+    let result = await addTask(taskData.value)
+    ID.value = result.id
+    addtostore()
+    closeModal()
 }
-//เรียกใช้function fetchdata
-// onMounted(fetchData)
+
 </script>
 <template>
     <div
