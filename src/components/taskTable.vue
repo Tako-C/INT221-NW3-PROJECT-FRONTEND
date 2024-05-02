@@ -18,10 +18,6 @@ const status = {
   DOING: 'Doing',
 }
 
-// async function fetchData() {
-//     taskData.value = await getTask("tasks")
-// }
-
  async function fetchData() {
   taskData.value = await getTask('tasks')
   taskStore.tasks.push(...taskData.value)
@@ -34,7 +30,7 @@ function openModal(taskId) {
 }
 
 function toggleDropDown(index) {
-  optionsDropDownIndex.value =
+  optionsDropDownIndex.value = 
     optionsDropDownIndex.value === index ? null : index
 }
 
@@ -51,7 +47,10 @@ function addModal(){
   router.push(`/task/add`)
 }
 
-fetchData()
+
+onMounted(fetchData)
+
+
 </script>
 
 <template>
