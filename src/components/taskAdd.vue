@@ -16,13 +16,13 @@ function closeModal() {
     
     taskStore.tasks = taskStore.tasks.filter(task => task.id !== taskId)
     taskStore.tasks.push(taskData.value)
-    console.log(taskStore.task);
+    console.log(taskStore.tasks);
 }
 
 function addtostore() {
-    const lastTaskId = taskStore.tasks[taskStore.tasks.length - 1].id
-    console.log(lastTaskId);
-    taskData.value.id = lastTaskId +1
+    // const lastTaskId = taskStore.tasks[taskStore.tasks.length - 1].id
+    // console.log(lastTaskId);
+    // taskData.value.id = lastTaskId +1
     taskStore.tasks.push(taskData.value)
 
 }

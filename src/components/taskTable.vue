@@ -51,7 +51,8 @@ function addModal(){
   router.push(`/task/add`)
 }
 
-fetchData()
+onMounted(fetchData)
+
 </script>
 
 <template>
