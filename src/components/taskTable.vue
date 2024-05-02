@@ -22,10 +22,10 @@ const status = {
 //     taskData.value = await getTask("tasks")
 // }
 
-async function fetchData() {
+ async function fetchData() {
   taskData.value = await getTask('tasks')
   taskStore.tasks.push(...taskData.value)
-  console.log(taskStore.tasks)
+  console.log(...taskStore.tasks)
 }
 
 function openModal(taskId) {
@@ -47,37 +47,49 @@ async function removeTask(taskId) {
     // await fetchData()
   }
 }
+function addModal(){
+  router.push(`/task/add`)
+}
 
 fetchData()
 </script>
 
 <template>
+<div class="bg-[#f0ede6] h-screen">
   <div class="class name : itbkk-">
     <div
-      class="bg-[#583d72] flex justify-center items-center h-20 text-24 text-white"
+      class="bg-[#6a746b] flex justify-center items-center h-20 text-24 text-white"
     >
-      <h1>IT-Bangmod Kradan Kanban (ITB-KK)</h1>
+      <h1 class="text-3xl font-bold font-serif">IT-Bangmod Kradan Kanban (ITB-KK)</h1>
     </div>
     <div class="flex justify-center">
-      <table class="table table-auto table-zebra w-[80%] h-[10%] max-h-10 mt-2">
-        <thead class="text-xl">
+      
+      <table class="table table-auto w-[80%] h-[10%] max-h-10 mt-10 bg-white">
+        <thead class="text-xl font-serif">
           <tr>
+            
             <th>ID</th>
             <th>Title</th>
             <th>Assignees</th>
             <th>Status</th>
+            <div class="add-Button">
+              <img
+                src="@/assets/plus.svg"
+                @click="addModal()"
+              >
+            </div>
           </tr>
         </thead>
         <tbody class="text-base">
           <tr
-            class="itbkk-item"
+            class="itbkk-item hover-table"
             v-show="taskStore.tasks.length > 0"
             v-for="(task, index) in taskStore.tasks"
             :key="index"
           >
-            <td>{{ task.id }}</td>
-            <td class="itbkk-title">{{ task.title }}</td>
-            <td>
+            <td @click="openModal(task.id)">{{ task.id }}</td>
+            <td @click="openModal(task.id)" class="itbkk-title">{{ task.title }}</td>
+            <td @click="openModal(task.id)">
               <span
                 class=""
                 :class="{
@@ -88,7 +100,7 @@ fetchData()
                 {{ !task.assignees ? 'Unassigned' : task.assignees }}</span
               >
             </td>
-            <td class="itbkk-status">{{ status[task.status] }}</td>
+            <td @click="openModal(task.id)" class="itbkk-status">{{ status[task.status] }}</td>
             <td>
               <div class="relative">
                 <img
@@ -136,9 +148,33 @@ fetchData()
 
     <router-view />
   </div>
+</div>
 </template>
 
 <style scoped>
+.itbkk-status {
+  color: #ff5858;
+}
+
+.hover-table:hover {
+    background-color: rgba(207, 207, 207, 0.5);
+    transition: 0.3s;
+    color: blue;
+
+}
+
+.add-Button {
+  width: 25%;
+  margin-top: 7px;
+  margin-left: 7px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #cc2e5d;
+  }
+}
+
+
 .button {
   appearance: none;
   outline: none;

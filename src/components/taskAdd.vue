@@ -1,145 +1,117 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import { getTask } from "../libs/fetchs.js"
+import { addTask } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
+import { useTaskStore } from '../stores/store.js'
 
-let taskData = ref([])
-let createTimeInBrowserTimezone = ref(null)
-let updateTimeInBrowserTimezone = ref(null)
-let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
+let taskData = ref({})
+const taskStore = useTaskStore()
 
-const status = {
-    TO_DO: "To Do",
-    NO_STATUS: "No Status",
-    DONE: "Done",
-    DOING: "Doing",
-}
-//Option datetime
-const options = {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-}
 
-function convertToBrowserTimezone(utcTime) {
-    // สร้าง Date object จากเวลา UTC
-    let date = new Date(utcTime)
-    // แปลงเวลาให้เป็น timezone ของ browser
-    const browserTime = date.toLocaleString("en-AU", options)
-    return browserTime
-}
 
-async function fetchData() {
-    try {
-        taskData.value = await getTask(`tasks/${route.params.id}`)
-
-        // เรียกใช้งานฟังก์ชันในการแปลงเวลา
-        createTimeInBrowserTimezone = convertToBrowserTimezone(
-            taskData.value.createdOn
-        )
-        updateTimeInBrowserTimezone = convertToBrowserTimezone(
-            taskData.value.updatedOn
-        )
-        fetchHaveData.value = !fetchHaveData.value
-    } catch (error) {
-        router.push("/task")
-        window.onload = function () {
-            setTimeout(async function () {
-                window.alert("The requested task does not exist")
-            }, 100)
-        }
-    }
-}
 function closeModal() {
     router.push("/task")
-    fetchHaveData.value = !fetchHaveData.value
+    
+    taskStore.tasks = taskStore.tasks.filter(task => task.id !== taskId)
+    taskStore.tasks.push(taskData.value)
+    console.log(taskStore.task);
+}
+
+function addtostore() {
+    const lastTaskId = taskStore.tasks[taskStore.tasks.length - 1].id
+    console.log(lastTaskId);
+    taskData.value.id = lastTaskId +1
+    taskStore.tasks.push(taskData.value)
+
+}
+async function save() {
+    
+    if(taskData.value.status === "No Status"){
+        taskData.value.status = "NO_STATUS"
+        console.log(taskData.value)
+        addTask(taskData.value)
+        addtostore()
+        closeModal()
+    }
+    if(taskData.value.status === "To Do"){
+        taskData.value.status = "TO_DO"
+         addTask(taskData.value)
+         closeModal()
+    }
+    if(taskData.value.status === "Doing"){
+        taskData.value.status = "DOING"
+         addTask(taskData.value)
+         closeModal()
+    }
+    if(taskData.value.status === "Done"){
+        taskData.value.status = "DONE"
+         addTask(taskData.value)
+         closeModal()
+    }
 }
 //เรียกใช้function fetchdata
 // onMounted(fetchData)
 </script>
 <template>
     <div
-       
         class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center"
     >
         <div
             class="bg-black bg-opacity-50 w-screen h-screen"
             @click="closeModal()"
-        ></div>
-        <div
-            class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl"
+
         >
-            <h1 class="itbkk-title break-words w-[79%]">
-                {{ taskData.title }}
+        </div>
+        <div
+            class="fixed bg-white w-[35%] h-[70%] indicator flex flex-col rounded-2xl"
+        >
+            <div class=" bg-gradient-to-b from-violet-300 rounded-2xl">
+                <h1 class="itbkk-title break-words w-[79%]">
+                    New Task
+                    <!-- {{ taskData.title }} -->
             </h1>
             <p class="border-b mt-2"></p>
-            <div class="flex mt-3 mb-20 ml-7">
-                <div class="w-1/2">
-                    <p class="font-bold">Description</p>
-                    <textarea
-                        v-if="taskData.description !== null"
-                        disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none bg-gray-400 bg-opacity-15 rounded-lg p-2 overflow-hidden hover:overflow-y-scroll"
-                        >{{ taskData.description }}</textarea
-                    >
+            </div>
 
-                    <textarea
-                        v-else
-                        disabled
-                        class="itbkk-description border-2 border-red-700 w-[80%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
-                        style="color: grey"
-                        >{{
-                            !taskData.description
-                                ? "No Description Provided"
-                                : taskData.assignees
-                        }}</textarea
-                    >
-                </div>
-                <div class="w-1/2">
+            <div class="mt-3 mb-20 ml-7">
+
+                    <div class="font-bold">Title</div>
+                    <input v-model="taskData.title" class="w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
+
+                    <div class="font-bold">Description</div>
+                    <textarea v-model="taskData.description" class="itbkk-description w-[80%] h-[80%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
+
                     <div class="font-bold">Assignees</div>
-                    <textarea
-                        disabled
-                        class="itbkk-assignees border-2 border-red-700 w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3"
-                        :class="{ 'italic text-gray-400': !taskData.assignees }"
-                        type="text"
-                        >{{
-                            !taskData.assignees
-                                ? "Unassigned"
-                                : taskData.assignees
-                        }}</textarea
-                    >
+                    <textarea v-model="taskData.assignees" class="itbkk-assignees w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2"></textarea>
 
                     <div class="font-bold">Status</div>
-                    <p
-                        class="itbkk-status border-2 border-red-700 w-1/6 h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
-                    >
-                            {{ status[taskData.status] }}
-                    </p>
-                    
-                    </div>
-                </div>
-            <div class="boxButton m-3">
-                <button
-                    type="submit"
-                    class="itbkk-button button buttonClose btn"
-                    @click="closeModal()"
-                >
-                    close
-                </button>
+                        <select v-model="taskData.status" class="itbkk-status w-[25%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2">
+                            <option>No Status</option>
+                            <option>To Do</option>
+                            <option>Doing</option>
+                            <option>Done</option>
+                        </select>
 
-                <button type="submit"class="itbkk-button button buttonClose btn"
-                 @click="closeModal()">
-                    OK
-                </button>
             </div>
-        </div>
+
+
+                <div class="boxButton m-3">
+                    <button
+                        type="submit"
+                        class="itbkk-button button buttonClose btn"
+                        @click="closeModal()"
+                    >
+                    CANCLE
+                    </button>
+                    <button type="submit"class="itbkk-button button buttonOK btn"
+                        @click="save()">
+                    SAVE
+                    </button>
+                </div>
+
+            </div>
     </div>
 </template>
 <style scoped>
@@ -198,11 +170,13 @@ function closeModal() {
 }
 
 h1 {
-    color: #e91f1f;
+
+    color: black;
     font-size: 32px;
     font-weight: 900;
     margin-top: 15px;
     margin-left: 25px;
+    font-family: sans-serif;
 }
 
 .modal {
