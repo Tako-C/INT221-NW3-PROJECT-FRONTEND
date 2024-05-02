@@ -6,13 +6,18 @@ import { useTaskStore } from '../stores/store.js'
 
 const route = useRoute()
 const router = useRouter()
-let taskData = ref({})
 const taskStore = useTaskStore()
 const ID = ref(0)
-
+let taskData = ref({
+    title: '',
+    description: '',
+    assignees: '',
+    status: 'No Status'
+})
 
 function closeModal() {
     router.push("/task")
+    clearData()
 }
 
 function addtostore() {
@@ -21,27 +26,90 @@ function addtostore() {
     taskStore.tasks.push(taskData.value)
 
 }
+
+
 async function save() {
-    
-    if(taskData.value.status === "No Status"){
-        taskData.value.status = "NO_STATUS"  
+    if (!validateTask()) {
+        return; // Stop execution if validation fails
     }
-    if(taskData.value.status === "To Do"){
-        taskData.value.status = "TO_DO"
-    }
-    if(taskData.value.status === "Doing"){
-        taskData.value.status = "DOING"
-    }
-    if(taskData.value.status === "Done"){
-        taskData.value.status = "DONE"
+    switch (taskData.value.status) {
+        case "To Do":
+            taskData.value.status = "TO_DO"
+            break;
+        case "Doing":
+            taskData.value.status = "DOING"
+            break;
+        case "Done":
+            taskData.value.status = "DONE"
+            break;
+        default:
+            taskData.value.status = "NO_STATUS"
     }
 
-    console.log(taskData.value)
     let result = await addTask(taskData.value)
     ID.value = result.id
     addtostore()
     closeModal()
 }
+
+
+function validateTask() {
+    // Title validation
+    if (!taskData.value.title) {
+        alert("Title cannot be empty")
+        return false;
+    } else if (taskData.value.title.length > 100) {
+        alert("Title cannot exceed 100 characters!")
+        return false;
+    }
+    // Description validation
+    if (taskData.value.description && taskData.value.description.length > 500) {
+        alert("Description cannot exceed 500 characters!")
+        return false;
+    }
+    if (!taskData.value.description) {
+        taskData.value.description = null
+    }
+    // Assignees validation
+    if (taskData.value.assignees && taskData.value.assignees.length > 30) {
+        alert("Assignees should not exceed 30 characters.")
+        return false;
+    }
+    if (!taskData.value.assignees) {
+        taskData.value.assignees = null
+    }
+
+    return true; // All validations passed
+}
+function clearData() {
+    taskData.value = {
+        title: '',
+        description: '',
+        assignees: '',
+        status: 'No Status'
+    }
+}
+// async function save() {
+    
+//     if(taskData.value.status === "No Status"){
+//         taskData.value.status = "NO_STATUS"  
+//     }
+//     if(taskData.value.status === "To Do"){
+//         taskData.value.status = "TO_DO"
+//     }
+//     if(taskData.value.status === "Doing"){
+//         taskData.value.status = "DOING"
+//     }
+//     if(taskData.value.status === "Done"){
+//         taskData.value.status = "DONE"
+//     }
+
+//     console.log(taskData.value)
+//     let result = await addTask(taskData.value)
+//     ID.value = result.id
+//     addtostore()
+//     closeModal()
+// }
 
 </script>
 <template>
