@@ -1,224 +1,243 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getTask } from '../libs/fetchs.js'
-import { useTaskStore } from '../stores/store.js'
-import { removeTaskById } from '@/libs/fetchs.js'
+import { ref, onMounted, watchEffect } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { getTask } from "../libs/fetchs.js"
+import { useTaskStore } from "../stores/store.js"
+import { removeTaskById } from "@/libs/fetchs.js"
+import errorDelete from '../components/modals/errorDelete.vue'
+import deleteSuccess from '../components/modals/deleteSuccess.vue'
+import addSuccess from '../components/modals/addSuccess.vue'
+import errorUpdate from '../components/modals/errorUpdate.vue'
+
 
 const taskStore = useTaskStore()
 let taskData = ref([])
 const router = useRouter()
 const route = useRoute()
 const optionsDropDownIndex = ref(null)
+const errorModalVisible = ref(false)
+const deleteModalVisible = ref(false)
 
 const status = {
-  TO_DO: 'To Do',
-  NO_STATUS: 'No Status',
-  DONE: 'Done',
-  DOING: 'Doing',
+    TO_DO: "To Do",
+    NO_STATUS: "No Status",
+    DONE: "Done",
+    DOING: "Doing",
 }
 
 async function fetchData() {
-  taskData.value = await getTask('tasks')
-  taskStore.tasks.push(...taskData.value)
-  console.log(...taskStore.tasks)
+    taskData.value = await getTask("tasks")
+    taskStore.tasks.push(...taskData.value)
+    // console.log(...taskStore.tasks)
 }
 
 function openModal(taskId) {
-  router.push(`/task/${taskId}`)
-  optionsDropDownIndex.value = null
+    router.push(`/task/${taskId}`)
+    optionsDropDownIndex.value = null
 }
 
 function toggleDropDown(index) {
-  optionsDropDownIndex.value =
-    optionsDropDownIndex.value === index ? null : index
+    optionsDropDownIndex.value =
+        optionsDropDownIndex.value === index ? null : index
 }
 
 async function removeTask(taskId) {
-  optionsDropDownIndex.value = null
-  const confirmed = window.confirm('Are you sure to delete task?')
-  if (confirmed) {
-    removeTaskById(taskId)
-    taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskId)
-    // await fetchData()
-  }
+    optionsDropDownIndex.value = null
+    const confirmed = window.confirm("Are you sure to delete task?")
+    if (confirmed) {
+        let result = await removeTaskById(taskId)
+        console.log("result",result);
+        if (result.status === 404) {
+            console.log("result :", result.status)
+            errorModalVisible.value = true
+        }else{
+          deleteModalVisible.value = true
+        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskId)
+        
+        }
+
+        
+    }
 }
 
 function addModal() {
-  router.push(`/task/add`)
+    router.push(`/task/add`)
 }
 
 function editModal(taskId) {
-  router.push(`/task/${taskId}/edit`)
-  optionsDropDownIndex.value = null
+    router.push(`/task/${taskId}/edit`)
+    optionsDropDownIndex.value = null
 }
 
-// // ปิด dropdown เมื่อคลิกนอกกรอบ
-// function handleClickOutside(event) {
-//   if (
-//     optionsDropDownIndex.value !== null &&
-//     !event.target.closest('.relative')
-//   ) {
-//     optionsDropDownIndex.value = null
-//   }
-// }
-
-// onMounted(() => {
-//   document.addEventListener('click', handleClickOutside)
-// })
-
-// onUnmounted(() => {
-//   document.removeEventListener('click', handleClickOutside)
-// })
-
 onMounted(fetchData)
+
+// ส่วนที่เกี่ยวข้องกับการแสดงmodal หลังจาก add remove update
+watchEffect(() => {
+    if (taskStore.successModalVisible === true) {
+        setTimeout(() => {
+            taskStore.successModalVisible = false
+        }, 3000)
+    }
+})
 </script>
 
 <template>
-  <div class="bg-[#f0ede6] h-screen">
-    <div class="class name : itbkk-">
-      <div
-        class="bg-[#6a746b] flex justify-center items-center h-20 text-24 text-white"
-      >
-        <h1 class="text-3xl font-bold font-serif">
-          IT-Bangmod Kradan Kanban (ITB-KK)
-        </h1>
-      </div>
-      <div class="flex justify-center">
-        <table class="table table-auto w-[80%] mt-10 bg-white overflow-hidden hover:overflow-y-scroll">
-          <thead class="text-xl font-serif">
-            <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Assignees</th>
-              <th>Status</th>
-              <div class="add-Button">
-                <img src="@/assets/plus.svg" @click="addModal()" />
-              </div>
-            </tr>
-          </thead>
-          <tbody class="text-base">
-            <tr
-              class="itbkk-item hover-table"
-              v-show="taskStore.tasks.length > 0"
-              v-for="(task, index) in taskStore.tasks"
-              :key="index"
-            >
-              <td @click="openModal(task.id)">{{ task.id }}</td>
-              <td @click="openModal(task.id)" class="itbkk-title">
-                {{ task.title }}
-              </td>
-              <td @click="openModal(task.id)">
-                <span
-                  class=""
-                  :class="{
-                    'italic text-gray-400': !task.assignees,
-                    'itbkk-assignees': !route.params.id,
-                  }"
-                >
-                  {{ !task.assignees ? 'Unassigned' : task.assignees }}</span
-                >
-              </td>
-              <td @click="openModal(task.id)" class="itbkk-status">
-                {{ status[task.status] }}
-              </td>
-              <td>
-                <div class="relative">
-                  <img
-                    src="@/assets/optionIcon.svg"
-                    alt="Options"
-                    @click="toggleDropDown(index)"
-                    class="cursor-pointer"
-                  />
-                  <div
-                    v-if="optionsDropDownIndex === index"
-                    class="absolute mt-2 w-48 bg-white border rounded-lg shadow-lg z-10"
-                  >
-                    <ul class="divide-y divide-gray-200">
-                      <li>
-                        <a
-                          href="#"
-                          @click="editModal(task.id)"
-                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
-                        >
-                          Edit
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          @click="removeTask(task.id)"
-                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
-                        >
-                          Remove
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-          <tbody v-show="taskStore.tasks.length === 0">
-            <tr>
-              <td class="text-center" colspan="4">Don't Have Task ??</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <errorDelete v-show="errorModalVisible" @closemodal="errorModalVisible = false" class="fixed z-30"/>
+    <deleteSuccess v-show="deleteModalVisible" @closemodal="deleteModalVisible = false" class="fixed z-30"/>
+    <addSuccess v-show="taskStore.successModalVisible === true" class="fixed z-30"/>
+    <errorUpdate v-show="taskStore.errorModalUpdate === true" @closemodal="taskStore.errorModalUpdate = false" class="fixed z-30" />
 
-      <router-view />
+    <div class="class name : itbkk- bg-[#fff2d3] w-full h-auto">
+        <header
+            name="header"
+            class="fixed top-0 z-10 w-screen bg-[#6a746b] flex justify-center items-center h-20 text-24 text-white"
+        >
+            <h1 class="text-3xl font-bold font-serif">
+                IT-Bangmod Kradan Kanban (ITB-KK)
+            </h1>
+        </header>
+
+        <!-- The button to open modal -->
+
+        <main class="flex justify-center pb-[20%]">
+            <table class="table w-[80%] bg-white mt-28">
+                <thead class="text-xl font-serif h-20">
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Assignees</th>
+                        <th>Status</th>
+                        <div class="add-Button">
+                            <img src="@/assets/plus.svg" @click="addModal()" />
+                        </div>
+                    </tr>
+                </thead>
+                <tbody class="text-base">
+                    <tr
+                        class="itbkk-item hover-table"
+                        v-show="taskStore.tasks.length > 0"
+                        v-for="(task, index) in taskStore.tasks"
+                        :key="index"
+                    >
+                        <td @click="openModal(task.id)">{{ task.id }}</td>
+                        <td @click="openModal(task.id)" class="itbkk-title">
+                            {{ task.title }}
+                        </td>
+                        <td @click="openModal(task.id)">
+                            <span
+                                class=""
+                                :class="{
+                                    'italic text-gray-400': !task.assignees,
+                                    'itbkk-assignees': !route.params.id,
+                                }"
+                            >
+                                {{
+                                    !task.assignees
+                                        ? "Unassigned"
+                                        : task.assignees
+                                }}</span
+                            >
+                        </td>
+                        <td @click="openModal(task.id)" class="itbkk-status">
+                            {{ status[task.status] }}
+                        </td>
+                        <td>
+                            <div class="relative">
+                                <img
+                                    src="@/assets/optionIcon.svg"
+                                    alt="Options"
+                                    @click="toggleDropDown(index)"
+                                    class="cursor-pointer"
+                                />
+                                <div
+                                    v-if="optionsDropDownIndex === index"
+                                    class="absolute w-32 bg-white border rounded-lg shadow-lg z-10"
+                                >
+                                    <ul class="divide-y divide-gray-200">
+                                        <li>
+                                            <a
+                                                href="#"
+                                                @click="editModal(task.id)"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                            >
+                                                Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="#"
+                                                @click="removeTask(task.id)"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                            >
+                                                Remove
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-show="taskStore.tasks.length === 0">
+                    <tr>
+                        <td class="text-center" colspan="4">
+                            Don't Have Task ??
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
     </div>
-  </div>
+    <router-view />
 </template>
 
 <style scoped>
 .itbkk-status {
-  color: #ff5858;
+    color: #ff5858;
 }
 
 .hover-table:hover {
-  background-color: rgba(207, 207, 207, 0.5);
-  transition: 0.3s;
-  color: blue;
+    background-color: rgba(207, 207, 207, 0.5);
+    transition: 0.3s;
+    color: blue;
 }
 
 .add-Button {
-  width: 40px;
-  margin-top: 5px;
-  margin-left: 5px;
-  cursor: pointer;
+    width: 40px;
+    margin-top: 5px;
+    margin-left: 5px;
+    cursor: pointer;
 
-  &:hover {
-    background-color: #cc2e5d;
-  }
+    &:hover {
+        background-color: #cc2e5d;
+    }
 }
 
 .button {
-  appearance: none;
-  outline: none;
-  border: none;
-  background: none;
-  cursor: pointer;
+    appearance: none;
+    outline: none;
+    border: none;
+    background: none;
+    cursor: pointer;
 
-  display: inline-block;
-  padding: 15px 25px;
-  background-image: linear-gradient(to right, #cc2e5d, #ff5858);
-  border-radius: 8px;
+    display: inline-block;
+    padding: 15px 25px;
+    background-image: linear-gradient(to right, #cc2e5d, #ff5858);
+    border-radius: 8px;
 
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
 
-  box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
-  transition: 0.4s ease-out;
+    box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
+    transition: 0.4s ease-out;
 
-  &:hover {
-    background-image: linear-gradient(to top, #008000, #5863ff);
-    box-shadow: 6px 6px rgba(253, 5, 199, 0.6);
-  }
+    &:hover {
+        background-image: linear-gradient(to top, #008000, #5863ff);
+        box-shadow: 6px 6px rgba(253, 5, 199, 0.6);
+    }
 }
 .div-class-name {
-  height: 50vh;
+    height: 50vh;
 }
 </style>

@@ -67,7 +67,7 @@ onMounted(fetchData)
 <template>
   <div
     v-show="fetchHaveData"
-    class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center"
+    class="class name : itbkk-* fixed w-screen h-screen z-10 top-0 left-0 flex justify-center items-center"
   >
     <div
       class="bg-black bg-opacity-50 w-screen h-screen"
@@ -119,7 +119,7 @@ onMounted(fetchData)
 
           <div class="font-bold">Status</div>
           <p
-            class="itbkk-status border-2 w-[25%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
+            class="itbkk-status border-2 w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
           >
             {{ status[taskData.status] }}
           </p>

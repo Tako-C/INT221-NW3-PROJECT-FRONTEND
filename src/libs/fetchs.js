@@ -23,16 +23,22 @@ async function removeTaskById(id) {
         method: 'DELETE',
       }
     )
-
     if (!res.ok) {
-      throw new Error('Failed to delete task')
-    }
+      if (res.status === 404) {
+        // Handle 404 error
+        return res
+      } else {
+        throw new Error('Failed to delete task')
+      }
+    }   
     console.log('Task deleted successfully')
+    return res
   } catch (error) {
-    console.error('Error deleting task:', error)
+    console.error('Error deleting task:', error)  
     throw error
   }
 }
+
 
 async function addTask(data,path) {
   try {

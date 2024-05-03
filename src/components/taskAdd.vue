@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue"
 import { addTask } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useTaskStore } from '../stores/store.js'
-
+import { validateTask } from '../libs/varidateTask.js';
 const route = useRoute()
 const router = useRouter()
 const taskStore = useTaskStore()
@@ -17,6 +17,7 @@ let taskData = ref({
 
 function closeModal() {
     router.push("/task")
+    // console.log(taskStore.successModalVisible);
     clearData()
 }
 
@@ -24,12 +25,12 @@ function addtostore() {
     taskData.value.id = ID.value
     console.log(taskData.value);
     taskStore.tasks.push(taskData.value)
-
+    taskStore.successModalVisible = true
 }
 
 
 async function save() {
-    if (!validateTask()) {
+    if (!validateTask(taskData.value)) {
         return; // Stop execution if validation fails
     }
     switch (taskData.value.status) {
@@ -53,34 +54,7 @@ async function save() {
 }
 
 
-function validateTask() {
-    // Title validation
-    if (!taskData.value.title) {
-        alert("Title cannot be empty")
-        return false;
-    } else if (taskData.value.title.length > 100) {
-        alert("Title cannot exceed 100 characters!")
-        return false;
-    }
-    // Description validation
-    if (taskData.value.description && taskData.value.description.length > 500) {
-        alert("Description cannot exceed 500 characters!")
-        return false;
-    }
-    if (!taskData.value.description) {
-        taskData.value.description = null
-    }
-    // Assignees validation
-    if (taskData.value.assignees && taskData.value.assignees.length > 30) {
-        alert("Assignees should not exceed 30 characters.")
-        return false;
-    }
-    if (!taskData.value.assignees) {
-        taskData.value.assignees = null
-    }
 
-    return true; // All validations passed
-}
 function clearData() {
     taskData.value = {
         title: '',
@@ -89,27 +63,6 @@ function clearData() {
         status: 'No Status'
     }
 }
-// async function save() {
-    
-//     if(taskData.value.status === "No Status"){
-//         taskData.value.status = "NO_STATUS"  
-//     }
-//     if(taskData.value.status === "To Do"){
-//         taskData.value.status = "TO_DO"
-//     }
-//     if(taskData.value.status === "Doing"){
-//         taskData.value.status = "DOING"
-//     }
-//     if(taskData.value.status === "Done"){
-//         taskData.value.status = "DONE"
-//     }
-
-//     console.log(taskData.value)
-//     let result = await addTask(taskData.value)
-//     ID.value = result.id
-//     addtostore()
-//     closeModal()
-// }
 
 </script>
 <template>
@@ -123,7 +76,7 @@ function clearData() {
         >
         </div>
         <div
-            class="fixed bg-white w-[35%] h-[70%] indicator flex flex-col rounded-2xl"
+            class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl"
         >
             <div class=" bg-gradient-to-b from-violet-300 rounded-2xl">
                 <h1 class="itbkk-title break-words w-[79%]">
@@ -145,7 +98,7 @@ function clearData() {
                     <textarea v-model="taskData.assignees" class="itbkk-assignees w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2"></textarea>
 
                     <div class="font-bold">Status</div>
-                        <select v-model="taskData.status" class="itbkk-status w-[25%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2">
+                        <select v-model="taskData.status" class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2">
                             <option>No Status</option>
                             <option>To Do</option>
                             <option>Doing</option>
