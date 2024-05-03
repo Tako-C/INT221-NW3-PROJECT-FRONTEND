@@ -41,9 +41,10 @@ function toggleDropDown(index) {
         optionsDropDownIndex.value === index ? null : index
 }
 
-async function removeTask(taskId) {
+async function removeTask(taskId,taskTitle) {
     optionsDropDownIndex.value = null
-    const confirmed = window.confirm("Are you sure to delete task?")
+    console.log(taskId);
+    const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
     if (confirmed) {
         let result = await removeTaskById(taskId)
         console.log("result",result);
@@ -172,7 +173,7 @@ onMounted(fetchData)
                                         <li>
                                             <a
                                                 href="#"
-                                                @click="removeTask(task.id)"
+                                                @click="removeTask(task.id,task.title)"
                                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
                                                 Remove
