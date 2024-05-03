@@ -85,7 +85,7 @@ onMounted(fetchData)
         </h1>
       </div>
       <div class="flex justify-center">
-        <table class="table table-auto w-[80%] h-[10%] max-h-10 mt-10 bg-white">
+        <table class="table table-auto w-[80%] mt-10 bg-white overflow-hidden hover:overflow-y-scroll">
           <thead class="text-xl font-serif">
             <tr>
               <th>ID</th>
@@ -217,5 +217,8 @@ onMounted(fetchData)
     background-image: linear-gradient(to top, #008000, #5863ff);
     box-shadow: 6px 6px rgba(253, 5, 199, 0.6);
   }
+}
+.div-class-name {
+  height: 50vh;
 }
 </style>

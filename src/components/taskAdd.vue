@@ -46,7 +46,7 @@ async function save() {
             taskData.value.status = "NO_STATUS"
     }
 
-    let result = await addTask(taskData.value)
+    let result = await addTask(taskData.value,"tasks")
     ID.value = result.id
     addtostore()
     closeModal()

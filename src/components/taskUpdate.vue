@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { getTask, editTask } from '../libs/fetchs.js'
 import { useRoute, useRouter } from 'vue-router'
+import { useTaskStore } from '../stores/store.js'
 
 let taskData = ref({
   id: '',
@@ -16,6 +17,8 @@ let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
+const taskStore = useTaskStore()
+const ID = ref(0)
 
 const status = {
   TO_DO: 'To Do',
@@ -82,9 +85,11 @@ async function updateTask(taskId, data) {
             : existingData.assignees,
         status: data.status !== undefined ? data.status : existingData.status,
       }
-      await editTask(taskId, newData)
+      let result = await editTask(taskId, newData)
       taskData.value = newData
-      router.push('/task')
+      ID.value = result.id
+      addtostore()
+      closeModal()
     } else {
       console.error('Error updating task: Task not found')
     }
@@ -93,6 +98,11 @@ async function updateTask(taskId, data) {
   }
 }
 
+function addtostore() {
+    taskData.value.id = ID.value
+    taskStore.tasks.push(taskData.value)
+
+}
 function closeModal() {
   router.push('/task')
   fetchHaveData.value = !fetchHaveData.value
@@ -103,7 +113,6 @@ onMounted(fetchData)
 </script>
 <template>
   <div
-    v-show="fetchHaveData"
     class="class name : itbkk-* fixed w-screen h-screen top-0 left-0 flex justify-center items-center"
   >
     <div
@@ -117,8 +126,8 @@ onMounted(fetchData)
         <h1 class="itbkk-title break-words w-[79%]">
           <textarea
             v-model="taskData.title"
-            v-if="taskData.description !== null"
-            class="text-white"
+            v-if="taskData.title !== null"
+            class="text-black w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2 overflow-hidden hover:overflow-y-scroll"
             >{{ taskData.title }} </textarea
           >
         </h1>
@@ -142,14 +151,14 @@ onMounted(fetchData)
             >{{
               !taskData.description
                 ? 'No Description Provided'
-                : taskData.assignees
+                : taskData.description
             }}</textarea
           >
         </div>
         <div class="w-1/2">
           <div class="font-bold">Assignees</div>
           <textarea
-            v-model="taskData.assignees"
+            disabled
             class="itbkk-assignees border-2 w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3"
             :class="{ 'italic text-gray-400': !taskData.assignees }"
             type="text"
