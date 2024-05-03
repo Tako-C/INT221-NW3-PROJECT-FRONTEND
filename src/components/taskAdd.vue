@@ -161,11 +161,11 @@ function clearData() {
                         class="itbkk-button button buttonClose btn"
                         @click="closeModal()"
                     >
-                    CANCLE
+                    Cancel
                     </button>
                     <button type="submit"class="itbkk-button button buttonOK btn"
                         @click="save()">
-                    SAVE
+                    Save
                     </button>
                 </div>
 
