@@ -25,7 +25,8 @@ function addtostore() {
     taskData.value.id = ID.value
     console.log(taskData.value);
     taskStore.tasks.push(taskData.value)
-    taskStore.successModalVisible = true
+    taskStore.successAdd = true
+    console.log(taskStore.successAdd);
 }
 
 

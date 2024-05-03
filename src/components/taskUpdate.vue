@@ -73,7 +73,7 @@ async function fetchData() {
         )
         fetchHaveData.value = !fetchHaveData.value
     } catch (error) {
-        taskStore.errorModalUpdate = true
+        taskStore.errorUpdate = true
         router.push("/task")
         // window.onload = function () {
         //     setTimeout(async function () {
@@ -103,6 +103,7 @@ async function updateTask(taskId) {
 
     let result = await editTask(taskId, taskData.value)
     ID.value = result.id
+    taskStore.successUpdate = true
     addtostore()
     closeModal()
 }

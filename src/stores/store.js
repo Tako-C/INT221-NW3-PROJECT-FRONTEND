@@ -5,7 +5,8 @@ import { defineStore } from 'pinia'
 export const useTaskStore = defineStore('task', {
   state: () => ({
     tasks: [],
-    successModalVisible:false,
-    errorModalUpdate:false
+    successAdd:false,
+    errorUpdate:false,
+    successUpdate:false
   }),
 })

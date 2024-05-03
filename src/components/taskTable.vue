@@ -4,19 +4,19 @@ import { useRoute, useRouter } from "vue-router"
 import { getTask } from "../libs/fetchs.js"
 import { useTaskStore } from "../stores/store.js"
 import { removeTaskById } from "@/libs/fetchs.js"
-import errorDelete from '../components/modals/errorDelete.vue'
-import deleteSuccess from '../components/modals/deleteSuccess.vue'
-import addSuccess from '../components/modals/addSuccess.vue'
-import errorUpdate from '../components/modals/errorUpdate.vue'
-
+// import errorDelete from '../components/modals/errorDelete.vue'
+// import deleteSuccess from '../components/modals/deleteSuccess.vue'
+// import addSuccess from '../components/modals/addSuccess.vue'
+// import errorUpdate from '../components/modals/errorUpdate.vue'
+import modalNotification from '../components/modals/modalNotification.vue'
 
 const taskStore = useTaskStore()
 let taskData = ref([])
 const router = useRouter()
 const route = useRoute()
 const optionsDropDownIndex = ref(null)
-const errorModalVisible = ref(false)
-const deleteModalVisible = ref(false)
+const errorDelete = ref(false)
+const successDelete = ref(false)
 
 const status = {
     TO_DO: "To Do",
@@ -49,14 +49,12 @@ async function removeTask(taskId) {
         console.log("result",result);
         if (result.status === 404) {
             console.log("result :", result.status)
-            errorModalVisible.value = true
+            errorDelete.value = true
         }else{
-          deleteModalVisible.value = true
-        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskId)
-        
-        }
-
-        
+          successDelete.value = true
+          console.log(successDelete.value);
+        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskId)     
+        }     
     }
 }
 
@@ -68,24 +66,32 @@ function editModal(taskId) {
     router.push(`/task/${taskId}/edit`)
     optionsDropDownIndex.value = null
 }
-
+function closeModalNotification() {
+    errorDelete.value = false
+    successDelete.value = false
+    taskStore.successUpdate =false
+    taskStore.errorUpdate = false
+    taskStore.errorUpdate = false
+    taskStore.successAdd = false
+    
+}
 onMounted(fetchData)
 
 // ส่วนที่เกี่ยวข้องกับการแสดงmodal หลังจาก add remove update
-watchEffect(() => {
-    if (taskStore.successModalVisible === true) {
-        setTimeout(() => {
-            taskStore.successModalVisible = false
-        }, 3000)
-    }
-})
+// watchEffect(() => {
+//     if (taskStore.successModalVisible === true) {
+//         setTimeout(() => {
+//             taskStore.successModalVisible = false
+//         }, 3000)
+//     }
+// })
 </script>
 
 <template>
-    <errorDelete v-show="errorModalVisible" @closemodal="errorModalVisible = false" class="fixed z-30"/>
-    <deleteSuccess v-show="deleteModalVisible" @closemodal="deleteModalVisible = false" class="fixed z-30"/>
-    <addSuccess v-show="taskStore.successModalVisible === true" class="fixed z-30"/>
-    <errorUpdate v-show="taskStore.errorModalUpdate === true" @closemodal="taskStore.errorModalUpdate = false" class="fixed z-30" />
+    <modalNotification :errorDelete="errorDelete" :successDelete="successDelete"
+     @closemodal="closeModalNotification()"
+     v-show="taskStore.successAdd === true || taskStore.errorUpdate === true || taskStore.successUpdate === true || errorDelete === true || successDelete === true"
+     class="z-30"/>
 
     <div class="class name : itbkk- bg-[#fff2d3] w-full h-auto">
         <header
