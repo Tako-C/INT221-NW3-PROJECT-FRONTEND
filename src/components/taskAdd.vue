@@ -3,44 +3,66 @@ import { ref, onMounted } from "vue"
 import { addTask } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useTaskStore } from '../stores/store.js'
-
+import { validateTask } from '../libs/varidateTask.js';
 const route = useRoute()
 const router = useRouter()
-let taskData = ref({})
 const taskStore = useTaskStore()
 const ID = ref(0)
-
+let taskData = ref({
+    title: '',
+    description: '',
+    assignees: '',
+    status: 'No Status'
+})
 
 function closeModal() {
     router.push("/task")
+    // console.log(taskStore.successModalVisible);
+    clearData()
 }
 
 function addtostore() {
     taskData.value.id = ID.value
     console.log(taskData.value);
     taskStore.tasks.push(taskData.value)
-
+    taskStore.successAdd = true
+    console.log(taskStore.successAdd);
 }
+
+
 async function save() {
-    
-    if(taskData.value.status === "No Status"){
-        taskData.value.status = "NO_STATUS"  
+    if (!validateTask(taskData.value)) {
+        return; // Stop execution if validation fails
     }
-    if(taskData.value.status === "To Do"){
-        taskData.value.status = "TO_DO"
-    }
-    if(taskData.value.status === "Doing"){
-        taskData.value.status = "DOING"
-    }
-    if(taskData.value.status === "Done"){
-        taskData.value.status = "DONE"
+    switch (taskData.value.status) {
+        case "To Do":
+            taskData.value.status = "TO_DO"
+            break;
+        case "Doing":
+            taskData.value.status = "DOING"
+            break;
+        case "Done":
+            taskData.value.status = "DONE"
+            break;
+        default:
+            taskData.value.status = "NO_STATUS"
     }
 
-    console.log(taskData.value)
-    let result = await addTask(taskData.value)
+    let result = await addTask(taskData.value,"tasks")
     ID.value = result.id
     addtostore()
     closeModal()
+}
+
+
+
+function clearData() {
+    taskData.value = {
+        title: '',
+        description: '',
+        assignees: '',
+        status: 'No Status'
+    }
 }
 
 </script>
@@ -55,7 +77,7 @@ async function save() {
         >
         </div>
         <div
-            class="fixed bg-white w-[35%] h-[70%] indicator flex flex-col rounded-2xl"
+            class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl"
         >
             <div class=" bg-gradient-to-b from-violet-300 rounded-2xl">
                 <h1 class="itbkk-title break-words w-[79%]">
@@ -77,7 +99,7 @@ async function save() {
                     <textarea v-model="taskData.assignees" class="itbkk-assignees w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2"></textarea>
 
                     <div class="font-bold">Status</div>
-                        <select v-model="taskData.status" class="itbkk-status w-[25%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2">
+                        <select v-model="taskData.status" class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2">
                             <option>No Status</option>
                             <option>To Do</option>
                             <option>Doing</option>
@@ -93,11 +115,11 @@ async function save() {
                         class="itbkk-button button buttonClose btn"
                         @click="closeModal()"
                     >
-                    CANCLE
+                    Cancel
                     </button>
                     <button type="submit"class="itbkk-button button buttonOK btn"
                         @click="save()">
-                    SAVE
+                    Save
                     </button>
                 </div>
 

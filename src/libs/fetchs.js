@@ -17,38 +17,75 @@ async function getTask(path) {
 
 async function removeTaskById(id) {
   try {
-    const res = await fetch(`http://localhost:8080/v1/tasks/${id}`, {
-      method: 'DELETE',
-    })
-
+    const res = await fetch(
+      `http://localhost:8080/v1/tasks/${id}`,
+      {
+        method: 'DELETE',
+      }
+    )
     if (!res.ok) {
-      throw new Error('Failed to delete task')
-    }
+      if (res.status === 404) {
+        // Handle 404 error
+        return res
+      } else {
+        throw new Error('Failed to delete task')
+      }
+    }   
     console.log('Task deleted successfully')
+    return res
   } catch (error) {
-    console.error('Error deleting task:', error)
+    console.error('Error deleting task:', error)  
     throw error
   }
 }
-async function addTask(data) {
-  try {
-    const response = await fetch(`http://localhost:8080/v1/tasks`, {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
 
-      body: JSON.stringify(data),
-      
-    });
-    console.log(data);
-    const result = await response.json();
-    console.log("Success:", result);
+
+async function addTask(data,path) {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/v1/${path}`,
+      {
+        method: 'POST', // or 'PUT'
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify(data),
+      }
+    )
+    console.log(data)
+    const result = await response.json()
+    console.log('Success:', result)
     return result
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error)
   }
-
 }
 
-export { getTask, removeTaskById, addTask }
+async function editTask(taskId, data) {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/v1/tasks/${taskId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    )
+
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(errorMessage)
+    }
+    const result = await response.json()
+    console.log('Success:', result)
+    return result
+  } catch (error) {
+    console.error('Error:', error.message)
+    throw error
+  }
+}
+
+export { getTask, removeTaskById, addTask, editTask }
