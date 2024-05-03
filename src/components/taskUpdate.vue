@@ -118,7 +118,7 @@ onMounted(fetchData)
           <textarea
             v-model="taskData.title"
             v-if="taskData.description !== null"
-            class="text-white"
+            class="text-black"
             >{{ taskData.title }} </textarea
           >
         </h1>
@@ -159,11 +159,36 @@ onMounted(fetchData)
           >
 
           <div class="font-bold">Status</div>
-          <p
+          <select
+            v-model="status[taskData.status]"
             class="itbkk-status border-2 w-[25%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
           >
-            {{ status[taskData.status] }}
-          </p>
+            <option>{{ status[taskData.status] }}</option>
+            <option
+              v-if="status[taskData.status] !== 'No Status'"
+              v-bind:value="'NO_STATUS'"
+            >
+              No Status
+            </option>
+            <option
+              v-if="status[taskData.status] !== 'To Do'"
+              v-bind:value="'TO_DO'"
+            >
+              To Do
+            </option>
+            <option
+              v-if="status[taskData.status] !== 'Doing'"
+              v-bind:value="'DOING'"
+            >
+              Doing
+            </option>
+            <option
+              v-if="status[taskData.status] !== 'Done'"
+              v-bind:value="'DONE'"
+            >
+              Done
+            </option>
+          </select>
           <div class="font-bold pt-1">TimeZone</div>
           <p
             class="itbkk-timezone border-2 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
@@ -201,7 +226,7 @@ onMounted(fetchData)
               title: taskData.title,
               description: taskData.description,
               assignees: taskData.assignees,
-              status: taskData.status,
+              status: status[taskData.status],
             })
           "
         >
