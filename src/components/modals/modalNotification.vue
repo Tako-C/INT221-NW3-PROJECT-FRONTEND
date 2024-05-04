@@ -1,4 +1,5 @@
-<script setup>import { useTaskStore } from "../../stores/store.js"
+<script setup>
+import { useTaskStore } from "../../stores/store.js"
 import { defineProps, ref, onMounted, watchEffect } from 'vue'
 import { defineEmits } from 'vue'
 
@@ -12,6 +13,7 @@ const message = ref({ header: "", detail: "" })
 // สร้าง ref สำหรับการเก็บค่า successAdd และ errorUpdate ที่มาจาก store
 let successAdd = ref(taskStore.successAdd)
 let errorUpdate = ref(taskStore.errorUpdate)
+let successUpdate = ref(taskStore.successUpdate)
 
 // ใช้ watch สำหรับตรวจสอบการเปลี่ยนแปลงของ errorDelete และ successDelete จาก props
 let errorDelete = ref(props.errorDelete)
@@ -26,6 +28,7 @@ watchEffect(() => {
 watchEffect(() => {
     successAdd.value = taskStore.successAdd;
     errorUpdate.value = taskStore.errorUpdate;
+    successUpdate.value = taskStore.successUpdate
     checkEvent();
 });
 
@@ -44,9 +47,9 @@ function checkEvent() {
     } else if (successDelete.value) {
         message.value.header = "Success!"
         message.value.detail = "successfully Delete."
-    } else {
-        message.value.header = "bbc"
-        message.value.detail = "bcbc"
+    } else if (successUpdate.value){
+        message.value.header = "Success!"
+        message.value.detail = "The update was successful."
     }
 }
 
@@ -57,13 +60,59 @@ onMounted(checkEvent)
 </script>
  
 <template>
-    <div class="fixed modal-box">
+    <div class="fixed modal-box" :class="{
+        'bg-green-100 border-green-600 border-2': message.header === 'Success!',
+        'bg-red-100 border-red-600 border-2': message.header === 'Error!'
+    }">
             <h3 class="text-lg font-bold">{{ message.header }}</h3>
-            <p class="py-4">{{message.detail}}</p>
-            <button @click="emits('closemodal')">Close</button>
+            <p class="border-b mt-2"></p>
+            <p class="itbkk-message py-4">{{ message.detail }}</p>
+            <div class="boxButton">
+                <button @click="emits('closemodal')" class="button buttonCancel">Close</button>
+            </div>
+            
     </div>
 </template>
  
 <style scoped>
+.boxButton {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+
+}
+.button {
+    margin-top: auto;
+    background-color: #04aa6d;
+    border: none;
+    color: white;
+    padding: 10px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+.buttonCancel {
+    background-color: white;
+    color: black;
+    border: 2px solid red;
+
+    &:hover {
+    background-color: red;
+    color: white;
+    }
+}
+
+.modal-box {
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
 
 </style>

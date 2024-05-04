@@ -4,11 +4,9 @@ import { useRoute, useRouter } from "vue-router"
 import { getTask } from "../libs/fetchs.js"
 import { useTaskStore } from "../stores/store.js"
 import { removeTaskById } from "@/libs/fetchs.js"
-// import errorDelete from '../components/modals/errorDelete.vue'
-// import deleteSuccess from '../components/modals/deleteSuccess.vue'
-// import addSuccess from '../components/modals/addSuccess.vue'
-// import errorUpdate from '../components/modals/errorUpdate.vue'
+
 import modalNotification from '../components/modals/modalNotification.vue'
+import modalconfirmed from '../components/modals/modalConfirmed.vue'
 
 const taskStore = useTaskStore()
 let taskData = ref([])
@@ -17,6 +15,9 @@ const route = useRoute()
 const optionsDropDownIndex = ref(null)
 const errorDelete = ref(false)
 const successDelete = ref(false)
+const openConfirmed= ref(false)
+const taskTitle = ref("")
+const taskID = ref("")
 
 const status = {
     TO_DO: "To Do",
@@ -31,31 +32,27 @@ async function fetchData() {
     // console.log(...taskStore.tasks)
 }
 
-function openModal(taskId) {
-    router.push(`/task/${taskId}`)
-    optionsDropDownIndex.value = null
-}
-
 function toggleDropDown(index) {
     optionsDropDownIndex.value =
         optionsDropDownIndex.value === index ? null : index
 }
 
-async function removeTask(taskId) {
+async function removeTask() {
     optionsDropDownIndex.value = null
-    const confirmed = window.confirm("Are you sure to delete task?")
-    if (confirmed) {
-        let result = await removeTaskById(taskId)
-        console.log("result",result);
+    openConfirmed.value = false
+    console.log(taskID.value);
+    // const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
+
+        let result = await removeTaskById(taskID.value)
+        console.log("result",result)
         if (result.status === 404) {
             console.log("result :", result.status)
             errorDelete.value = true
-        }else{
-          successDelete.value = true
-          console.log(successDelete.value);
-        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskId)     
-        }     
-    }
+        }
+        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskID.value) 
+        successDelete.value = true
+        console.log(successDelete.value);
+                
 }
 
 function addModal() {
@@ -66,6 +63,11 @@ function editModal(taskId) {
     router.push(`/task/${taskId}/edit`)
     optionsDropDownIndex.value = null
 }
+function openModal(taskId) {
+    router.push(`/task/${taskId}`)
+    optionsDropDownIndex.value = null
+}
+
 function closeModalNotification() {
     errorDelete.value = false
     successDelete.value = false
@@ -73,7 +75,15 @@ function closeModalNotification() {
     taskStore.errorUpdate = false
     taskStore.errorUpdate = false
     taskStore.successAdd = false
+    openConfirmed.value = false
+    taskTitle.value = ""
+    taskID.value = ""
     
+}
+function openConfirmModal(id,title) {
+    openConfirmed.value = true
+    taskTitle.value = title
+    taskID.value = id
 }
 onMounted(fetchData)
 
@@ -87,16 +97,23 @@ onMounted(fetchData)
 // })
 </script>
 
+
 <template>
     <modalNotification :errorDelete="errorDelete" :successDelete="successDelete"
      @closemodal="closeModalNotification()"
      v-show="taskStore.successAdd === true || taskStore.errorUpdate === true || taskStore.successUpdate === true || errorDelete === true || successDelete === true"
      class="z-30"/>
+    <modalconfirmed v-show="openConfirmed"
+    :taskTitle="taskTitle"
+    @closemodal="closeModalNotification()"
+    @confirmed="removeTask()"
+    class="z-40"
+    />
 
-    <div class="class name : itbkk- bg-[#fff2d3] w-full h-auto">
+    <div class="class name : itbkk- bg-gradient-to-b from-[#fff2d3] from-40% to-pink-500 w-screen h-screen">
         <header
             name="header"
-            class="fixed top-0 z-10 w-screen bg-[#6a746b] flex justify-center items-center h-20 text-24 text-white"
+            class="fixed top-0 z-10 w-screen bg-[#628765] flex justify-center items-center h-20 text-24 text-white"
         >
             <h1 class="text-3xl font-bold font-serif">
                 IT-Bangmod Kradan Kanban (ITB-KK)
@@ -106,19 +123,19 @@ onMounted(fetchData)
         <!-- The button to open modal -->
 
         <main class="flex justify-center pb-[20%]">
-            <table class="table w-[80%] bg-white mt-28">
+            <table class="table w-auto bg-white mt-28">
                 <thead class="text-xl font-serif h-20">
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
                         <th>Assignees</th>
                         <th>Status</th>
-                        <div class="add-Button">
+                        <div class="itbkk-button-add add-Button">
                             <img src="@/assets/plus.svg" @click="addModal()" />
                         </div>
                     </tr>
                 </thead>
-                <tbody class="text-base">
+                <tbody class="text-base ">
                     <tr
                         class="itbkk-item hover-table"
                         v-show="taskStore.tasks.length > 0"
@@ -144,11 +161,19 @@ onMounted(fetchData)
                                 }}</span
                             >
                         </td>
-                        <td @click="openModal(task.id)" class="itbkk-status">
+                        <td @click="openModal(task.id)" 
+                            class="itbkk-status rounded-2xl"
+                            :class="{
+                                'bg-gray-200': task.status === 'NO_STATUS',
+                                'bg-yellow-200': task.status === 'TO_DO',
+                                'bg-orange-200': task.status === 'DOING',
+                                'bg-green-200': task.status === 'DONE'
+                            }"
+                        >
                             {{ status[task.status] }}
                         </td>
                         <td>
-                            <div class="relative">
+                            <div class="itbkk-button-action relative">
                                 <img
                                     src="@/assets/optionIcon.svg"
                                     alt="Options"
@@ -164,7 +189,7 @@ onMounted(fetchData)
                                             <a
                                                 href="#"
                                                 @click="editModal(task.id)"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                                class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
                                                 Edit
                                             </a>
@@ -172,10 +197,10 @@ onMounted(fetchData)
                                         <li>
                                             <a
                                                 href="#"
-                                                @click="removeTask(task.id)"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                                @click="openConfirmModal(task.id,task.title)"
+                                                class="itbkk-button-delete block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
-                                                Remove
+                                                Delete
                                             </a>
                                         </li>
                                     </ul>
@@ -198,24 +223,34 @@ onMounted(fetchData)
 </template>
 
 <style scoped>
-.itbkk-status {
-    color: #ff5858;
+.hover-font-table {
+    opacity: 30%;
+    
+    &:hover {
+        opacity: 100%;
+        transition: 0.3s;
+        color: blue;
+    }
+    
 }
 
 .hover-table:hover {
     background-color: rgba(207, 207, 207, 0.5);
     transition: 0.3s;
-    color: blue;
 }
 
 .add-Button {
+    opacity: 30%;
     width: 40px;
     margin-top: 5px;
     margin-left: 5px;
+    margin-right: 20px;
     cursor: pointer;
 
     &:hover {
-        background-color: #cc2e5d;
+        /* background-color: #cc2e5d; */
+        opacity: 100%;
+        transition: 0.5s;
     }
 }
 

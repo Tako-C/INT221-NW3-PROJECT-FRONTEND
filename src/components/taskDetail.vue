@@ -76,7 +76,7 @@ onMounted(fetchData)
     <div
       class="fixed bg-[#f0ede6] w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
     >
-      <div class="bg-gradient-to-b from-[#6a746b] rounded-2xl">
+      <div class="bg-gradient-to-b from-[#628765] rounded-2xl">
         <h1 class="itbkk-title break-words w-[79%]">
           {{ taskData.title }}
         </h1>

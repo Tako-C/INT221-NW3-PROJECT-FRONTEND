@@ -77,11 +77,11 @@ function clearData() {
         >
         </div>
         <div
-            class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl"
+            class="fixed bg-[#f0ede6] w-[35%] h-auto indicator flex flex-col rounded-2xl"
         >
-            <div class=" bg-gradient-to-b from-violet-300 rounded-2xl">
+            <div class="bg-gradient-to-b from-[#628765] rounded-2xl ">
                 <h1 class="itbkk-title break-words w-[79%]">
-                    New Task
+                    <span class="font-serif text-[100%]">Add </span><span class="text-[70%] opacity-[60%] font-serif">New Task</span>
                     <!-- {{ taskData.title }} -->
             </h1>
             <p class="border-b mt-2"></p>
@@ -90,7 +90,7 @@ function clearData() {
             <div class="mt-3 mb-20 ml-7">
 
                     <div class="font-bold">Title</div>
-                    <input v-model="taskData.title" class="w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
+                    <input v-model="taskData.title" class="itbkk-title w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
 
                     <div class="font-bold">Description</div>
                     <textarea v-model="taskData.description" class="itbkk-description w-[80%] h-[80%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
@@ -112,12 +112,14 @@ function clearData() {
                 <div class="boxButton m-3">
                     <button
                         type="submit"
-                        class="itbkk-button button buttonClose btn"
+                        class="itbkk-button-cancel button buttonClose btn"
                         @click="closeModal()"
                     >
                     Cancel
                     </button>
-                    <button type="submit"class="itbkk-button button buttonOK btn"
+                    <button 
+                        type="submit"
+                        class="itbkk-button-confirm button buttonOK btn"
                         @click="save()">
                     Save
                     </button>
