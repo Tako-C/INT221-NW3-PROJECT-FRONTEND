@@ -4,11 +4,9 @@ import { useRoute, useRouter } from "vue-router"
 import { getTask } from "../libs/fetchs.js"
 import { useTaskStore } from "../stores/store.js"
 import { removeTaskById } from "@/libs/fetchs.js"
-// import errorDelete from '../components/modals/errorDelete.vue'
-// import deleteSuccess from '../components/modals/deleteSuccess.vue'
-// import addSuccess from '../components/modals/addSuccess.vue'
-// import errorUpdate from '../components/modals/errorUpdate.vue'
+
 import modalNotification from '../components/modals/modalNotification.vue'
+import modalconfirmed from '../components/modals/modalConfirmed.vue'
 
 const taskStore = useTaskStore()
 let taskData = ref([])
@@ -17,6 +15,9 @@ const route = useRoute()
 const optionsDropDownIndex = ref(null)
 const errorDelete = ref(false)
 const successDelete = ref(false)
+const openConfirmed= ref(false)
+const taskTitle = ref("")
+const taskID = ref("")
 
 const status = {
     TO_DO: "To Do",
@@ -31,32 +32,27 @@ async function fetchData() {
     // console.log(...taskStore.tasks)
 }
 
-function openModal(taskId) {
-    router.push(`/task/${taskId}`)
-    optionsDropDownIndex.value = null
-}
-
 function toggleDropDown(index) {
     optionsDropDownIndex.value =
         optionsDropDownIndex.value === index ? null : index
 }
 
-async function removeTask(taskId,taskTitle) {
+async function removeTask() {
     optionsDropDownIndex.value = null
-    console.log(taskId);
-    const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
-    if (confirmed) {
-        let result = await removeTaskById(taskId)
-        console.log("result",result);
+    openConfirmed.value = false
+    console.log(taskID.value);
+    // const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
+
+        let result = await removeTaskById(taskID.value)
+        console.log("result",result)
         if (result.status === 404) {
             console.log("result :", result.status)
             errorDelete.value = true
-        }else{
-          successDelete.value = true
-          console.log(successDelete.value);
-        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskId)     
-        }     
-    }
+        }
+        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskID.value) 
+        successDelete.value = true
+        console.log(successDelete.value);
+                
 }
 
 function addModal() {
@@ -67,6 +63,11 @@ function editModal(taskId) {
     router.push(`/task/${taskId}/edit`)
     optionsDropDownIndex.value = null
 }
+function openModal(taskId) {
+    router.push(`/task/${taskId}`)
+    optionsDropDownIndex.value = null
+}
+
 function closeModalNotification() {
     errorDelete.value = false
     successDelete.value = false
@@ -74,7 +75,15 @@ function closeModalNotification() {
     taskStore.errorUpdate = false
     taskStore.errorUpdate = false
     taskStore.successAdd = false
+    openConfirmed.value = false
+    taskTitle.value = ""
+    taskID.value = ""
     
+}
+function openConfirmModal(id,title) {
+    openConfirmed.value = true
+    taskTitle.value = title
+    taskID.value = id
 }
 onMounted(fetchData)
 
@@ -93,6 +102,13 @@ onMounted(fetchData)
      @closemodal="closeModalNotification()"
      v-show="taskStore.successAdd === true || taskStore.errorUpdate === true || taskStore.successUpdate === true || errorDelete === true || successDelete === true"
      class="z-30"/>
+     
+    <modalconfirmed v-show="openConfirmed"
+    :taskTitle="taskTitle"
+    @closemodal="closeModalNotification()"
+    @confirmed="removeTask()"
+    class="z-40"
+    />
 
     <div class="class name : itbkk- bg-[#fff2d3] w-full h-auto">
         <header
@@ -173,7 +189,7 @@ onMounted(fetchData)
                                         <li>
                                             <a
                                                 href="#"
-                                                @click="removeTask(task.id,task.title)"
+                                                @click="openConfirmModal(task.id,task.title)"
                                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
                                                 Remove

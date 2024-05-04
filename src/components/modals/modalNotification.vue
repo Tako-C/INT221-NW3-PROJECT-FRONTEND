@@ -1,4 +1,5 @@
-<script setup>import { useTaskStore } from "../../stores/store.js"
+<script setup>
+import { useTaskStore } from "../../stores/store.js"
 import { defineProps, ref, onMounted, watchEffect } from 'vue'
 import { defineEmits } from 'vue'
 
@@ -12,6 +13,7 @@ const message = ref({ header: "", detail: "" })
 // สร้าง ref สำหรับการเก็บค่า successAdd และ errorUpdate ที่มาจาก store
 let successAdd = ref(taskStore.successAdd)
 let errorUpdate = ref(taskStore.errorUpdate)
+let successUpdate = ref(taskStore.successUpdate)
 
 // ใช้ watch สำหรับตรวจสอบการเปลี่ยนแปลงของ errorDelete และ successDelete จาก props
 let errorDelete = ref(props.errorDelete)
@@ -26,6 +28,7 @@ watchEffect(() => {
 watchEffect(() => {
     successAdd.value = taskStore.successAdd;
     errorUpdate.value = taskStore.errorUpdate;
+    successUpdate.value = taskStore.successUpdate
     checkEvent();
 });
 
@@ -44,9 +47,9 @@ function checkEvent() {
     } else if (successDelete.value) {
         message.value.header = "Success!"
         message.value.detail = "successfully Delete."
-    } else {
-        message.value.header = "bbc"
-        message.value.detail = "bcbc"
+    } else if (successUpdate.value){
+        message.value.header = "Success!"
+        message.value.detail = "The update was successful."
     }
 }
 
