@@ -97,12 +97,12 @@ onMounted(fetchData)
 // })
 </script>
 
+
 <template>
     <modalNotification :errorDelete="errorDelete" :successDelete="successDelete"
      @closemodal="closeModalNotification()"
      v-show="taskStore.successAdd === true || taskStore.errorUpdate === true || taskStore.successUpdate === true || errorDelete === true || successDelete === true"
      class="z-30"/>
-     
     <modalconfirmed v-show="openConfirmed"
     :taskTitle="taskTitle"
     @closemodal="closeModalNotification()"
@@ -110,10 +110,10 @@ onMounted(fetchData)
     class="z-40"
     />
 
-    <div class="class name : itbkk- bg-[#fff2d3] w-full h-auto">
+    <div class="class name : itbkk- bg-gradient-to-b from-[#fff2d3] from-40% to-pink-500 w-screen h-screen">
         <header
             name="header"
-            class="fixed top-0 z-10 w-screen bg-[#6a746b] flex justify-center items-center h-20 text-24 text-white"
+            class="fixed top-0 z-10 w-screen bg-[#628765] flex justify-center items-center h-20 text-24 text-white"
         >
             <h1 class="text-3xl font-bold font-serif">
                 IT-Bangmod Kradan Kanban (ITB-KK)
@@ -123,19 +123,19 @@ onMounted(fetchData)
         <!-- The button to open modal -->
 
         <main class="flex justify-center pb-[20%]">
-            <table class="table w-[80%] bg-white mt-28">
+            <table class="table w-auto bg-white mt-28">
                 <thead class="text-xl font-serif h-20">
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
                         <th>Assignees</th>
                         <th>Status</th>
-                        <div class="add-Button">
+                        <div class="itbkk-button-add add-Button">
                             <img src="@/assets/plus.svg" @click="addModal()" />
                         </div>
                     </tr>
                 </thead>
-                <tbody class="text-base">
+                <tbody class="text-base ">
                     <tr
                         class="itbkk-item hover-table"
                         v-show="taskStore.tasks.length > 0"
@@ -161,11 +161,19 @@ onMounted(fetchData)
                                 }}</span
                             >
                         </td>
-                        <td @click="openModal(task.id)" class="itbkk-status">
+                        <td @click="openModal(task.id)" 
+                            class="itbkk-status rounded-2xl"
+                            :class="{
+                                'bg-gray-200': task.status === 'NO_STATUS',
+                                'bg-yellow-200': task.status === 'TO_DO',
+                                'bg-orange-200': task.status === 'DOING',
+                                'bg-green-200': task.status === 'DONE'
+                            }"
+                        >
                             {{ status[task.status] }}
                         </td>
                         <td>
-                            <div class="relative">
+                            <div class="itbkk-button-action relative">
                                 <img
                                     src="@/assets/optionIcon.svg"
                                     alt="Options"
@@ -181,7 +189,7 @@ onMounted(fetchData)
                                             <a
                                                 href="#"
                                                 @click="editModal(task.id)"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                                class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
                                                 Edit
                                             </a>
@@ -190,9 +198,9 @@ onMounted(fetchData)
                                             <a
                                                 href="#"
                                                 @click="openConfirmModal(task.id,task.title)"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                                class="itbkk-button-delete block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
-                                                Remove
+                                                Delete
                                             </a>
                                         </li>
                                     </ul>
@@ -215,24 +223,34 @@ onMounted(fetchData)
 </template>
 
 <style scoped>
-.itbkk-status {
-    color: #ff5858;
+.hover-font-table {
+    opacity: 30%;
+    
+    &:hover {
+        opacity: 100%;
+        transition: 0.3s;
+        color: blue;
+    }
+    
 }
 
 .hover-table:hover {
     background-color: rgba(207, 207, 207, 0.5);
     transition: 0.3s;
-    color: blue;
 }
 
 .add-Button {
+    opacity: 30%;
     width: 40px;
     margin-top: 5px;
     margin-left: 5px;
+    margin-right: 20px;
     cursor: pointer;
 
     &:hover {
-        background-color: #cc2e5d;
+        /* background-color: #cc2e5d; */
+        opacity: 100%;
+        transition: 0.5s;
     }
 }
 

@@ -143,24 +143,31 @@ onMounted(fetchData)
         <div
             class="fixed bg-[#f0ede6] w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
         >
-            <div class="bg-gradient-to-b from-[#6a746b] rounded-2xl">
+        <div class="bg-gradient-to-b from-[#628765] rounded-2xl ">
                 <h1 class="itbkk-title break-words w-[79%]">
+                    <span class="font-serif text-[100%]">Edit </span><span class="text-[70%] opacity-[60%] font-serif">Task</span>
+                </h1>
+            <p class="border-b mt-2"></p>
+        </div>
+
+            <div class="flex mt-3 mb-20 ml-7">
+                
+                <div class="w-1/2">
+
+                    <p class="font-bold">Title</p>
+                    
                     <textarea
                         v-model="taskData.title"
                         v-if="taskData.title !== null"
-                        class="text-black w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2 overflow-hidden hover:overflow-y-scroll"
+                        class="itbkk-title text-black w-[90%] h-auto resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2 overflow-hidden hover:overflow-y-scroll "
                         >{{ taskData.title }} </textarea
                     >
-                </h1>
-                <p class="border-b mt-2"></p>
-            </div>
+   
 
-            <div class="flex mt-3 mb-20 ml-7">
-                <div class="w-1/2">
-                    <p class="font-bold">Description</p>
+                    <p class="font-bold mt-2">Description</p>
                     
                     <textarea
-                        class="itbkk-description border-2 w-[80%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
+                        class="itbkk-description border-2 w-[90%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
                         v-model="taskData.description"
                         :placeholder="taskData.description ? '' : 'No Description Provided'"
@@ -243,8 +250,8 @@ onMounted(fetchData)
 .boxButton {
     display: flex;
     justify-content: flex-end;
-    margin-top: auto;
-    margin-right: 25px;
+    margin-top: 70px;
+    margin-right: 30px;
 }
 .button {
     margin-top: auto;
@@ -265,6 +272,7 @@ onMounted(fetchData)
     background-color: white;
     color: black;
     border: 2px solid red;
+    margin-right: 5px;
 }
 .buttonClose:hover {
     background-color: red;

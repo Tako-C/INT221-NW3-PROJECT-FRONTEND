@@ -60,13 +60,59 @@ onMounted(checkEvent)
 </script>
  
 <template>
-    <div class="fixed modal-box">
+    <div class="fixed modal-box" :class="{
+        'bg-green-100 border-green-600 border-2': message.header === 'Success!',
+        'bg-red-100 border-red-600 border-2': message.header === 'Error!'
+    }">
             <h3 class="text-lg font-bold">{{ message.header }}</h3>
-            <p class="py-4">{{message.detail}}</p>
-            <button @click="emits('closemodal')">Close</button>
+            <p class="border-b mt-2"></p>
+            <p class="itbkk-message py-4">{{ message.detail }}</p>
+            <div class="boxButton">
+                <button @click="emits('closemodal')" class="button buttonCancel">Close</button>
+            </div>
+            
     </div>
 </template>
  
 <style scoped>
+.boxButton {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+
+}
+.button {
+    margin-top: auto;
+    background-color: #04aa6d;
+    border: none;
+    color: white;
+    padding: 10px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+.buttonCancel {
+    background-color: white;
+    color: black;
+    border: 2px solid red;
+
+    &:hover {
+    background-color: red;
+    color: white;
+    }
+}
+
+.modal-box {
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
 
 </style>
