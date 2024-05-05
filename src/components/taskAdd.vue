@@ -47,7 +47,14 @@ async function save() {
         default:
             taskData.value.status = "NO_STATUS"
     }
-
+    // trim
+        taskData.value.title = taskData.value.title.trim();
+        if (taskData.value.description !== null) {
+            taskData.value.description = taskData.value.description.trim()
+        }if (taskData.value.assignees!==null) {
+            taskData.value.assignees = taskData.value.assignees.trim()
+        }
+            
     let result = await addTask(taskData.value,"tasks")
     ID.value = result.id
     addtostore()

@@ -122,8 +122,8 @@ onMounted(fetchData)
 
         <!-- The button to open modal -->
 
-        <main class="flex justify-center pb-[20%]">
-            <table class="table w-auto bg-white mt-28">
+        <main class="flex justify-center h-screen  hover:overflow-y-auto overflow-hidden">
+            <table class="table w-auto bg-white mt-28 mb-28">
                 <thead class="text-xl font-serif h-20">
                     <tr>
                         <th>ID</th>
@@ -161,16 +161,15 @@ onMounted(fetchData)
                                 }}</span
                             >
                         </td>
-                        <td @click="openModal(task.id)" 
-                            class="itbkk-status rounded-2xl"
-                            :class="{
-                                'bg-gray-200': task.status === 'NO_STATUS',
-                                'bg-yellow-200': task.status === 'TO_DO',
-                                'bg-orange-200': task.status === 'DOING',
-                                'bg-green-200': task.status === 'DONE'
-                            }"
-                        >
-                            {{ status[task.status] }}
+                        <td @click="openModal(task.id)" >
+                            <p class="itbkk-status rounded-2xl m-1 p-2"
+                                :class="{
+                                    'bg-gray-200' : task.status === 'NO_STATUS',
+                                    'bg-yellow-200': task.status === 'TO_DO',
+                                    'bg-orange-200': task.status === 'DOING',
+                                    'bg-green-200': task.status === 'DONE'
+                            }">
+                            {{ status[task.status] }}</p>
                         </td>
                         <td>
                             <div class="itbkk-button-action relative">
