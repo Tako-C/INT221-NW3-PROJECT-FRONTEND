@@ -1,5 +1,5 @@
 <script setup>
-import { useTaskStore } from "../../stores/store.js"
+import { useStore } from "../../stores/store.js"
 import { defineProps, ref, onMounted, watchEffect } from 'vue'
 import { defineEmits } from 'vue'
 
@@ -8,7 +8,7 @@ const props = defineProps({
     errorDelete: { type: Boolean, require: true },
     successDelete: { type: Boolean, require: true }
 })
-const taskStore = useTaskStore()
+const taskStore = useStore()
 const message = ref({ header: "", detail: "" })
 // สร้าง ref สำหรับการเก็บค่า successAdd และ errorUpdate ที่มาจาก store
 let successAdd = ref(taskStore.successAdd)
@@ -40,7 +40,7 @@ function checkEvent() {
         message.value.detail = "The task has been successfully added."
     } else if (errorUpdate.value) {
         message.value.header = "Error!"
-        message.value.detail = "The update was unsuccessful."
+        message.value.detail = "The task does not exist."
     } else if (errorDelete.value) {
         message.value.header = "Error!"
         message.value.detail = "An error occurred while deleting the task."
