@@ -103,30 +103,31 @@ onMounted(fetchData)
     class="z-40"
     />
  
-    <div class="class name : itbkk- bg-gradient-to-b from-[#fff2d3] from-40% to-pink-500 w-screen h-screen">
+    <div class="class name : itbkk- bg-white w-screen h-screen">
         <header
             name="header"
-            class="fixed top-0 z-10 w-screen bg-[#628765] flex justify-center items-center h-20 text-24 text-white"
+            class="fixed top-0 z-10 w-screen bg-[#797979] flex items-center h-20 text-24 text-white"
         >
-            <h1 class="text-3xl font-bold font-serif">
+            <h1 class="text-3xl font-bold font-serif pl-[3%]">
                 IT-Bangmod Kradan Kanban (ITB-KK)
             </h1>
-            <div class="mt-28 ml-10 mb-5 bg-black"><a href="http://localhost:5173/status/manage">Manage</a></div>
+            <div class=" ml-10 bg-black"><a href="http://localhost:5173/status/manage">Manage</a></div>
+            <div class="itbkk-button-add add-Button h-16 flex items-center justify-center">
+                            <img class="itbkk-button-add add-Button" src="@/assets/plus.svg" @click="addModal()" />
+                        </div>
         </header>
  
         <!-- The button to open modal -->
  
-        <main class="flex justify-center h-screen  hover:overflow-y-auto overflow-hidden">
-            <table class="table w-auto bg-white mt-28 mb-28">
-                <thead class="text-xl font-serif h-20">
+        <main class="flex flex-col pt-[8%] h-screen ml-[10%] mr-[10%]  hover:overflow-y-auto overflow-hidden">
+            <div class="mt-2 ml-10 mb-3 text-xl font-serif font-bold"><span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > task table</div>
+            <table class="table table-zebra w-auto bg-white mt-2 mb-28">
+                <thead class="bg-[#818080] text-white font-serif h-20 text-2xl">
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
                         <th>Assignees</th>
                         <th>Status</th>
-                        <div class="itbkk-button-add add-Button h-16 flex items-center justify-center">
-                            <img class="itbkk-button-add add-Button" src="@/assets/plus.svg" @click="addModal()" />
-                        </div>
                     </tr>
                 </thead>
                 <tbody class="text-base ">
