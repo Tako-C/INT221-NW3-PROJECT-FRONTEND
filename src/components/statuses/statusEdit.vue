@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted,watch, onUpdated } from "vue"
-import { getData, editStatus } from "@/libs/fetchs.js"
+import { ref, onMounted, onUpdated } from "vue"
+import { getData, editData } from "@/libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "@/stores/store.js"
 import { validateTask } from "@/libs/varidateTask.js"
@@ -23,25 +23,21 @@ const ID = ref(0)
 const isEdited = ref(false)
 
 
+console.log(route.params.id)
+    if(route.params.id == 1){
+        window.alert("Harm naja")
+        router.push({name: 'StatusTable'})
 
+    } 
 async function fetchData() {
-    console.log(route.params.id)
-    // if(route.params.id === 1){
-    //     window.alert("Harm naja")
-    //     router.push("/status/manage")
-    // } 
     try {
         statusData.value = await getData(`statuses/${route.params.id}`)
         console.log(originalStatusData.value);
         
         originalStatusData.value = { ...statusData.value }
     } catch (error) {
-        router.push("/status/manage")
-        // window.onload = function () {
-        //     setTimeout(async function () {
-        //         window.alert("The requested task does not exist3333")
-        //     }, 100)
-        // }
+        statusStore.errorUpdateStatus = true
+        router.push({name: 'StatusTable'})
     }
 }
 
@@ -49,26 +45,15 @@ async function updateStatus(statusId) {
     // if (!validateTask(statusData.value)) {
     //     return // Stop execution if validation fails
     // }
-    // switch (statusData.value.statusName) {
-    //     case "To Do":
-    //         statusData.value.statusName = "TO_DO"
-    //         break
-    //     case "Doing":
-    //         statusData.value.statusName = "DOING"
-    //         break
-    //     case "Done":
-    //         statusData.value.statusName = "DONE"
-    //         break
-    //     default:
-    //         statusData.value.statusName = "NO_STATUS"
-    // }
+  
     //trim
     if(statusData.value.statusDescription.length !== 0 ) {
         statusData.value.statusDescription = statusData.value.statusDescription.trim()
     }
-
-    let result = await editStatus(statusId, statusData.value)
+    let result = await editData("statuses",statusId, statusData.value)
     ID.value = result.id
+    statusStore.successUpdateStatus = true
+    console.log(statusStore.successUpdateStatus);
     addtostore()
     closeModal()
 }
@@ -90,7 +75,7 @@ function addtostore() {
 }
 
 function closeModal() {
-    router.push("/status/manage")
+    router.push({name: 'StatusTable'})
     clearData()
 }
 

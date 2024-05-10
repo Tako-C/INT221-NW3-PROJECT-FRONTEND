@@ -1,14 +1,13 @@
 <script setup>
 import { ref, onMounted, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { getData } from "../libs/fetchs.js"
-import { useStore } from "../stores/store.js"
-import { removeTaskById } from "@/libs/fetchs.js"
+import { useStore } from "@/stores/store.js"
+import { removeTaskById,getData } from "@/libs/fetchs.js"
 
-import modalNotification from '../components/modals/modalNotification.vue'
-import modalconfirmed from '../components/modals/modalConfirmed.vue'
+import modalNotification from '@/components/modals/modalNotification.vue'
+import modalconfirmed from '@/components/modals/modalConfirmed.vue'
 
-const taskStore = useStore()
+const Store = useStore()
 let statusData = ref([])
 const router = useRouter()
 const route = useRoute()
@@ -19,11 +18,12 @@ const openConfirmed= ref(false)
 const taskTitle = ref("")
 const taskID = ref("")
 
-
+console.log(Store.tasks);
+console.log(Store.statuss);
 async function fetchData() {
     statusData.value = await getData("statuses")
-    taskStore.statuss.push(...statusData.value)
-    console.log(...taskStore.statuss)
+    Store.statuss.push(...statusData.value)
+    // console.log(...Store.statuss)
 
 }
 
@@ -32,48 +32,41 @@ function toggleDropDown(index) {
         optionsDropDownIndex.value === index ? null : index
 }
 
-async function removeTask() {
-    optionsDropDownIndex.value = null
-    openConfirmed.value = false
-    console.log(taskID.value);
-    // const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
+// async function removeTask() {
+//     optionsDropDownIndex.value = null
+//     openConfirmed.value = false
+//     console.log(taskID.value);
+//     // const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
 
-        let result = await removeTaskById(taskID.value)
-        console.log("result",result)
-        if (result.status === 404) {
-            console.log("result :", result.status)
-            errorDelete.value = true
-        }
-        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskID.value) 
-        successDelete.value = true
-        console.log(successDelete.value);
+//         let result = await removeTaskById(taskID.value)
+//         console.log("result",result)
+//         if (result.status === 404) {
+//             console.log("result :", result.status)
+//             errorDelete.value = true
+//         }
+//         taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskID.value) 
+//         successDelete.value = true
+//         console.log(successDelete.value);
                 
-}
+// }
 
 function addModal_Status() {
-    router.push(`/status/manage/add`)
+    // router.push(`/status/add`)
+    router.push({ name: 'StatusAdd'});
 }
 
 function editModal_Status(status_Id) {
-    router.push(`/status/manage/${status_Id}/edit`)
+    router.push(`/status/${status_Id}/edit`)
     optionsDropDownIndex.value = null
 }
 
-// function openModal(status_Id) {
-//     router.push(`/status/manage/${taskId}`)
-//     optionsDropDownIndex.value = null
-// }
-
 function closeModalNotification() {
-    errorDelete.value = false
-    successDelete.value = false
-    taskStore.successUpdate =false
-    taskStore.errorUpdate = false
-    taskStore.errorUpdate = false
-    taskStore.successAdd = false
+    Store.successAddStatus = false
+    Store.successUpdateStatus = false
+    Store.errorUpdateStatus = false
     openConfirmed.value = false
-    taskTitle.value = ""
-    taskID.value = ""
+    // taskTitle.value = ""
+    // taskID.value = ""
     
 }
 function openConfirmModal(id,title) {
@@ -81,23 +74,21 @@ function openConfirmModal(id,title) {
     taskTitle.value = title
     taskID.value = id
 }
+function checkVariable() {
+    if (Store.successAddStatus == true || Store.successUpdateStatus == true ||Store.errorUpdateStatus == true ) {
+        return true
+    }
+    return false 
+}
 onMounted(fetchData)
 
-// ส่วนที่เกี่ยวข้องกับการแสดงmodal หลังจาก add remove update
-// watchEffect(() => {
-//     if (taskStore.successModalVisible === true) {
-//         setTimeout(() => {
-//             taskStore.successModalVisible = false
-//         }, 3000)
-//     }
-// })
 </script>
 
 
 <template>
-    <modalNotification :errorDelete="errorDelete" :successDelete="successDelete"
+    <modalNotification
      @closemodal="closeModalNotification()"
-     v-show="taskStore.successAdd === true || taskStore.errorUpdate === true || taskStore.successUpdate === true || errorDelete === true || successDelete === true"
+     v-show="checkVariable()"
      class="z-30"/>
     <modalconfirmed v-show="openConfirmed"
     :taskTitle="taskTitle"
@@ -135,11 +126,11 @@ onMounted(fetchData)
                 <tbody class="text-base ">
                     <tr
                         class="itbkk-item hover-table"
-                        v-show="taskStore.statuss.length > 0"
-                        v-for="(status, index) in taskStore.statuss"
+                        v-show="Store.statuss.length > 0"
+                        v-for="(status, index) in Store.statuss"
                         :key="index"
                     >
-                        <td>{{ status.id }}</td>
+                        <td>{{ index+1 }}</td>
                         <td class="itbkk-title">
                             {{ status.statusName }}
                         </td>
@@ -187,7 +178,7 @@ onMounted(fetchData)
                         </td>
                     </tr>
                 </tbody>
-                <tbody v-show="taskStore.statuss.length === 0">
+                <tbody v-show="Store.statuss.length === 0">
                     <tr>
                         <td class="text-center" colspan="4">
                             Don't Have status ??

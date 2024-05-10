@@ -3,7 +3,7 @@ import taskTable from '../components/taskTable.vue'
 import taskDetail from '../components/taskDetail.vue'
 import taskAdd from '@/components/taskAdd.vue'
 import taskEdit from '@/components/taskUpdate.vue'
-import taskStatus from '@/components/taskStatus.vue'
+import taskStatus from '@/components/statuses/StatusTable.vue'
 import statusAdd from '@/components/statuses/statusAdd.vue'
 import statusEdit from '@/components/statuses/statusEdit.vue'
 
@@ -15,9 +15,12 @@ const router = createRouter({
       name: 'taskTable',
       component: taskTable,
       children: [
-        { path: ':id', component: taskDetail },
+        { path: ':id', 
+          name: 'taskDetail', 
+          component: taskDetail },
         {
           path: 'add',
+          name: 'taskAdd',
           component: taskAdd,
         },
         {
@@ -27,12 +30,18 @@ const router = createRouter({
       ],
     },
     {
-      path: '/status/manage',
-      name: 'taskStatus',
+      path: '/status',
+      name: 'StatusTable',
       component: taskStatus,
       children: [
-        { path: 'add', component: statusAdd },
-        { path: ':id/edit', component: statusEdit }
+        { 
+          path: 'add', 
+          name: 'StatusAdd', 
+          component: statusAdd },
+        { 
+          path: ':id/edit',
+          name: 'StatusEdit', 
+          component: statusEdit }
       ]
     },
     // {

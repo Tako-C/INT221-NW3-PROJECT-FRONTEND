@@ -6,8 +6,12 @@ export const useStore = defineStore('task', {
   state: () => ({
     tasks: [],
     statuss:[],
-    successAdd:false,
-    errorUpdate:false,
-    successUpdate:false
+    successAddTask:false,
+    successUpdateTask:false,
+    errorUpdateTask:false,
+    successUpdateStatus:false,
+    successAddStatus:false,
+    errorUpdateStatus:false
+
   }),
 })

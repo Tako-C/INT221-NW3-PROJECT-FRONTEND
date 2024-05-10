@@ -5,40 +5,46 @@ import { defineEmits } from 'vue'
 
 const emits = defineEmits(['closemodal'])
 const props = defineProps({
-    errorDelete: { type: Boolean, require: true },
-    successDelete: { type: Boolean, require: true }
+    errorDelete: { type: Boolean},
+    successDelete: { type: Boolean},
 })
-const taskStore = useStore()
+const Store = useStore()
 const message = ref({ header: "", detail: "" })
-// สร้าง ref สำหรับการเก็บค่า successAdd และ errorUpdate ที่มาจาก store
-let successAdd = ref(taskStore.successAdd)
-let errorUpdate = ref(taskStore.errorUpdate)
-let successUpdate = ref(taskStore.successUpdate)
-
-// ใช้ watch สำหรับตรวจสอบการเปลี่ยนแปลงของ errorDelete และ successDelete จาก props
+let successAddTask = ref(Store.successAddTask)
+let errorUpdateTask = ref(Store.errorUpdateTask)
+let successUpdateTask = ref(Store.successUpdateTask)
 let errorDelete = ref(props.errorDelete)
 let successDelete = ref(props.successDelete)
+let successAddStatus = ref(Store.successAddStatus)
+let successUpdateStatus = ref(Store.successUpdateStatus)
+let errorUpdateStatus = ref(Store.errorUpdateStatus)
+// watchEffect(() => {
+//     errorDelete.value = props.errorDelete;
+//     successDelete.value = props.successDelete;
+//     checkEvent();
+// });
+
+// ใช้ watchEffect เพื่อตรวจสอบการเปลี่ยนแปลงใน Store.successAdd และ Store.errorUpdate
 watchEffect(() => {
     errorDelete.value = props.errorDelete;
     successDelete.value = props.successDelete;
-    checkEvent();
-});
-
-// ใช้ watchEffect เพื่อตรวจสอบการเปลี่ยนแปลงใน taskStore.successAdd และ taskStore.errorUpdate
-watchEffect(() => {
-    successAdd.value = taskStore.successAdd;
-    errorUpdate.value = taskStore.errorUpdate;
-    successUpdate.value = taskStore.successUpdate
+    successAddTask.value = Store.successAddTask
+    errorUpdateTask.value = Store.errorUpdateTask
+    successUpdateTask.value = Store.successUpdateTask
+    successAddStatus.value = Store.successAddStatus
+    successUpdateStatus.value = Store.successUpdateStatus
+    errorUpdateStatus.value = Store.errorUpdateStatus
     checkEvent();
 });
 
 
 
 function checkEvent() {
-    if (successAdd.value) {
+        //Task
+    if (successAddTask.value) {
         message.value.header = "Success!"
         message.value.detail = "The task has been successfully added."
-    } else if (errorUpdate.value) {
+    } else if (errorUpdateTask.value) {
         message.value.header = "Error!"
         message.value.detail = "The task does not exist."
     } else if (errorDelete.value) {
@@ -47,10 +53,22 @@ function checkEvent() {
     } else if (successDelete.value) {
         message.value.header = "Success!"
         message.value.detail = "successfully Delete."
-    } else if (successUpdate.value){
+    } else if (successUpdateTask.value){
         message.value.header = "Success!"
         message.value.detail = "The update was successful."
+
+        //Status
+    } else if(successAddStatus.value){
+        message.value.header = "Success!"
+        message.value.detail = "The status has been added."
+    } else if(successUpdateStatus.value){
+        message.value.header = "Success!"
+        message.value.detail = "The status has been updated"
     }
+    else if (errorUpdateStatus.value) {
+        message.value.header = "Error!"
+        message.value.detail = "“An error has occurred, the status does not exist."
+}
 }
 
 // เรียกใช้งานฟังก์ชัน checkEvent เมื่อคอมโพเนนต์ถูกอัพเดต
