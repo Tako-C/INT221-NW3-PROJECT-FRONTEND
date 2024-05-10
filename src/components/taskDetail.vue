@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getTask } from '../libs/fetchs.js'
+import { getData } from '../libs/fetchs.js'
 import { useRoute, useRouter } from 'vue-router'
 
 let taskData = ref([])
@@ -11,12 +11,6 @@ let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
 
-const status = {
-  TO_DO: 'To Do',
-  NO_STATUS: 'No Status',
-  DONE: 'Done',
-  DOING: 'Doing',
-}
 //Option datetime
 const options = {
   year: 'numeric',
@@ -38,7 +32,7 @@ function convertToBrowserTimezone(utcTime) {
 
 async function fetchData() {
   try {
-    taskData.value = await getTask(`tasks/${route.params.id}`)
+    taskData.value = await getData(`tasks/${route.params.id}`)
 
     // เรียกใช้งานฟังก์ชันในการแปลงเวลา
     createTimeInBrowserTimezone = convertToBrowserTimezone(
@@ -121,7 +115,7 @@ onMounted(fetchData)
           <p
             class="itbkk-status border-2 w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
           >
-            {{ status[taskData.status] }}
+            {{ taskData.statusName }}
           </p>
           <div class="font-bold pt-1">TimeZone</div>
           <p

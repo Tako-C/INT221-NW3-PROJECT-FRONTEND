@@ -1,8 +1,8 @@
 // GetData
-async function getTask(path) {
+async function getData(path) {
   try {
-    // const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v1/${path}`)
-    const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v1/${path}`)
+    // const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v2/${path}`)
+    const res = await fetch(`http://localhost:8080/v2/${path}`)
 
     if (!res.ok) {
       throw new Error('Failed to fetch data')
@@ -18,7 +18,7 @@ async function getTask(path) {
 async function removeTaskById(id) {
   try {
     const res = await fetch(
-      `http://ip23nw3.sit.kmutt.ac.th:8080/v1/tasks/${id}`,
+      `http://localhost:8080/v2/tasks/${id}`,
       {
         method: 'DELETE',
       }
@@ -43,7 +43,7 @@ async function removeTaskById(id) {
 async function addTask(data,path) {
   try {
     const response = await fetch(
-      `http://ip23nw3.sit.kmutt.ac.th:8080/v1/${path}`,
+      `http://localhost:8080/v2/${path}`,
       {
         method: 'POST', // or 'PUT'
         headers: {
@@ -65,7 +65,7 @@ async function addTask(data,path) {
 async function editTask(taskId, data) {
   try {
     const response = await fetch(
-      `http://ip23nw3.sit.kmutt.ac.th:8080/v1/tasks/${taskId}`,
+      `http://localhost:8080/v2/tasks/${taskId}`,
       {
         method: 'PUT',
         headers: {
@@ -88,4 +88,20 @@ async function editTask(taskId, data) {
   }
 }
 
-export { getTask, removeTaskById, addTask, editTask }
+async function taskStatus(path) {
+  try {
+    // const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v2/${path}`)
+    const res = await fetch(`http://localhost:8080/v2/${path}`)
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    const data = await res.json()
+    return data
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    throw error
+  }
+}
+
+export { getData, removeTaskById, addTask, editTask }

@@ -2,17 +2,17 @@
 import { ref, onMounted } from "vue"
 import { addTask } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
-import { useTaskStore } from '../stores/store.js'
+import { useStore } from '../stores/store.js'
 import { validateTask } from '../libs/varidateTask.js';
 const route = useRoute()
 const router = useRouter()
-const taskStore = useTaskStore()
+const taskStore = useStore()
 const ID = ref(0)
 let taskData = ref({
     title: '',
     description: '',
     assignees: '',
-    status: 'No Status'
+    statusName: 'No Status'
 })
 
 function closeModal() {
@@ -34,19 +34,19 @@ async function save() {
     if (!validateTask(taskData.value)) {
         return; // Stop execution if validation fails
     }
-    switch (taskData.value.status) {
-        case "To Do":
-            taskData.value.status = "TO_DO"
-            break;
-        case "Doing":
-            taskData.value.status = "DOING"
-            break;
-        case "Done":
-            taskData.value.status = "DONE"
-            break;
-        default:
-            taskData.value.status = "NO_STATUS"
-    }
+    // switch (taskData.value.statusName) {
+    //     case "To Do":
+    //         taskData.value.statusName = "TO_DO"
+    //         break;
+    //     case "Doing":
+    //         taskData.value.statusName = "DOING"
+    //         break;
+    //     case "Done":
+    //         taskData.value.statusName = "DONE"
+    //         break;
+    //     default:
+    //         taskData.value.statusName = "NO_STATUS"
+    // }
     // trim
         taskData.value.title = taskData.value.title.trim();
         if (taskData.value.description !== null) {
@@ -106,7 +106,7 @@ function clearData() {
                     <textarea v-model="taskData.assignees" class="itbkk-assignees w-[80%] h-[30%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2"></textarea>
 
                     <div class="font-bold">Status</div>
-                        <select v-model="taskData.status" class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2">
+                        <select v-model="taskData.statusName" class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2">
                             <option>No Status</option>
                             <option>To Do</option>
                             <option>Doing</option>
@@ -127,7 +127,9 @@ function clearData() {
                     <button 
                         type="submit"
                         class="itbkk-button-confirm button buttonOK btn"
-                        @click="save()">
+                        @click="save()"
+                        :disabled="taskData.title.length === 0">
+                        
                     Save
                     </button>
                 </div>

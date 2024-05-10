@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted } from "vue"
-import { getTask, editTask } from "../libs/fetchs.js"
+import { ref, onMounted,watch,watchEffect } from "vue"
+import { getData, editTask } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
-import { useTaskStore } from "../stores/store.js"
+import { useStore } from "../stores/store.js"
 import { validateTask } from "../libs/varidateTask.js"
 
 let taskData = ref({
@@ -10,23 +10,27 @@ let taskData = ref({
     title: "",
     description: "",
     assignees: "",
-    status: "",
+    statusName: "",
 })
+const originalTaskData = ref({
+    id: "",
+    title: "",
+    description: "",
+    assignees: "",
+    statusName: "",
+})
+
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
-const taskStore = useTaskStore()
+const taskStore = useStore()
 const ID = ref(0)
+const isEdited = ref(false)
 
-const status = {
-    TO_DO: "To Do",
-    NO_STATUS: "No Status",
-    DONE: "Done",
-    DOING: "Doing",
-}
+
 
 //Option datetime
 const options = {
@@ -49,20 +53,8 @@ function convertToBrowserTimezone(utcTime) {
 
 async function fetchData() {
     try {
-        taskData.value = await getTask(`tasks/${route.params.id}`)
-        switch (taskData.value.status) {
-        case "TO_DO":
-            taskData.value.status = "To Do"
-            break
-        case "DOING":
-            taskData.value.status = "Doing"
-            break
-        case "DONE":
-            taskData.value.status = "Done"
-            break
-        default:
-            taskData.value.status = "No Status"
-    }
+        taskData.value = await getData(`tasks/${route.params.id}`)
+        console.log(originalTaskData.value);
 
         // เรียกใช้งานฟังก์ชันในการแปลงเวลา
         createTimeInBrowserTimezone = convertToBrowserTimezone(
@@ -72,35 +64,24 @@ async function fetchData() {
             taskData.value.updatedOn
         )
         fetchHaveData.value = !fetchHaveData.value
+        originalTaskData.value = { ...taskData.value }
     } catch (error) {
         taskStore.errorUpdate = true
         router.push("/task")
-        // window.onload = function () {
-        //     setTimeout(async function () {
-        //         window.alert("The requested task does not exist3333")
-        //     }, 100)
-        // }
     }
 }
 
 async function updateTask(taskId) {
     if (!validateTask(taskData.value)) {
-        return // Stop execution if validation fails
+        return 
     }
-    switch (taskData.value.status) {
-        case "To Do":
-            taskData.value.status = "TO_DO"
-            break
-        case "Doing":
-            taskData.value.status = "DOING"
-            break
-        case "Done":
-            taskData.value.status = "DONE"
-            break
-        default:
-            taskData.value.status = "NO_STATUS"
-    }
-
+    //trim
+    taskData.value.title = taskData.value.title.trim();
+        if (taskData.value.description !== null) {
+            taskData.value.description = taskData.value.description.trim()
+        }if (taskData.value.assignees!==null) {
+            taskData.value.assignees = taskData.value.assignees.trim()
+        }
     let result = await editTask(taskId, taskData.value)
     ID.value = result.id
     taskStore.successUpdate = true
@@ -131,6 +112,21 @@ function closeModal() {
 
 //เรียกใช้function fetchdata
 onMounted(fetchData)
+
+
+watch(() => {
+    if (
+        originalTaskData.value.title !== taskData.value.title ||
+        originalTaskData.value.description !== taskData.value.description ||
+        originalTaskData.value.assignees !== taskData.value.assignees ||
+        originalTaskData.value.statusName !== taskData.value.statusName
+    ) {
+        isEdited.value = true
+    } else {
+        isEdited.value = false
+    }
+})
+
 </script>
 <template>
     <div
@@ -190,7 +186,7 @@ onMounted(fetchData)
 
                     <div class="font-bold">Status</div>
                     <select
-                        v-model="taskData.status"
+                        v-model="taskData.statusName"
                         class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2"
                     >
                         <option>No Status</option>
@@ -236,9 +232,10 @@ onMounted(fetchData)
                             title: taskData.title,
                             description: taskData.description,
                             assignees: taskData.assignees,
-                            status: status[taskData.status],
+                            status: taskData.status,
                         })
                     "
+                    :disabled="!isEdited"
                 >
                     Update
                 </button>

@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { getTask } from "../libs/fetchs.js"
-import { useTaskStore } from "../stores/store.js"
+import { getData } from "../libs/fetchs.js"
+import { useStore } from "../stores/store.js"
 import { removeTaskById } from "@/libs/fetchs.js"
 
 import modalNotification from '../components/modals/modalNotification.vue'
 import modalconfirmed from '../components/modals/modalConfirmed.vue'
 
-const taskStore = useTaskStore()
+const taskStore = useStore()
 let taskData = ref([])
 const router = useRouter()
 const route = useRoute()
@@ -19,15 +19,8 @@ const openConfirmed= ref(false)
 const taskTitle = ref("")
 const taskID = ref("")
 
-const status = {
-    TO_DO: "To Do",
-    NO_STATUS: "No Status",
-    DONE: "Done",
-    DOING: "Doing",
-}
-
 async function fetchData() {
-    taskData.value = await getTask("tasks")
+    taskData.value = await getData("tasks")
     taskStore.tasks.push(...taskData.value)
     // console.log(...taskStore.tasks)
 }
@@ -118,6 +111,7 @@ onMounted(fetchData)
             <h1 class="text-3xl font-bold font-serif">
                 IT-Bangmod Kradan Kanban (ITB-KK)
             </h1>
+            <div class="mt-28 ml-10 mb-5 bg-black"><a href="http://localhost:5173/status/manage">Manage</a></div>
         </header>
 
         <!-- The button to open modal -->
@@ -130,8 +124,8 @@ onMounted(fetchData)
                         <th>Title</th>
                         <th>Assignees</th>
                         <th>Status</th>
-                        <div class="itbkk-button-add add-Button">
-                            <img src="@/assets/plus.svg" @click="addModal()" />
+                        <div class="itbkk-button-add add-Button h-16 flex items-center justify-center">
+                            <img class="itbkk-button-add add-Button" src="@/assets/plus.svg" @click="addModal()" />
                         </div>
                     </tr>
                 </thead>
@@ -164,12 +158,13 @@ onMounted(fetchData)
                         <td @click="openModal(task.id)" >
                             <p class="itbkk-status rounded-2xl m-1 p-2"
                                 :class="{
-                                    'bg-gray-200' : task.status === 'NO_STATUS',
-                                    'bg-yellow-200': task.status === 'TO_DO',
-                                    'bg-orange-200': task.status === 'DOING',
-                                    'bg-green-200': task.status === 'DONE'
+                                    'bg-gray-200' : task.statusName === 'No Status',
+                                    'bg-yellow-200': task.statusName === 'To Do',
+                                    'bg-orange-200': task.statusName === 'Doing',
+                                    'bg-green-200': task.statusName === 'Done'
                             }">
-                            {{ status[task.status] }}</p>
+                            {{ task.statusName }}</p>
+                            
                         </td>
                         <td>
                             <div class="itbkk-button-action relative">
