@@ -24,12 +24,15 @@ const transferModal = ref(false)
 console.log(Store.tasks);
 console.log(Store.statuss);
 async function fetchData() {
-    taskData.value = await getData("tasks")
-    Store.tasks.push(...taskData.value)
-    statusData.value = await getData("statuses")
-    Store.statuss.push(...statusData.value)
-    console.log(Store.tasks)
-    console.log(Store.statuss)
+    if(Store.tasks.length === 0 || Store.statuss.length === 0){
+        taskData.value = await getData("tasks")
+        Store.tasks.push(...taskData.value)
+        statusData.value = await getData("statuses")
+        Store.statuss.push(...statusData.value)
+        console.log(Store.tasks)
+        console.log(Store.statuss) 
+    }
+
 
 }
 
@@ -45,7 +48,7 @@ async function removeTask() {
 
         
 
-            console.log(Store.tasks);
+        console.log(Store.tasks);
         const checkTaskUseStatus = Store.tasks.filter((task)=> task.statusName == statusNameDelete.value)
         console.warn(checkTaskUseStatus.length)
         if (checkTaskUseStatus.length == 0) {

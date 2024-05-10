@@ -66,7 +66,7 @@ function editModal(taskId) {
 }
 function openModal(taskId) {
     // router.push(`/task/${taskId}`)
-    router.push({ name: 't', params: { id: taskId } });
+    router.push({ name: 'taskDetail', params: { id: taskId } });
 
     optionsDropDownIndex.value = null
 }
@@ -144,8 +144,8 @@ onMounted(fetchData)
                 <tbody class="text-base ">
                     <tr
                     class="itbkk-item hover-table border-[1px] rounded-2xl"
-                        v-show="taskStore.tasks.length > 0"
-                        v-for="(task, index) in taskStore.tasks"
+                        v-show="Store.tasks.length > 0"
+                        v-for="(task, index) in Store.tasks"
                         :key="index"
                     >
                         <td @click="openModal(task.id)">{{index+1}}</td>
