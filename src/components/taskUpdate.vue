@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onMounted,watch,watchEffect } from "vue"
+import { ref, onMounted,watch,watchEffect, onUpdated } from "vue"
 import { getData, editTask } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "../stores/store.js"
 import { validateTask } from "../libs/varidateTask.js"
-
+ 
 let taskData = ref({
     id: "",
     title: "",
@@ -19,7 +19,6 @@ const originalTaskData = ref({
     assignees: "",
     statusName: "",
 })
-
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -30,7 +29,12 @@ const taskStore = useStore()
 const ID = ref(0)
 const isEdited = ref(false)
 
-
+const status = {
+    TO_DO: "To Do",
+    NO_STATUS: "No Status",
+    DONE: "Done",
+    DOING: "Doing",
+}
 
 //Option datetime
 const options = {
@@ -42,7 +46,7 @@ const options = {
     second: "2-digit",
     hour12: false,
 }
-
+ 
 function convertToBrowserTimezone(utcTime) {
     // สร้าง Date object จากเวลา UTC
     let date = new Date(utcTime)
@@ -50,11 +54,10 @@ function convertToBrowserTimezone(utcTime) {
     const browserTime = date.toLocaleString("en-AU", options)
     return browserTime
 }
-
+ 
 async function fetchData() {
     try {
         taskData.value = await getData(`tasks/${route.params.id}`)
-        console.log(originalTaskData.value);
 
         // เรียกใช้งานฟังก์ชันในการแปลงเวลา
         createTimeInBrowserTimezone = convertToBrowserTimezone(
@@ -70,10 +73,10 @@ async function fetchData() {
         router.push("/task")
     }
 }
-
+ 
 async function updateTask(taskId) {
     if (!validateTask(taskData.value)) {
-        return 
+        return // Stop execution if validation fails
     }
     //trim
     taskData.value.title = taskData.value.title.trim();
@@ -88,7 +91,7 @@ async function updateTask(taskId) {
     addtostore()
     closeModal()
 }
-
+ 
 function addtostore() {
     // ค้นหา index ของ taskStore.tasks ที่มี id เท่ากับ taskData.value.id
     let indexToUpdate = -1
@@ -104,17 +107,16 @@ function addtostore() {
         taskStore.tasks.push(taskData.value)
     }
 }
-
+ 
 function closeModal() {
     router.push("/task")
     fetchHaveData.value = !fetchHaveData.value
 }
-
+ 
 //เรียกใช้function fetchdata
 onMounted(fetchData)
-
-
-watch(() => {
+ 
+onUpdated(() => {
     if (
         originalTaskData.value.title !== taskData.value.title ||
         originalTaskData.value.description !== taskData.value.description ||
@@ -126,7 +128,6 @@ watch(() => {
         isEdited.value = false
     }
 })
-
 </script>
 <template>
     <div
@@ -145,13 +146,13 @@ watch(() => {
                 </h1>
             <p class="border-b mt-2"></p>
         </div>
-
+ 
             <div class="flex mt-3 mb-20 ml-7">
-                
+               
                 <div class="w-1/2">
-
+ 
                     <p class="font-bold">Title</p>
-                    
+                   
                     <textarea
                         v-model="taskData.title"
                         v-if="taskData.title !== null"
@@ -159,9 +160,9 @@ watch(() => {
                         >{{ taskData.title }} </textarea
                     >
    
-
+ 
                     <p class="font-bold mt-2">Description</p>
-                    
+                   
                     <textarea
                         class="itbkk-description border-2 w-[90%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
@@ -183,7 +184,7 @@ watch(() => {
                         >{{taskData.assignees}}
                         </textarea
                     >
-
+ 
                     <div class="font-bold">Status</div>
                     <select
                         v-model="taskData.statusName"
@@ -194,7 +195,7 @@ watch(() => {
                         <option>Doing</option>
                         <option>Done</option>
                     </select>
-
+ 
                     <div class="font-bold pt-1">TimeZone</div>
                     <p
                         class="itbkk-timezone border-2 w-[80%] h-[10%] bg-gray-400 bg-opacity-15 rounded-lg pl-3"
@@ -223,7 +224,7 @@ watch(() => {
                 >
                     Close
                 </button>
-
+ 
                 <button
                     type="submit"
                     class="itbkk-button button buttonOK btn"
@@ -264,7 +265,7 @@ watch(() => {
     transition-duration: 0.4s;
     cursor: pointer;
 }
-
+ 
 .buttonClose {
     background-color: white;
     color: black;
@@ -284,11 +285,11 @@ watch(() => {
     background-color: #04aa6d;
     color: white;
 }
-
+ 
 .box {
     margin-right: auto;
 }
-
+ 
 .modal-overlay {
     position: absolute;
     top: 0;
@@ -298,7 +299,7 @@ watch(() => {
     z-index: 98;
     background-color: rgba(0, 0, 0, 0.3);
 }
-
+ 
 h1 {
     color: black;
     font-size: 32px;
@@ -307,19 +308,20 @@ h1 {
     margin-left: 25px;
     font-family: sans-serif;
 }
-
+ 
 .modal {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 99;
-
+ 
     width: 100%;
     max-width: 400px;
     background-color: #fff;
     border-radius: 16px;
-
+ 
     padding: 25px;
 }
 </style>
+ 

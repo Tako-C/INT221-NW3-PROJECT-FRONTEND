@@ -50,18 +50,19 @@ async function removeTask() {
                 
 }
 
-function addModal() {
-    router.push(`/task/add`)
+function addModal_Status() {
+    router.push(`/status/manage/add`)
 }
 
-function editModal(taskId) {
-    router.push(`/task/${taskId}/edit`)
+function editModal_Status(status_Id) {
+    router.push(`/status/manage/${status_Id}/edit`)
     optionsDropDownIndex.value = null
 }
-function openModal(taskId) {
-    router.push(`/task/${taskId}`)
-    optionsDropDownIndex.value = null
-}
+
+// function openModal(status_Id) {
+//     router.push(`/status/manage/${taskId}`)
+//     optionsDropDownIndex.value = null
+// }
 
 function closeModalNotification() {
     errorDelete.value = false
@@ -117,8 +118,8 @@ onMounted(fetchData)
 
         <!-- The button to open modal -->
 
-        <main class="flex flex-col justify-center h-screen ml-[20%] hover:overflow-y-auto overflow-hidden">
-            <div class="mt-28 ml-10 mb-5"><span><a href="http://localhost:5173/task">Home</a></span> > task table</div>
+        <main class="flex flex-col pt-[8%] h-screen pl-[20%] pr-[20%] hover:overflow-y-auto overflow-hidden">
+            <div class="mt-2 ml-10 mb-3 text-xl font-serif font-bold"><span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > task table</div>
             <table class="table w-auto bg-white mb-28">
                 <thead class="text-xl font-serif h-20">
                     <tr>
@@ -127,7 +128,7 @@ onMounted(fetchData)
                         <th>Description</th>
                         <th>Action</th>
                         <div class="itbkk-button-add add-Button h-16 flex items-center justify-center">
-                            <img class="itbkk-button-add add-Button" src="@/assets/plus.svg" @click="addModal()" />
+                            <img class="itbkk-button-add add-Button" src="@/assets/plus.svg" @click="addModal_Status()" />
                         </div>
                     </tr>
                 </thead>
@@ -138,12 +139,12 @@ onMounted(fetchData)
                         v-for="(status, index) in taskStore.statuss"
                         :key="index"
                     >
-                        <td @click="openModal(status.id)">{{ status.id }}</td>
-                        <td @click="openModal(status.id)" class="itbkk-title">
+                        <td>{{ status.id }}</td>
+                        <td class="itbkk-title">
                             {{ status.statusName }}
                         </td>
                         
-                        <td @click="openModal(status.id)" >
+                        <td >
                             <p class="itbkk-status rounded-2xl m-1 p-2"  
                             >
                             {{ status.statusDescription }}</p>
@@ -165,7 +166,7 @@ onMounted(fetchData)
                                         <li>
                                             <a
                                                 href="#"
-                                                @click="editModal(task.id)"
+                                                @click="editModal_Status(status.id)"
                                                 class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
                                                 Edit
@@ -174,7 +175,7 @@ onMounted(fetchData)
                                         <li>
                                             <a
                                                 href="#"
-                                                @click="openConfirmModal(task.id,task.title)"
+                                                @click="openConfirmModal(status.id, status.statusDescription)"
                                                 class="itbkk-button-delete block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                                             >
                                                 Delete

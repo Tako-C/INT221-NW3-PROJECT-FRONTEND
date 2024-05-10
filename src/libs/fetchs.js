@@ -88,20 +88,52 @@ async function editTask(taskId, data) {
   }
 }
 
-async function taskStatus(path) {
+async function editStatus(status_ID, data) {
   try {
-    // const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v2/${path}`)
-    const res = await fetch(`http://localhost:8080/v2/${path}`)
+    const response = await fetch(
+      `http://localhost:8080/v2/statuses/${status_ID}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    )
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch data')
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(errorMessage)
     }
-    const data = await res.json()
-    return data
+    const result = await response.json()
+    console.log('Success:', result)
+    return result
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error:', error.message)
     throw error
   }
 }
 
-export { getData, removeTaskById, addTask, editTask }
+async function addStatus(path, data) {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/v2/${path}`,
+      {
+        method: 'POST', // or 'PUT'
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify(data),
+      }
+    )
+    console.log(data)
+    const result = await response.json()
+    console.log('Success:', result)
+    return result
+  } catch (error) {
+    console.error('Error:', error)
+  }
+}
+
+export { getData, removeTaskById, addTask, editTask, editStatus, addStatus }
