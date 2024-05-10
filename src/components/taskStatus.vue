@@ -119,7 +119,7 @@ onMounted(fetchData)
         <!-- The button to open modal -->
 
         <main class="flex flex-col pt-[8%] h-screen pl-[20%] pr-[20%] hover:overflow-y-auto overflow-hidden">
-            <div class="mt-2 ml-10 mb-3 text-xl font-serif font-bold"><span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > task table</div>
+            <div class="mt-2 ml-10 mb-3 text-xl font-serif font-bold"><span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > Status Manage</div>
             <table class="table w-auto bg-white mb-28">
                 <thead class="text-xl font-serif h-20">
                     <tr>
