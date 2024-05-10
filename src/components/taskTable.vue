@@ -2,7 +2,7 @@
 import { ref, onMounted, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "@/stores/store.js"
-import { removeTaskById,getData } from "@/libs/fetchs.js"
+import { removeById,getData } from "@/libs/fetchs.js"
  
 import modalNotification from '@/components/modals/modalNotification.vue'
 import modalconfirmed from '@/components/modals/modalConfirmed.vue'
@@ -40,7 +40,7 @@ async function removeTask() {
     console.log(taskID.value);
     // const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
  
-        let result = await removeTaskById(taskID.value)
+        let result = await removeById("tasks",taskID.value)
         console.log("result",result)
         if (result.status === 404) {
             console.log("result :", result.status)
@@ -63,7 +63,7 @@ function editModal(taskId) {
 }
 function openModal(taskId) {
     // router.push(`/task/${taskId}`)
-    router.push({ name: 'taskDetail', params: { id: taskId } });
+    router.push({ name: 't', params: { id: taskId } });
 
     optionsDropDownIndex.value = null
 }

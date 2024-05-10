@@ -18,10 +18,10 @@ async function getData(path) {
   }
 }
 
-async function removeTaskById(id) {
+async function removeById(path,id) {
   try {
     const res = await fetch(
-      `${url}/v2/tasks/${id}`,
+      `${url}/v2/${path}/${id}`,
       {
         method: 'DELETE',
       }
@@ -139,4 +139,4 @@ async function editData(path,taskId,data) {
 //   }
 // }
 
-export { getData, removeTaskById, addData, editData }
+export { getData, removeById, addData, editData }

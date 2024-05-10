@@ -1,19 +1,46 @@
 <script setup>
-import { defineEmits } from 'vue'
-import { defineProps, ref } from 'vue'
-
+import { defineEmits, onMounted, onUpdated } from 'vue'
+import {  ref, defineProps } from 'vue'
+import { useStore } from '@/stores/store.js'
 const emits = defineEmits(['closemodal','confirmed'])
+const Store = useStore()
+const transterId = ref("")
 const props = defineProps({
     statusName: { type: String }
-})
 
+})
+const statusData = ref([])
+
+function transfer() {
+    for (let i = 0; i < Store.statuss.length; i++) {
+        if (Store.statuss[i].statusName == props.statusName) {
+           statusData.value.push( Store.statuss[i])
+        }
+    }
+    console.log(statusData.value);
+}
+
+onMounted(()=> transfer())
 </script>
  
 <template>
-    <div class="fixed modal-box">
-        <h3 class="text-lg font-bold">Delete a status</h3>
-        <p class="border-b mt-2"></p>
-        <p class="itbkk-message py-4">Do you want to delete the status "{{ props.statusName }}"</p>
+    <div class="fixed modal-box z-40">
+        <h3 class="text-lg font-bold">Transter a Status</h3>
+        <p class="border-b mt-2"></p>{{ props.statusName , statusData.value }}
+        <p class="itbkk-message py-4"> There is some task asscociated with the Doing status.</p>
+        <p class="itbkk-message py-4"> Transfer to   
+            <select
+                        
+                        class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2"
+                    >
+                        <option
+                            v-for="(status ,index) in statusData.value"
+                            :key="index"
+                        >{{status.statusName}}
+                    </option>
+                    </select>
+        </p>
+       
         <div class="boxButton">        
             <button @click="emits('closemodal')" class="itbkk-button-cancel button buttonCancel">Cancel</button>
             <button @click="emits('confirmed')" class="itbkk-button-confirm button buttonConfirm">Confirm</button>
