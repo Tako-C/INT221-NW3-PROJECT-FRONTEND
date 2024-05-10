@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import { addStatus } from "@/libs/fetchs.js"
+import { addData } from "@/libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from '@/stores/store.js'
 import { validateTask } from '@/libs/varidateTask.js';
@@ -14,7 +14,9 @@ let statusData = ref({
 })
 
 function closeModal() {
-    router.push("/status/manage")
+    // router.push({name:StatusTable})
+    router.go(-1);
+
     clearData()
 }
 
@@ -22,7 +24,7 @@ function addtostore() {
     statusData.value.id = ID.value
     console.log(statusData.value);
     statusStore.statuss.push(statusData.value)
-    // statusStore.successAdd = true
+    statusStore.successAddStatus = true
     console.log(statusStore.statuss);
 }
 
@@ -35,7 +37,7 @@ async function save() {
         statusData.value.statusDescription = statusData.value.statusDescription.trim()
     }
             
-    let result = await addStatus("statuses",statusData.value)
+    let result = await addData(statusData.value,"statuses")
     ID.value = result.id
     addtostore()
     closeModal()

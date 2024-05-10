@@ -1,15 +1,15 @@
 <script setup>
 import { ref, onMounted, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { getData } from "../libs/fetchs.js"
-import { useStore } from "../stores/store.js"
-import { removeTaskById } from "@/libs/fetchs.js"
+import { useStore } from "@/stores/store.js"
+import { removeById,getData } from "@/libs/fetchs.js"
  
-import modalNotification from '../components/modals/modalNotification.vue'
-import modalconfirmed from '../components/modals/modalConfirmed.vue'
- 
-const taskStore = useStore()
+import modalNotification from '@/components/modals/modalNotification.vue'
+import modalconfirmed from '@/components/modals/modalConfirmed.vue'
+
+const Store = useStore()
 let taskData = ref([])
+let statusData = ref([])
 const router = useRouter()
 const route = useRoute()
 const optionsDropDownIndex = ref(null)
@@ -18,11 +18,15 @@ const successDelete = ref(false)
 const openConfirmed= ref(false)
 const taskTitle = ref("")
 const taskID = ref("")
- 
+
 async function fetchData() {
     taskData.value = await getData("tasks")
-    taskStore.tasks.push(...taskData.value)
-    // console.log(...taskStore.tasks)
+    Store.tasks.push(...taskData.value)
+    statusData.value = await getData("statuses")
+    Store.statuss.push(...statusData.value)
+    console.log(Store.tasks)
+    console.log(Store.statuss)
+    
 }
  
 function toggleDropDown(index) {
@@ -36,23 +40,24 @@ async function removeTask() {
     console.log(taskID.value);
     // const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
  
-        let result = await removeTaskById(taskID.value)
+        let result = await removeById("tasks",taskID.value)
         console.log("result",result)
         if (result.status === 404) {
             console.log("result :", result.status)
             errorDelete.value = true
         }
-        taskStore.tasks = taskStore.tasks.filter((task) => task.id !== taskID.value)
+        Store.tasks = Store.tasks.filter((task) => task.id !== taskID.value)
         successDelete.value = true
         console.log(successDelete.value);
                
 }
  
 function addModal() {
-    router.push(`/task/add`)
+    // router.push(`/task/add`)
+    router.push({ name: 'taskAdd'});
 }
 function switchToManage() {
-    router.push(`/status/manage`)
+    router.push(`/status`)
 }
  
 function editModal(taskId) {
@@ -60,17 +65,18 @@ function editModal(taskId) {
     optionsDropDownIndex.value = null
 }
 function openModal(taskId) {
-    router.push(`/task/${taskId}`)
+    // router.push(`/task/${taskId}`)
+    router.push({ name: 't', params: { id: taskId } });
+
     optionsDropDownIndex.value = null
 }
  
 function closeModalNotification() {
     errorDelete.value = false
     successDelete.value = false
-    taskStore.successUpdate =false
-    taskStore.errorUpdate = false
-    taskStore.errorUpdate = false
-    taskStore.successAdd = false
+    Store.successUpdateTask = false
+    Store.errorUpdateTask = false
+    Store.successAddTask = false
     openConfirmed.value = false
     taskTitle.value = ""
     taskID.value = ""
@@ -81,23 +87,23 @@ function openConfirmModal(id,title) {
     taskTitle.value = title
     taskID.value = id
 }
+function checkVariable() {
+    if (Store.successAddTask == true || Store.errorUpdateTask == true 
+    || Store.successUpdateTask == true || errorDelete.value === true 
+    || successDelete.value === true ) {
+        return true
+    }
+    return false 
+}
 onMounted(fetchData)
- 
-// ส่วนที่เกี่ยวข้องกับการแสดงmodal หลังจาก add remove update
-// watchEffect(() => {
-//     if (taskStore.successModalVisible === true) {
-//         setTimeout(() => {
-//             taskStore.successModalVisible = false
-//         }, 3000)
-//     }
-// })
+
 </script>
  
  
 <template>
     <modalNotification :errorDelete="errorDelete" :successDelete="successDelete"
      @closemodal="closeModalNotification()"
-     v-show="taskStore.successAdd === true || taskStore.errorUpdate === true || taskStore.successUpdate === true || errorDelete === true || successDelete === true"
+     v-show="checkVariable()"
      class="z-30"/>
     <modalconfirmed v-show="openConfirmed"
     :taskTitle="taskTitle"
@@ -114,6 +120,7 @@ onMounted(fetchData)
             <h1 class="text-3xl font-bold font-serif pl-[3%] titleShadow">
                 IT-Bangmod Kradan Kanban (ITB-KK)
             </h1>
+    
         </header>
  
         <!-- The button to open modal -->
@@ -136,12 +143,12 @@ onMounted(fetchData)
                 </thead>
                 <tbody class="text-base ">
                     <tr
-                        class="itbkk-item hover-table border-[1px] rounded-2xl"
+                    class="itbkk-item hover-table border-[1px] rounded-2xl"
                         v-show="taskStore.tasks.length > 0"
                         v-for="(task, index) in taskStore.tasks"
                         :key="index"
                     >
-                        <td @click="openModal(task.id)">{{ task.id }}</td>
+                        <td @click="openModal(task.id)">{{index+1}}</td>
                         <td @click="openModal(task.id)" class="itbkk-title">
                             {{ task.title }}
                         </td>
@@ -169,7 +176,6 @@ onMounted(fetchData)
                                     'text-green-400': task.statusName === 'Done'
                             }">
                             {{ task.statusName }}</p>
-                           
                         </td>
                         <td>
                             <div class="itbkk-button-action relative pl-[40%]">
@@ -208,7 +214,7 @@ onMounted(fetchData)
                         </td>
                     </tr>
                 </tbody>
-                <tbody v-show="taskStore.tasks.length === 0">
+                <tbody v-show="Store.tasks.length === 0">
                     <tr>
                         <td class="text-center" colspan="4">
                             Don't Have Task ??

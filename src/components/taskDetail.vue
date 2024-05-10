@@ -10,7 +10,13 @@ let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
- 
+
+const status = {
+  TO_DO: 'To Do',
+  NO_STATUS: 'No Status',
+  DONE: 'Done',
+  DOING: 'Doing',
+}
 //Option datetime
 const options = {
   year: 'numeric',
@@ -33,7 +39,7 @@ function convertToBrowserTimezone(utcTime) {
 async function fetchData() {
   try {
     taskData.value = await getData(`tasks/${route.params.id}`)
- 
+
     // เรียกใช้งานฟังก์ชันในการแปลงเวลา
     createTimeInBrowserTimezone = convertToBrowserTimezone(
       taskData.value.createdOn

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted,watch,watchEffect, onUpdated } from "vue"
-import { getData, editTask } from "../libs/fetchs.js"
+import { getData, editData } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "../stores/store.js"
 import { validateTask } from "../libs/varidateTask.js"
@@ -19,19 +19,22 @@ const originalTaskData = ref({
     assignees: "",
     statusName: "",
 })
- 
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
-const taskStore = useStore()
+const Store = useStore()
 const ID = ref(0)
 const isEdited = ref(false)
- 
- 
- 
+
+const status = {
+    TO_DO: "To Do",
+    NO_STATUS: "No Status",
+    DONE: "Done",
+    DOING: "Doing",
+}
+
 //Option datetime
 const options = {
     year: "numeric",
@@ -54,9 +57,7 @@ function convertToBrowserTimezone(utcTime) {
 async function fetchData() {
     try {
         taskData.value = await getData(`tasks/${route.params.id}`)
-        console.log(originalTaskData.value);
-        console.log(taskData.value);
- 
+
         // เรียกใช้งานฟังก์ชันในการแปลงเวลา
         createTimeInBrowserTimezone = convertToBrowserTimezone(
             taskData.value.createdOn
@@ -64,57 +65,48 @@ async function fetchData() {
         updateTimeInBrowserTimezone = convertToBrowserTimezone(
             taskData.value.updatedOn
         )
-        fetchHaveData.value = !fetchHaveData.value
         originalTaskData.value = { ...taskData.value }
     } catch (error) {
-        taskStore.errorUpdate = true
-        router.push("/task")
+        Store.errorUpdateTask = true
+        router.push({name: 'taskTable'})
     }
 }
  
 async function updateTask(taskId) {
     if (!validateTask(taskData.value)) {
-        return
+        return 
     }
-    //trim
-    taskData.value.title = taskData.value.title.trim();
-        if (taskData.value.description !== null) {
-            taskData.value.description = taskData.value.description.trim()
-        }if (taskData.value.assignees!==null) {
-            taskData.value.assignees = taskData.value.assignees.trim()
-        }
-    let result = await editTask(taskId, taskData.value)
+    
+    let result = await editData("tasks",taskId, taskData.value)
     ID.value = result.id
-    taskStore.successUpdate = true
+    Store.successUpdateTask = true
     addtostore()
     closeModal()
 }
  
 function addtostore() {
-    // ค้นหา index ของ taskStore.tasks ที่มี id เท่ากับ taskData.value.id
+    // ค้นหา index ของ Store.tasks ที่มี id เท่ากับ taskData.value.id
     let indexToUpdate = -1
-    for (let i = 0; i < taskStore.tasks.length; i++) {
-        if (taskStore.tasks[i].id === taskData.value.id) {
+    for (let i = 0; i < Store.tasks.length; i++) {
+        if (Store.tasks[i].id === taskData.value.id) {
             indexToUpdate = i
             break
         }
     }
     if (indexToUpdate !== -1) {
-        taskStore.tasks[indexToUpdate] = taskData.value
+        Store.tasks[indexToUpdate] = taskData.value
     } else {
-        taskStore.tasks.push(taskData.value)
+        Store.tasks.push(taskData.value)
     }
 }
  
 function closeModal() {
-    router.push("/task")
-    fetchHaveData.value = !fetchHaveData.value
+    router.push({name: 'taskTable'})
 }
  
 //เรียกใช้function fetchdata
 onMounted(fetchData)
- 
- 
+
 onUpdated(() => {
     if (
         originalTaskData.value.title !== taskData.value.title ||
@@ -127,7 +119,6 @@ onUpdated(() => {
         isEdited.value = false
     }
 })
- 
 </script>
 <template>
     <div
@@ -190,10 +181,10 @@ onUpdated(() => {
                         v-model="taskData.statusName"
                         class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2"
                     >
-                        <option>No Status</option>
-                        <option>To Do</option>
-                        <option>Doing</option>
-                        <option>Done</option>
+                        <option
+                        v-for="(status ,index) in Store.statuss"
+                        :key="index"
+                        >{{status.statusName}}</option>
                     </select>
  
                     <div class="font-bold pt-1">TimeZone</div>
