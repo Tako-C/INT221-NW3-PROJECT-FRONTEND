@@ -18,14 +18,11 @@ async function getData(path) {
   }
 }
 
-async function removeById(path,id) {
+async function removeById(path, id) {
   try {
-    const res = await fetch(
-      `${url}/v2/${path}/${id}`,
-      {
-        method: 'DELETE',
-      }
-    )
+    const res = await fetch(`${url}/v2/${path}/${id}`, {
+      method: 'DELETE',
+    })
     if (!res.ok) {
       if (res.status === 404) {
         // Handle 404 error
@@ -33,29 +30,25 @@ async function removeById(path,id) {
       } else {
         throw new Error('Failed to delete task')
       }
-    }   
+    }
     console.log('Task deleted successfully')
     return res
   } catch (error) {
-    console.error('Error deleting task:', error)  
+    console.error('Error deleting task:', error)
     throw error
   }
 }
 
-
-async function addData(data,path) {
+async function addData(data, path) {
   try {
-    const response = await fetch(
-      `${url}/v2/${path}`,
-      {
-        method: 'POST', // or 'PUT'
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    const response = await fetch(`${url}/v2/${path}`, {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
 
-        body: JSON.stringify(data),
-      }
-    )
+      body: JSON.stringify(data),
+    })
     console.log(data)
     const result = await response.json()
     console.log('Success:', result)
@@ -65,18 +58,15 @@ async function addData(data,path) {
   }
 }
 
-async function editData(path,taskId,data) {
+async function editData(path, taskId, data) {
   try {
-    const response = await fetch(
-      `${url}/v2/${path}/${taskId}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    )
+    const response = await fetch(`${url}/v2/${path}/${taskId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
 
     if (!response.ok) {
       const errorMessage = await response.text()
@@ -87,6 +77,27 @@ async function editData(path,taskId,data) {
     return result
   } catch (error) {
     console.error('Error:', error.message)
+    throw error
+  }
+}
+
+async function removeAndTransfer(path, removeId, transferId) {
+  try {
+    const res = await fetch(`${url}/v2/${path}/${removeId}/${transferId}`, {
+      method: 'DELETE',
+    })
+    if (!res.ok) {
+      if (res.status === 404) {
+        // Handle 404 error
+        return res
+      } else {
+        throw new Error('Failed to delete task')
+      }
+    }
+    console.log('Status removed and tasks transferred successfully')
+    return res
+  } catch (error) {
+    console.error('Error removing status and transferring tasks:', error)
     throw error
   }
 }
@@ -139,4 +150,4 @@ async function editData(path,taskId,data) {
 //   }
 // }
 
-export { getData, removeById, addData, editData }
+export { getData, removeById, addData, editData, removeAndTransfer }
