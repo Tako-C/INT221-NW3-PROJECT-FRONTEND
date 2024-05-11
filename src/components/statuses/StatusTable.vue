@@ -196,14 +196,14 @@ onMounted(fetchData);
       >
         <div>
           <span
-            ><a href="http://localhost:5173/task" class="text-blue-500"
+            ><a href="http://localhost:5173/task" class="itbkk-button-home text-blue-500"
               >Home</a
             ></span
           >
           > Status Manage
         </div>
         <div>
-          <button class="button-add mb-2" @click="addModal_Status()">
+          <button class="itbkk-button-add button-add mb-2" @click="addModal_Status()">
             Add Status
           </button>
         </div>
@@ -230,12 +230,12 @@ onMounted(fetchData);
             :key="index"
           >
             <td>{{ index + 1 }}</td>
-            <td class="itbkk-title">
+            <td class="itbkk-status-name">
               {{ status.statusName }}
             </td>
 
             <td>
-              <p class="itbkk-status rounded-2xl m-1 p-2">
+              <p class="itbkk-status-description rounded-2xl m-1 p-2">
                 {{ status.statusDescription }}
               </p>
             </td>
@@ -251,7 +251,7 @@ onMounted(fetchData);
                   v-if="optionsDropDownIndex === index"
                   class="absolute w-32 bg-white border rounded-lg shadow-lg z-10"
                 >
-                  <ul class="divide-y divide-gray-200">
+                  <ul class="itbkk-button-edit divide-y divide-gray-200">
                     <li>
                       <a
                         href="#"

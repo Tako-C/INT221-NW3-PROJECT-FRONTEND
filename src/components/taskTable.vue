@@ -127,7 +127,7 @@ onMounted(fetchData)
  
         <main class="flex flex-col pt-[8%] h-screen ml-[10%] mr-[10%]  hover:overflow-y-auto overflow-hidden">
             <div class="flex mt-2 ml-10 mb-3 text-xl font-serif font-bold justify-end">
-                <button class="button-manage" @click="switchToManage()">Status Manage</button>
+                <button class="itbkk-manage-status button-manage" @click="switchToManage()">Status Manage</button>
                 <button class="button-add" @click="addModal()">Add Task</button>
             </div>
             <!-- <div class="mt-2 ml-10 mb-3 text-xl font-serif font-bold text-right"><span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > task table</div> -->

@@ -78,12 +78,12 @@ function clearData() {
             <p class="border-b mt-2"></p>
             </div>
 
-            <div class="mt-3 ml-7">
+            <div class="itbkk-modal-status mt-3 ml-7">
 
-                    <div class="font-bold">Name</div>
+                    <div class="itbkk-status-name font-bold">Name</div>
                     <input v-model="statusData.statusName" class="itbkk-title w-[90%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
 
-                    <div class="font-bold">Description</div>
+                    <div class="itbkk-status-description font-bold">Description</div>
                     <textarea v-model="statusData.statusDescription" class="itbkk-description w-[90%] h-44 resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
 
             </div>

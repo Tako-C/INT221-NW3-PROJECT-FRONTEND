@@ -130,7 +130,7 @@ if (
                 
                 <div>
 
-                    <p class="font-bold">Name</p>
+                    <p class="itbkk-status-name font-bold">Name</p>
                     
                     <textarea
                         v-model="statusData.statusName"
@@ -140,7 +140,7 @@ if (
                     >
    
 
-                    <p class="font-bold mt-2">Description</p>
+                    <p class="itbkk-status-description font-bold mt-2">Description</p>
                     
                     <textarea
                         class="itbkk-description border-2 w-[90%] h-44 resize-none italic pl-2 bg-gray-400 bg-opacity-15 rounded-lg"
@@ -154,10 +154,10 @@ if (
                 </div>
             
             </div>
-            <div class="boxButton m-3">
+            <div class="itbkk-modal-status boxButton m-3">
                 <button
                     type="submit"
-                    class="itbkk-button button buttonClose btn"
+                    class="itbkk-button-cancel button buttonClose btn"
                     @click="closeModal()"
                 >
                     Close
@@ -165,7 +165,7 @@ if (
 
                 <button
                     type="submit"
-                    class="itbkk-button button buttonOK btn"
+                    class="itbkk-button-confirm button buttonOK btn"
                     @click="
                         updateStatus(route.params.id, {
                             Name: statusData.statusName,
