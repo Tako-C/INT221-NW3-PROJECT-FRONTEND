@@ -6,7 +6,7 @@ import { useStore } from '@/stores/store.js'
 import { validateTask } from '@/libs/varidateTask.js';
 const route = useRoute()
 const router = useRouter()
-const statusStore = useStore()
+const Store = useStore()
 const ID = ref(0)
 let statusData = ref({
     statusName: '',
@@ -14,8 +14,8 @@ let statusData = ref({
 })
 
 function closeModal() {
-    // router.push({name:StatusTable})
-    router.go(-1);
+    router.push({name: 'StatusTable'})
+    // router.go(-1);
 
     clearData()
 }
@@ -23,24 +23,28 @@ function closeModal() {
 function addtostore() {
     statusData.value.id = ID.value
     console.log(statusData.value);
-    statusStore.statuss.push(statusData.value)
-    statusStore.successAddStatus = true
-    console.log(statusStore.statuss);
+    Store.statuss.push(statusData.value)
+    Store.successAddStatus = true
+    console.log(Store.statuss);
 }
 
 
 async function save() {
-    // if (!validateTask(statusData.value)) {
-    //     return; // Stop execution if validation fails
-    // }
-    if(statusData.value.statusDescription.length !== 0 ) {
-        statusData.value.statusDescription = statusData.value.statusDescription.trim()
-    }
+    let checkStatusName = Store.statuss.filter((status) => status.statusName === statusData.value.statusName)
+        if(checkStatusName.length === 1){
+            window.alert("An error has occurred, the status could not be added.")
             
-    let result = await addData(statusData.value,"statuses")
-    ID.value = result.id
-    addtostore()
-    closeModal()
+        }else{
+            if(statusData.value.statusDescription.length !== 0 ) {
+            statusData.value.statusDescription = statusData.value.statusDescription.trim()
+
+            
+            let result = await addData(statusData.value,"statuses")
+            ID.value = result.id
+            addtostore()
+            closeModal()
+            }
+    }
 }
 
 

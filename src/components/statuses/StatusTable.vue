@@ -1,125 +1,141 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useStore } from '@/stores/store.js'
-import { removeById, getData, removeAndTransfer } from '@/libs/fetchs.js'
+import { ref, onMounted, watchEffect } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "@/stores/store.js";
+import { removeById, getData, removeAndTransfer } from "@/libs/fetchs.js";
 
-import modalNotification from '@/components/modals/modalNotification.vue'
-import modalstatusDelete from '@/components/statuses/statusDelete.vue'
-import modalTransfer from '@/components/modals/modalTransfer.vue'
+import modalNotification from "@/components/modals/modalNotification.vue";
+import modalstatusDelete from "@/components/statuses/statusDelete.vue";
+import modalTransfer from "@/components/modals/modalTransfer.vue";
 
-const Store = useStore()
-let statusData = ref([])
-const router = useRouter()
-const optionsDropDownIndex = ref(null)
-const successDeleteStatus = ref(false)
-const openConfirmed = ref(false)
-const statusNameDelete = ref('')
-const statusID = ref('')
-const taskData = ref([])
-const transferModal = ref(false)
-console.log(Store.tasks)
-console.log(Store.statuss)
+const route = useRoute();
+const Store = useStore();
+let statusData = ref([]);
+const router = useRouter();
+const optionsDropDownIndex = ref(null);
+const successDeleteStatus = ref(false);
+const openConfirmed = ref(false);
+const statusNameDelete = ref("");
+const statusID = ref("");
+const taskData = ref([]);
+const transferModal = ref(false);
+const errorDeleteStatus = ref(false);
+console.log(Store.tasks);
+console.log(Store.statuss);
 
 async function fetchData() {
   if (Store.tasks.length === 0 || Store.statuss.length === 0) {
-    taskData.value = await getData('tasks')
-    Store.tasks.push(...taskData.value)
-    statusData.value = await getData('statuses')
-    Store.statuss.push(...statusData.value)
-    console.log(Store.tasks)
-    console.log(Store.statuss)
+    taskData.value = await getData("tasks");
+    Store.tasks.push(...taskData.value);
+    statusData.value = await getData("statuses");
+    Store.statuss.push(...statusData.value);
+    console.log(Store.tasks);
+    console.log(Store.statuss);
   }
 }
 
 function toggleDropDown(index) {
   optionsDropDownIndex.value =
-    optionsDropDownIndex.value === index ? null : index
+    optionsDropDownIndex.value === index ? null : index;
 }
 
-async function removeTask() {
-  optionsDropDownIndex.value = null
-  openConfirmed.value = false
-  console.log(statusID.value)
+async function removeStatus() {
+  optionsDropDownIndex.value = null;
+  openConfirmed.value = false;
+  console.log(statusID.value);
 
-  console.log(Store.tasks)
+  console.log(Store.tasks);
   const checkTaskUseStatus = Store.tasks.filter(
     (task) => task.statusName == statusNameDelete.value
-  )
-  console.warn(checkTaskUseStatus.length)
+  );
+  console.warn(checkTaskUseStatus.length);
+  
   if (checkTaskUseStatus.length == 0) {
     Store.statuss = Store.statuss.filter(
       (status) => status.id !== statusID.value
-    )
-    window.alert('OK')
-    let result = await removeById('statuses', statusID.value)
-    console.log('result', result)
+    );
+    let result = await removeById("statuses", statusID.value);
+    console.log("result", result);
     if (result.status === 404) {
-      console.log('result :', result.status)
-      // errorDelete.value = true
+      console.log("result :", result.status);
+      errorDeleteStatus.value = true;
     }
+    else{
+        successDeleteStatus.value = true;
+        console.log(successDeleteStatus.value);
+    }
+    
   } else {
     // window.alert("Have task is use status")
-    transferModal.value = true
+    transferModal.value = true;
+
   }
-  openConfirmed.value = false
-  // successDeleteStatus.value = true
-  console.log(successDeleteStatus.value)
+  
+  openConfirmed.value = false;
+  
 }
 
 async function removeStatusTransfer(data) {
-  const { removeStatus, transferStatus } = data
+  const { removeStatus, transferStatus } = data;
   // หา id จาก statusname ที่รับมา
   const removeStatusId = Store.statuss.find(
     (status) => status.statusName === removeStatus
-  ).id
+  ).id;
   const transferStatusId = Store.statuss.find(
     (status) => status.statusName === transferStatus
-  ).id
+  ).id;
 
   let removedStatus = await removeAndTransfer(
-    'statuses',
+    "statuses",
     removeStatusId,
     transferStatusId
-  )
+  );
   const tasksToTransfer = Store.tasks.filter(
     (task) => task.statusName === removeStatus
-  )
+  );
   if (tasksToTransfer.length > 0) {
     for (const task of tasksToTransfer) {
-      task.statusName = transferStatusId
+      task.statusName = transferStatusId;
     }
     // console.log('Tasks status transferred successfully.')
   }
   // not good na
-  Store.statuss = Store.statuss.filter((status) => status.id !== removeStatusId)
-  transferModal.value = false
+  Store.statuss = Store.statuss.filter(
+    (status) => status.id !== removeStatusId
+  );
+  transferModal.value = false;
 }
 
 function addModal_Status() {
-  router.push({ name: 'StatusAdd' })
+  router.push({ name: "StatusAdd" });
 }
 
 function editModal_Status(status_Id) {
-  router.push(`/status/${status_Id}/edit`)
-  optionsDropDownIndex.value = null
+  router.push(`/status/${status_Id}/edit`);
+  optionsDropDownIndex.value = null;
 }
 
 function closeModalNotification() {
-  Store.successAddStatus = false
-  Store.successUpdateStatus = false
-  Store.errorUpdateStatus = false
-  openConfirmed.value = false
-  transferModal.value = false
-  statusNameDelete.value = ''
-  statusID.value = ''
+  Store.successAddStatus = false;
+  Store.successUpdateStatus = false;
+  Store.errorUpdateStatus = false;
+  openConfirmed.value = false;
+  transferModal.value = false;
+  successDeleteStatus.value = false;
+  errorDeleteStatus.value = false;
+  statusNameDelete.value = "";
+  statusID.value = "";
 }
 
 function openConfirmModal(id, name) {
-  openConfirmed.value = true
-  statusNameDelete.value = name
-  console.log(statusNameDelete)
-  statusID.value = id
+  if (name === "No Status") {
+    window.alert("You can not delete this Status.");
+  } else {
+    openConfirmed.value = true;
+    statusNameDelete.value = name;
+    console.log(statusNameDelete);
+    statusID.value = id;
+  }
 }
 
 function checkVariable() {
@@ -127,17 +143,21 @@ function checkVariable() {
     Store.successAddStatus == true ||
     Store.successUpdateStatus == true ||
     Store.errorUpdateStatus == true ||
-    successDeleteStatus.value === true
+    successDeleteStatus.value === true ||
+    errorDeleteStatus.value === true 
   ) {
-    return true
+    return true;
   }
-  return false
+  return false;
 }
-onMounted(fetchData)
+
+onMounted(fetchData);
 </script>
 
 <template>
   <modalNotification
+    :successDeleteStatus="successDeleteStatus"
+    :errorDeleteStatus="errorDeleteStatus"
     @closemodal="closeModalNotification()"
     v-show="checkVariable()"
     class="z-30"
@@ -146,14 +166,14 @@ onMounted(fetchData)
     v-show="openConfirmed"
     :statusName="statusNameDelete"
     @closemodal="closeModalNotification()"
-    @confirmed="removeTask()"
+    @confirmed="removeStatus()"
     class="z-40"
   />
   <modalTransfer
     :statusName="statusNameDelete"
     v-show="transferModal"
     @closemodal="closeModalNotification()"
-    @confirmed="removeStatusTransfer($event)"
+    @confirmed="removeStatusTransfer($event),successDeleteStatus = true"
   ></modalTransfer>
 
   <div class="class name : itbkk- bg-white w-screen h-screen">
@@ -323,7 +343,7 @@ onMounted(fetchData)
 }
 
 .button-add::after {
-  content: '+';
+  content: "+";
   position: absolute;
   opacity: 0;
   top: 10px;

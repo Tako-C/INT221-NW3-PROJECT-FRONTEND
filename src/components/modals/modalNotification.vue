@@ -7,6 +7,8 @@ const emits = defineEmits(['closemodal'])
 const props = defineProps({
     errorDelete: { type: Boolean},
     successDelete: { type: Boolean},
+    successDeleteStatus: {type: Boolean},
+    errorDeleteStatus: {type: Boolean}
 })
 const Store = useStore()
 const message = ref({ header: "", detail: "" })
@@ -18,6 +20,8 @@ let successDelete = ref(props.successDelete)
 let successAddStatus = ref(Store.successAddStatus)
 let successUpdateStatus = ref(Store.successUpdateStatus)
 let errorUpdateStatus = ref(Store.errorUpdateStatus)
+let successDeleteStatus = ref(props.successDeleteStatus)
+let errorDeleteStatus = ref(props.errorDeleteStatus)
 // watchEffect(() => {
 //     errorDelete.value = props.errorDelete;
 //     successDelete.value = props.successDelete;
@@ -34,6 +38,8 @@ watchEffect(() => {
     successAddStatus.value = Store.successAddStatus
     successUpdateStatus.value = Store.successUpdateStatus
     errorUpdateStatus.value = Store.errorUpdateStatus
+    successDeleteStatus.value = props.successDeleteStatus
+    errorDeleteStatus.value = props.errorDeleteStatus
     checkEvent();
 });
 
@@ -67,8 +73,16 @@ function checkEvent() {
     }
     else if (errorUpdateStatus.value) {
         message.value.header = "Error!"
-        message.value.detail = "“An error has occurred, the status does not exist."
-}
+        message.value.detail = "An error has occurred, the status does not exist."
+    }
+    else if(successDeleteStatus.value){
+        message.value.header = "Success"
+        message.value.detail = "The status has been deleted."
+    }
+    else if(errorDeleteStatus.value){
+        message.value.header = "Error!"
+        message.value.detail = "An error has occurred, the status does not exist."
+    }
 }
 
 // เรียกใช้งานฟังก์ชัน checkEvent เมื่อคอมโพเนนต์ถูกอัพเดต

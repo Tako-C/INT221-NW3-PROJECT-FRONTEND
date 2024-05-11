@@ -25,7 +25,7 @@ const isEdited = ref(false)
 
 console.log(route.params.id)
     if(route.params.id == 1){
-        window.alert("Harm naja")
+        window.alert("You can not edit this Status.")
         router.push({name: 'StatusTable'})
 
     } 
@@ -47,6 +47,10 @@ async function updateStatus(statusId) {
     // }
   
     //trim
+    if(statusData.value.statusName.length === 0){
+        window.alert("Information Empty Naja.")
+        isEdited.value = false
+    }
     if(statusData.value.statusDescription.length !== 0 ) {
         statusData.value.statusDescription = statusData.value.statusDescription.trim()
     }

@@ -21,9 +21,10 @@ export const useStore = defineStore('task', () => {
   const statuss = []
   const successAddTask = false
   const successUpdateTask = false
-  const  errorUpdateTask = false
+  const errorUpdateTask = false
   const successUpdateStatus = false
   const successAddStatus = false
   const errorUpdateStatus = false
+
   return { tasks, statuss, successAddStatus, successAddTask, successUpdateTask, successUpdateStatus, errorUpdateStatus, errorUpdateTask}
   })

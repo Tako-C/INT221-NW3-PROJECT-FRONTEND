@@ -7,6 +7,7 @@ const props = defineProps({
     statusName: { type: String }
 })
 
+
 </script>
  
 <template>

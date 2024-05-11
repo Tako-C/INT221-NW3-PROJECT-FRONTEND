@@ -10,6 +10,7 @@ const props = defineProps({
 const statusData = ref([])
 const transferStatus = ref(null)
 
+
 watchEffect(() => {
   statusData.value = [...Store.statuss]
   if (
