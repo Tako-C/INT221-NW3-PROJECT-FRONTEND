@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { getData } from '../libs/fetchs.js'
 import { useRoute, useRouter } from 'vue-router'
+
  
 let taskData = ref([])
 let createTimeInBrowserTimezone = ref(null)
@@ -65,6 +66,7 @@ function closeModal() {
 onMounted(fetchData)
 </script>
 <template>
+  
   <div
     v-show="fetchHaveData"
     class="class name : itbkk-* fixed w-screen h-screen z-10 top-0 left-0 flex justify-center items-center"
@@ -74,9 +76,9 @@ onMounted(fetchData)
       @click="closeModal()"
     ></div>
     <div
-      class="fixed bg-[#f0ede6] w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
+      class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
     >
-      <div class="bg-gradient-to-b from-[#628765] rounded-2xl">
+      <div class="rounded-t-2xl">
         <h1 class="itbkk-title break-words w-[79%]">
           {{ taskData.title }}
         </h1>
@@ -156,6 +158,7 @@ onMounted(fetchData)
   </div>
 </template>
 <style scoped>
+
 .boxButton {
   display: flex;
   justify-content: flex-end;
@@ -213,10 +216,11 @@ onMounted(fetchData)
 h1 {
   color: black;
   font-size: 32px;
-  font-weight: 900;
+  font-weight: 600;
   margin-top: 15px;
   margin-left: 25px;
   font-family: sans-serif;
+  
 }
  
 .modal {

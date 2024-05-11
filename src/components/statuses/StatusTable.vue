@@ -123,35 +123,43 @@ onMounted(fetchData)
     />
     <modalTransfer :statusName="statusNameDelete" v-show="transferModal"></modalTransfer>
 
-    <div class="class name : itbkk- bg-gradient-to-b from-[#fff2d3] from-40% to-pink-500 w-screen h-screen">
+    <div class="class name : itbkk- bg-white w-screen h-screen">
         <header
             name="header"
-            class="fixed top-0 z-10 w-screen bg-[#628765] flex justify-center items-center h-20 text-24 text-white"
+            class="fixed top-0 z-10 w-screen bg-[#797979] flex justify-center items-center h-20 text-24 text-white"
         >
-            <h1 class="text-3xl font-bold font-serif">
+            <h1 class="text-3xl font-bold font-serif pl-[3%] titleShadow">
                 IT-Bangmod Kradan Kanban (ITB-KK)
             </h1>
+    
         </header>
 
         <!-- The button to open modal -->
 
-        <main class="flex flex-col pt-[8%] h-screen pl-[20%] pr-[20%] hover:overflow-y-auto overflow-hidden">
-            <div class="mt-2 ml-10 mb-3 text-xl font-serif font-bold"><span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > Status Manage</div>
-            <table class="table w-auto bg-white mb-28">
-                <thead class="text-xl font-serif h-20">
+        <main class="flex flex-col pt-[7%] h-screen pl-[20%] pr-[20%] hover:overflow-y-auto overflow-hidden">
+            <div class="flex text-2xl font-serif font-bold justify-between items-center">
+                <div>
+                    <span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > Status Manage
+                </div>
+                <div>
+                    <button class="button-add mb-2" @click="addModal_Status()">Add Task</button>
+                </div>
+            </div>
+            <table class="table table-zebra w-auto bg-white mt-2 mb-28">
+                <thead class="bg-[#818080] text-white font-serif h-20 text-2xl titleShadow">
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Description</th>
                         <th>Action</th>
-                        <div class="itbkk-button-add add-Button h-16 flex items-center justify-center">
+                        <!-- <div class="itbkk-button-add add-Button h-16 flex items-center justify-center">
                             <img class="itbkk-button-add add-Button" src="@/assets/plus.svg" @click="addModal_Status()" />
-                        </div>
+                        </div> -->
                     </tr>
                 </thead>
                 <tbody class="text-base ">
                     <tr
-                        class="itbkk-item hover-table"
+                        class="itbkk-item hover-table border-[1px] rounded-2xl"
                         v-show="Store.statuss.length > 0"
                         v-for="(status, index) in Store.statuss"
                         :key="index"
@@ -218,6 +226,12 @@ onMounted(fetchData)
 </template>
 
 <style scoped>
+.home-link {
+
+}
+.titleShadow {
+    text-shadow: 5px 5px 3px black;
+}
 .hover-font-table {
     opacity: 30%;
     
@@ -234,7 +248,7 @@ onMounted(fetchData)
     transition: 0.3s;
 }
 
-.add-Button {
+/* .add-Button {
     opacity: 30%;
     width: 40px;
     margin-top: 5px;
@@ -244,34 +258,45 @@ onMounted(fetchData)
 
     &:hover {
         /* background-color: #cc2e5d; */
-        opacity: 100%;
+        /* opacity: 100%;
         transition: 0.5s;
-    }
+    } */
+/* } */
+
+
+.button-add {
+  border-radius: 4px;
+  background-color: black;
+  border: none;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
+  padding: 10px;
+  width: 150px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin-right: 5px;
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0,.7);
+  position: relative;
 }
 
-.button {
-    appearance: none;
-    outline: none;
-    border: none;
-    background: none;
-    cursor: pointer;
+.button-add:hover {
+  padding-right: 24px;
+  padding-left: 8px;
+}
 
-    display: inline-block;
-    padding: 15px 25px;
-    background-image: linear-gradient(to right, #cc2e5d, #ff5858);
-    border-radius: 8px;
+.button-add::after {
+  content: '+';
+  position: absolute;
+  opacity: 0;
+  top: 10px;
+  right: -20px;
+  transition: 0.5s;
+}
 
-    color: #fff;
-    font-size: 15px;
-    font-weight: 700;
-
-    box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
-    transition: 0.4s ease-out;
-
-    &:hover {
-        background-image: linear-gradient(to top, #008000, #5863ff);
-        box-shadow: 6px 6px rgba(253, 5, 199, 0.6);
-    }
+.button-add:hover::after {
+  opacity: 1;
+  right: 10px;
 }
 .div-class-name {
     height: 50vh;

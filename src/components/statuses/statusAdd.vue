@@ -64,9 +64,9 @@ function clearData() {
         >
         </div>
         <div
-            class="fixed bg-[#f0ede6] w-[35%] h-auto indicator flex flex-col rounded-2xl"
+            class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl shadow-white shadow-2xl "
         >
-            <div class="bg-gradient-to-b from-[#628765] rounded-2xl ">
+            <div class=" rounded-2xl ">
                 <h1 class="itbkk-title break-words w-[79%]">
                     <span class="font-serif text-[100%]">Add </span><span class="text-[70%] opacity-[60%] font-serif">New Status</span>
                     <!-- {{ statusData.title }} -->
@@ -74,13 +74,13 @@ function clearData() {
             <p class="border-b mt-2"></p>
             </div>
 
-            <div class="mt-3 mb-20 ml-7">
+            <div class="mt-3 ml-7">
 
                     <div class="font-bold">Name</div>
-                    <input v-model="statusData.statusName" class="itbkk-title w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
+                    <input v-model="statusData.statusName" class="itbkk-title w-[90%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
 
                     <div class="font-bold">Description</div>
-                    <textarea v-model="statusData.statusDescription" class="itbkk-description w-[80%] h-[80%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
+                    <textarea v-model="statusData.statusDescription" class="itbkk-description w-[90%] h-44 resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
 
             </div>
 
@@ -110,7 +110,7 @@ function clearData() {
 .boxButton {
     display: flex;
     justify-content: flex-end;
-    margin-top: auto;
+    margin-top: 70px;
     margin-right: 25px;
 }
 .button {

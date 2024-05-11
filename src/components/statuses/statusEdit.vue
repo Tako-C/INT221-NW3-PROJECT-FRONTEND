@@ -113,18 +113,18 @@ if (
             @click="closeModal()"
         ></div>
         <div
-            class="fixed bg-[#f0ede6] w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
+            class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
         >
-        <div class="bg-gradient-to-b from-[#628765] rounded-2xl ">
+        <div class=" rounded-2xl ">
                 <h1 class="itbkk-title break-words w-[79%]">
                     <span class="font-serif text-[100%]">Edit </span><span class="text-[70%] opacity-[60%] font-serif">Status</span>
                 </h1>
             <p class="border-b mt-2"></p>
         </div>
 
-            <div class="flex mt-3 mb-20 ml-7">
+            <div class="mt-3 ml-7">
                 
-                <div class="w-1/2">
+                <div>
 
                     <p class="font-bold">Name</p>
                     
@@ -139,7 +139,7 @@ if (
                     <p class="font-bold mt-2">Description</p>
                     
                     <textarea
-                        class="itbkk-description border-2 w-[90%] h-[105%] resize-none italic bg-gray-400 bg-opacity-15 rounded-lg"
+                        class="itbkk-description border-2 w-[90%] h-44 resize-none italic pl-2 bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
                         v-model="statusData.statusDescription"
                         :placeholder="statusData.statusDescription ? '' : 'No Description Provided'"
