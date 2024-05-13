@@ -8,7 +8,8 @@ import statusAdd from '@/components/statuses/statusAdd.vue'
 import statusEdit from '@/components/statuses/statusEdit.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  // history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory("/nw3/"),
   routes: [
     {
       path: '/task',

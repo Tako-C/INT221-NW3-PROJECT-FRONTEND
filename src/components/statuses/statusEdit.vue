@@ -124,30 +124,26 @@ if (
             class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
         >
         <div class=" rounded-2xl ">
-                <h1 class="itbkk-title break-words w-[79%]">
-                    <span class="font-serif text-[100%]">Edit </span><span class="text-[70%] opacity-[60%] font-serif">Status</span>
+                <h1 class=" break-words w-[79%]">
+                    <span class="font-serif text-[100%]">Edit </span>
+                    <span class="text-[70%] opacity-[60%] font-serif">Status</span>
                 </h1>
             <p class="border-b mt-2"></p>
         </div>
-
-            <div class="mt-3 ml-7">
-                
+            <div class=" itbkk-modal-status mt-3 ml-7">                
                 <div>
-
                     <p class="itbkk-status-name font-bold">Name</p>
                     
                     <textarea
                         v-model="statusData.name"
                         v-if="statusData.name !== null"
-                        class="itbkk-title text-black w-[90%] h-auto resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2 overflow-hidden hover:overflow-y-scroll "
+                        class=" itbkk-status-name text-black w-[90%] h-auto resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2 overflow-hidden hover:overflow-y-scroll "
                         >{{ statusData.name }} </textarea
                     >
-   
-
-                    <p class="itbkk-status-description font-bold mt-2">Description</p>
+                    <p class="font-bold mt-2">Description</p>
                     
                     <textarea
-                        class="itbkk-description border-2 w-[90%] h-44 resize-none italic pl-2 bg-gray-400 bg-opacity-15 rounded-lg"
+                        class=" itbkk-status-description border-2 w-[90%] h-44 resize-none italic pl-2 bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
                         v-model="statusData.description"
                         :placeholder="statusData.description ? '' : 'No Description Provided'"
@@ -158,7 +154,7 @@ if (
                 </div>
             
             </div>
-            <div class="itbkk-modal-status boxButton m-3">
+            <div class=" boxButton m-3">
                 <button
                     type="submit"
                     class="itbkk-button-cancel button buttonClose btn"
