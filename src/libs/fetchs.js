@@ -1,8 +1,11 @@
+// Path URL
+const url = import.meta.env.VITE_BASE_URL
+
 // GetData
-async function getTask(path) {
+async function getData(path) {
   try {
-    // const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v1/${path}`)
-    const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v1/${path}`)
+    // const res = await fetch(`http://ip23nw3.sit.kmutt.ac.th:8080/v2/${path}`)
+    const res = await fetch(`${url}/v2/${path}`)
 
     if (!res.ok) {
       throw new Error('Failed to fetch data')
@@ -15,10 +18,10 @@ async function getTask(path) {
   }
 }
 
-async function removeTaskById(id) {
+async function removeById(path,id) {
   try {
     const res = await fetch(
-      `http://ip23nw3.sit.kmutt.ac.th:8080/v1/tasks/${id}`,
+      `${url}/v2/${path}/${id}`,
       {
         method: 'DELETE',
       }
@@ -40,10 +43,10 @@ async function removeTaskById(id) {
 }
 
 
-async function addTask(data,path) {
+async function addData(data,path) {
   try {
     const response = await fetch(
-      `http://ip23nw3.sit.kmutt.ac.th:8080/v1/${path}`,
+      `${url}/v2/${path}`,
       {
         method: 'POST', // or 'PUT'
         headers: {
@@ -62,10 +65,10 @@ async function addTask(data,path) {
   }
 }
 
-async function editTask(taskId, data) {
+async function editData(path,taskId,data) {
   try {
     const response = await fetch(
-      `http://ip23nw3.sit.kmutt.ac.th:8080/v1/tasks/${taskId}`,
+      `${url}/v2/${path}/${taskId}`,
       {
         method: 'PUT',
         headers: {
@@ -88,4 +91,52 @@ async function editTask(taskId, data) {
   }
 }
 
-export { getTask, removeTaskById, addTask, editTask }
+// async function editStatus(status_ID, data) {
+//   try {
+//     const response = await fetch(
+//       `${url}/v2/statuses/${status_ID}`,
+//       {
+//         method: 'PUT',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(data),
+//       }
+//     )
+
+//     if (!response.ok) {
+//       const errorMessage = await response.text()
+//       throw new Error(errorMessage)
+//     }
+//     const result = await response.json()
+//     console.log('Success:', result)
+//     return result
+//   } catch (error) {
+//     console.error('Error:', error.message)
+//     throw error
+//   }
+// }
+
+// async function addStatus(path, data) {
+//   try {
+//     const response = await fetch(
+//       `${url}/v2/${path}`,
+//       {
+//         method: 'POST', // or 'PUT'
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+
+//         body: JSON.stringify(data),
+//       }
+//     )
+//     console.log(data)
+//     const result = await response.json()
+//     console.log('Success:', result)
+//     return result
+//   } catch (error) {
+//     console.error('Error:', error)
+//   }
+// }
+
+export { getData, removeById, addData, editData }
