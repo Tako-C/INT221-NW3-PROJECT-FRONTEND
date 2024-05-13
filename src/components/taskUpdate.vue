@@ -129,9 +129,9 @@ onUpdated(() => {
             @click="closeModal()"
         ></div>
         <div
-            class="fixed bg-[#f0ede6] w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
+            class="fixed bg-white w-[55%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
         >
-        <div class="bg-gradient-to-b from-[#628765] rounded-2xl ">
+        <div class="rounded-2xl ">
                 <h1 class="itbkk-title break-words w-[79%]">
                     <span class="font-serif text-[100%]">Edit </span><span class="text-[70%] opacity-[60%] font-serif">Task</span>
                 </h1>
@@ -184,7 +184,7 @@ onUpdated(() => {
                         <option
                         v-for="(status ,index) in Store.statuss"
                         :key="index"
-                        >{{status.statusName}}</option>
+                        >{{status.name}}</option>
                     </select>
  
                     <div class="font-bold pt-1">TimeZone</div>

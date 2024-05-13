@@ -6,16 +6,16 @@ import { useStore } from '@/stores/store.js'
 import { validateTask } from '@/libs/varidateTask.js';
 const route = useRoute()
 const router = useRouter()
-const statusStore = useStore()
+const Store = useStore()
 const ID = ref(0)
 let statusData = ref({
-    statusName: '',
-    statusDescription: '',
+    name: '',
+    description: '',
 })
 
 function closeModal() {
-    // router.push({name:StatusTable})
-    router.go(-1);
+    router.push({name: 'StatusTable'})
+    // router.go(-1);
 
     clearData()
 }
@@ -23,32 +23,38 @@ function closeModal() {
 function addtostore() {
     statusData.value.id = ID.value
     console.log(statusData.value);
-    statusStore.statuss.push(statusData.value)
-    statusStore.successAddStatus = true
-    console.log(statusStore.statuss);
+    Store.statuss.push(statusData.value)
+    Store.successAddStatus = true
+    console.log(Store.statuss);
 }
 
 
 async function save() {
-    // if (!validateTask(statusData.value)) {
-    //     return; // Stop execution if validation fails
-    // }
-    if(statusData.value.statusDescription.length !== 0 ) {
-        statusData.value.statusDescription = statusData.value.statusDescription.trim()
+    let checkStatusName = Store.statuss.filter((status) => status.name === statusData.value.name)
+        if(checkStatusName.length === 1){
+            window.alert("An error has occurred, the status could not be added.")
+        }  
+        else if (statusData.value.description.length == 0) {
+            window.alert("An error description is empty.")
+        }   
+        else{
+            if(statusData.value.description.length !== 0 && statusData.value.name !== null) {
+                statusData.value.name = statusData.value.name.trim()
+                statusData.value.description = statusData.value.description.trim()      
+            let result = await addData(statusData.value,"statuses")
+            ID.value = result.id
+            addtostore()
+            closeModal()
+            }            
     }
-            
-    let result = await addData(statusData.value,"statuses")
-    ID.value = result.id
-    addtostore()
-    closeModal()
 }
 
 
 
 function clearData() {
     statusData.value = {
-        statusName: '',
-        statusDescription: ''
+        name: '',
+        description: ''
     }
 }
 
@@ -64,9 +70,9 @@ function clearData() {
         >
         </div>
         <div
-            class="fixed bg-[#f0ede6] w-[35%] h-auto indicator flex flex-col rounded-2xl"
+            class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl shadow-white shadow-2xl "
         >
-            <div class="bg-gradient-to-b from-[#628765] rounded-2xl ">
+            <div class=" rounded-2xl ">
                 <h1 class="itbkk-title break-words w-[79%]">
                     <span class="font-serif text-[100%]">Add </span><span class="text-[70%] opacity-[60%] font-serif">New Status</span>
                     <!-- {{ statusData.title }} -->
@@ -74,13 +80,13 @@ function clearData() {
             <p class="border-b mt-2"></p>
             </div>
 
-            <div class="mt-3 mb-20 ml-7">
+            <div class="itbkk-modal-status mt-3 ml-7">
 
-                    <div class="font-bold">Name</div>
-                    <input v-model="statusData.statusName" class="itbkk-title w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
+                    <div class="itbkk-status-name font-bold">Name</div>
+                    <input v-model="statusData.name" class="itbkk-title w-[90%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
 
-                    <div class="font-bold">Description</div>
-                    <textarea v-model="statusData.statusDescription" class="itbkk-description w-[80%] h-[80%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
+                    <div class="itbkk-status-description font-bold">Description</div>
+                    <textarea v-model="statusData.description" class="itbkk-description w-[90%] h-44 resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
 
             </div>
 
@@ -97,7 +103,7 @@ function clearData() {
                         type="submit"
                         class="itbkk-button-confirm button buttonOK btn"
                         @click="save()"
-                        :disabled="statusData.statusName.length === 0">
+                        :disabled="statusData.name.length === 0">
                         
                     Add
                     </button>
@@ -110,7 +116,7 @@ function clearData() {
 .boxButton {
     display: flex;
     justify-content: flex-end;
-    margin-top: auto;
+    margin-top: 70px;
     margin-right: 25px;
 }
 .button {

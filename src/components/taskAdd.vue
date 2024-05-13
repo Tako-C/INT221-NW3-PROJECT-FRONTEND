@@ -84,9 +84,9 @@ function clearData() {
         >
         </div>
         <div
-            class="fixed bg-[#f0ede6] w-[35%] h-auto indicator flex flex-col rounded-2xl"
+            class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
         >
-            <div class="bg-gradient-to-b from-[#628765] rounded-2xl ">
+            <div class="rounded-2xl ">
                 <h1 class="itbkk-title break-words w-[79%]">
                     <span class="font-serif text-[100%]">Add </span><span class="text-[70%] opacity-[60%] font-serif">New Task</span>
                     <!-- {{ taskData.title }} -->
@@ -113,7 +113,7 @@ function clearData() {
                         <option
                             v-for="(status ,index) in Store.statuss"
                             :key="index"
-                        >{{status.statusName}}
+                        >{{status.name}}
                     </option>
                     </select>
  
@@ -132,7 +132,7 @@ function clearData() {
                         type="submit"
                         class="itbkk-button-confirm button buttonOK btn"
                         @click="save()">
-                    Save
+                    Add
                     </button>
                 </div>
  
