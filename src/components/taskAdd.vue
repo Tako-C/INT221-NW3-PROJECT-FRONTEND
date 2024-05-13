@@ -113,7 +113,7 @@ function clearData() {
                         <option
                             v-for="(status ,index) in Store.statuss"
                             :key="index"
-                        >{{status.statusName}}
+                        >{{status.name}}
                     </option>
                     </select>
  
