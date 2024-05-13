@@ -79,11 +79,9 @@ async function removeStatusTransfer(data) {
   const { removeStatus, transferStatus } = data;
   // หา id จาก statusname ที่รับมา
   const removeStatusId = Store.statuss.find(
-    (status) => status.statusName === removeStatus
-  ).id;
+    (status) => status.name === removeStatus).id;
   const transferStatusId = Store.statuss.find(
-    (status) => status.statusName === transferStatus
-  ).id;
+    (status) => status.name === transferStatus).id;
 
   let removedStatus = await removeAndTransfer(
     "statuses",
@@ -196,7 +194,7 @@ onMounted(fetchData);
       >
         <div>
           <span
-            ><a href="http://localhost:5173/task" class="itbkk-button-home text-blue-500"
+            ><a href="router.push({name: 'taskTable'}" class="itbkk-button-home text-blue-500"
               >Home</a
             ></span
           >
@@ -231,12 +229,12 @@ onMounted(fetchData);
           >
             <td>{{ index + 1 }}</td>
             <td class="itbkk-status-name">
-              {{ status.statusName }}
+              {{ status.name }}
             </td>
 
             <td>
               <p class="itbkk-status-description rounded-2xl m-1 p-2">
-                {{ status.statusDescription }}
+                {{ status.description }}
               </p>
             </td>
             <td>
@@ -264,7 +262,7 @@ onMounted(fetchData);
                     <li>
                       <a
                         href="#"
-                        @click="openConfirmModal(status.id, status.statusName)"
+                        @click="openConfirmModal(status.id, status.name)"
                         class="itbkk-button-delete block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                       >
                         Delete

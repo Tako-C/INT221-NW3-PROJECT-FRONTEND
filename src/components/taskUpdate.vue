@@ -184,7 +184,7 @@ onUpdated(() => {
                         <option
                         v-for="(status ,index) in Store.statuss"
                         :key="index"
-                        >{{status.statusName}}</option>
+                        >{{status.name}}</option>
                     </select>
  
                     <div class="font-bold pt-1">TimeZone</div>

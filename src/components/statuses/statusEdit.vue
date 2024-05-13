@@ -6,19 +6,19 @@ import { useStore } from "@/stores/store.js"
 import { validateTask } from "@/libs/varidateTask.js"
 
 let statusData = ref({
-    statusName: '',
-    statusDescription: '',
+    name: '',
+    description: '',
 })
 
 const originalStatusData = ref({
-    statusName: '',
-    statusDescription: '',
+    name: '',
+    description: '',
 })
 
 
 const route = useRoute()
 const router = useRouter()
-const statusStore = useStore()
+const Store = useStore()
 const ID = ref(0)
 const isEdited = ref(false)
 
@@ -36,7 +36,7 @@ async function fetchData() {
         
         originalStatusData.value = { ...statusData.value }
     } catch (error) {
-        statusStore.errorUpdateStatus = true
+        Store.errorUpdateStatus = true
         router.push({name: 'StatusTable'})
     }
 }
@@ -45,36 +45,40 @@ async function updateStatus(statusId) {
     // if (!validateTask(statusData.value)) {
     //     return // Stop execution if validation fails
     // }
-  
-    //trim
-    if(statusData.value.statusName.length === 0){
-        window.alert("Information Empty Naja.")
-        isEdited.value = false
-    }
-    if(statusData.value.statusDescription.length !== 0 ) {
-        statusData.value.statusDescription = statusData.value.statusDescription.trim()
-    }
-    let result = await editData("statuses",statusId, statusData.value)
-    ID.value = result.id
-    statusStore.successUpdateStatus = true
-    console.log(statusStore.successUpdateStatus);
-    addtostore()
-    closeModal()
+
+         if(statusData.value.name.length == 0 || statusData.value.name === "null"){
+            window.alert("Information statusName Empty or null.")
+            isEdited.value = false
+
+        } else if (statusData.value.description.length == 0 ) {
+            window.alert("Information description Empty")
+        }
+         else {
+           
+                statusData.value.name = statusData.value.name.trim()
+                statusData.value.description = statusData.value.description.trim()
+                let result = await editData("statuses",statusId, statusData.value)
+                ID.value = result.id
+                Store.successUpdateStatus = true
+                console.log(Store.successUpdateStatus);
+                addtostore()
+                closeModal()         
+        }
 }
 
 function addtostore() {
-    // ค้นหา index ของ statusStore.tasks ที่มี id เท่ากับ statusData.value.id
+    // ค้นหา index ของ Store.tasks ที่มี id เท่ากับ statusData.value.id
     let indexToUpdate = 0
-    for (let i = 0; i < statusStore.statuss.length; i++) {
-        if (statusStore.statuss[i].id === statusData.value.id) {
+    for (let i = 0; i < Store.statuss.length; i++) {
+        if (Store.statuss[i].id === statusData.value.id) {
             indexToUpdate = i
             break
         }
     }
     if (indexToUpdate !== 0) {
-        statusStore.statuss[indexToUpdate] = statusData.value
+        Store.statuss[indexToUpdate] = statusData.value
     } else {
-        statusStore.statuss.push(statusData.value)
+        Store.statuss.push(statusData.value)
     }
 }
 
@@ -85,8 +89,8 @@ function closeModal() {
 
 function clearData() {
     statusData.value = {
-        statusName: '',
-        statusDescription: ''
+        name: '',
+        description: ''
     }
 }
 
@@ -95,8 +99,8 @@ onMounted(fetchData)
 
 onUpdated(()=>{
 if (
-        originalStatusData.value.statusName !== statusData.value.statusName ||
-        originalStatusData.value.statusDescription !== statusData.value.statusDescription
+        originalStatusData.value.name !== statusData.value.name ||
+        originalStatusData.value.description !== statusData.value.description
 
     ) {
         isEdited.value = true
@@ -133,10 +137,10 @@ if (
                     <p class="itbkk-status-name font-bold">Name</p>
                     
                     <textarea
-                        v-model="statusData.statusName"
-                        v-if="statusData.statusName !== null"
+                        v-model="statusData.name"
+                        v-if="statusData.name !== null"
                         class="itbkk-title text-black w-[90%] h-auto resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-3 border-2 overflow-hidden hover:overflow-y-scroll "
-                        >{{ statusData.statusName }} </textarea
+                        >{{ statusData.name }} </textarea
                     >
    
 
@@ -145,10 +149,10 @@ if (
                     <textarea
                         class="itbkk-description border-2 w-[90%] h-44 resize-none italic pl-2 bg-gray-400 bg-opacity-15 rounded-lg"
                         style="color: grey"
-                        v-model="statusData.statusDescription"
-                        :placeholder="statusData.statusDescription ? '' : 'No Description Provided'"
+                        v-model="statusData.description"
+                        :placeholder="statusData.description ? '' : 'No Description Provided'"
                         >
-                        {{statusData.statusDescription}}
+                        {{statusData.description}}
                         </textarea
                     >
                 </div>
@@ -168,8 +172,8 @@ if (
                     class="itbkk-button-confirm button buttonOK btn"
                     @click="
                         updateStatus(route.params.id, {
-                            Name: statusData.statusName,
-                            Description: statusData.statusDescription,
+                            name: statusData.name,
+                            description: statusData.description,
                         })
                     "
                     :disabled="!isEdited"

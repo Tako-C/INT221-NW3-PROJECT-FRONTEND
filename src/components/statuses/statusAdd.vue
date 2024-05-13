@@ -9,8 +9,8 @@ const router = useRouter()
 const Store = useStore()
 const ID = ref(0)
 let statusData = ref({
-    statusName: '',
-    statusDescription: '',
+    name: '',
+    description: '',
 })
 
 function closeModal() {
@@ -30,20 +30,22 @@ function addtostore() {
 
 
 async function save() {
-    let checkStatusName = Store.statuss.filter((status) => status.statusName === statusData.value.statusName)
+    let checkStatusName = Store.statuss.filter((status) => status.name === statusData.value.name)
         if(checkStatusName.length === 1){
             window.alert("An error has occurred, the status could not be added.")
-            
-        }else{
-            if(statusData.value.statusDescription.length !== 0 ) {
-            statusData.value.statusDescription = statusData.value.statusDescription.trim()
-
-            
+        }  
+        else if (statusData.value.description.length == 0) {
+            window.alert("An error description is empty.")
+        }   
+        else{
+            if(statusData.value.description.length !== 0 && statusData.value.name !== null) {
+                statusData.value.name = statusData.value.name.trim()
+                statusData.value.description = statusData.value.description.trim()      
             let result = await addData(statusData.value,"statuses")
             ID.value = result.id
             addtostore()
             closeModal()
-            }
+            }            
     }
 }
 
@@ -51,8 +53,8 @@ async function save() {
 
 function clearData() {
     statusData.value = {
-        statusName: '',
-        statusDescription: ''
+        name: '',
+        description: ''
     }
 }
 
@@ -81,10 +83,10 @@ function clearData() {
             <div class="itbkk-modal-status mt-3 ml-7">
 
                     <div class="itbkk-status-name font-bold">Name</div>
-                    <input v-model="statusData.statusName" class="itbkk-title w-[90%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
+                    <input v-model="statusData.name" class="itbkk-title w-[90%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
 
                     <div class="itbkk-status-description font-bold">Description</div>
-                    <textarea v-model="statusData.statusDescription" class="itbkk-description w-[90%] h-44 resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
+                    <textarea v-model="statusData.description" class="itbkk-description w-[90%] h-44 resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
 
             </div>
 
@@ -101,7 +103,7 @@ function clearData() {
                         type="submit"
                         class="itbkk-button-confirm button buttonOK btn"
                         @click="save()"
-                        :disabled="statusData.statusName.length === 0">
+                        :disabled="statusData.name.length === 0">
                         
                     Add
                     </button>

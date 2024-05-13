@@ -15,10 +15,10 @@ watchEffect(() => {
   statusData.value = [...Store.statuss]
   if (
     props.statusName &&
-    statusData.value.some((status) => status.statusName === props.statusName)
+    statusData.value.some((status) => status.name === props.statusName)
   ) {
     statusData.value = statusData.value.filter(
-      (status) => status.statusName !== props.statusName
+      (status) => status.name !== props.statusName
     )
   }
 })
@@ -41,9 +41,9 @@ watchEffect(() => {
         <option
           v-for="(status, index) in statusData"
           :key="index"
-          :value="status.statusName"
+          :value="status.name"
         >
-          {{ status.statusName }}
+          {{ status.name }}
         </option>
       </select>
     </p>
