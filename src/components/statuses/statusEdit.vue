@@ -50,19 +50,25 @@ async function updateStatus(statusId) {
             window.alert("Information statusName Empty or null.")
             isEdited.value = false
 
-        } else if (statusData.value.description.length == 0 ) {
-            window.alert("Information description Empty")
-        }
+        } 
+        // else if (statusData.value.description.length == 0 ) {
+        //     window.alert("Information description Empty")
+        // }
          else {
-           
+            if (statusData.value.description.length === 0) {
+                statusData.value.description = null
+            }
+            if(statusData.value.name !== null && statusData.value.description !== null) {
                 statusData.value.name = statusData.value.name.trim()
-                statusData.value.description = statusData.value.description.trim()
+                statusData.value.description = statusData.value.description.trim()   
+
+            }      
                 let result = await editData("statuses",statusId, statusData.value)
                 ID.value = result.id
                 Store.successUpdateStatus = true
-                console.log(Store.successUpdateStatus);
+                console.log(Store.successUpdateStatus)
                 addtostore()
-                closeModal()         
+                closeModal()  
         }
 }
 

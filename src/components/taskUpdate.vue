@@ -4,21 +4,6 @@ import { getData, editData } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "../stores/store.js"
 import { validateTask } from "../libs/varidateTask.js"
- 
-let taskData = ref({
-    id: "",
-    title: "",
-    description: "",
-    assignees: "",
-    statusName: "",
-})
-const originalTaskData = ref({
-    id: "",
-    title: "",
-    description: "",
-    assignees: "",
-    statusName: "",
-})
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
 let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -27,6 +12,25 @@ const router = useRouter()
 const Store = useStore()
 const ID = ref(0)
 const isEdited = ref(false)
+const DefualtStatus = 1
+
+let taskData = ref({
+    id: "",
+    title: "",
+    description: "",
+    assignees: "",
+    status:DefualtStatus,
+    statusName: "",
+    
+})
+const originalTaskData = ref({
+    id: "",
+    title: "",
+    description: "",
+    assignees: "",
+    status:DefualtStatus,
+    statusName: "",
+})
 
 const status = {
     TO_DO: "To Do",
@@ -57,6 +61,8 @@ function convertToBrowserTimezone(utcTime) {
 async function fetchData() {
     try {
         taskData.value = await getData(`tasks/${route.params.id}`)
+        const statusObject = Store.statuss.find(status => status.name === taskData.value.status)
+        taskData.value.status = statusObject.id
 
         // เรียกใช้งานฟังก์ชันในการแปลงเวลา
         createTimeInBrowserTimezone = convertToBrowserTimezone(
@@ -76,7 +82,9 @@ async function updateTask(taskId) {
     if (!validateTask(taskData.value)) {
         return 
     }
-    
+    const statusObject = Store.statuss.find(status => status.id === taskData.value.status);
+    console.log(statusObject.id)
+    taskData.value.statusName = statusObject.name
     let result = await editData("tasks",taskId, taskData.value)
     ID.value = result.id
     Store.successUpdateTask = true
@@ -112,7 +120,8 @@ onUpdated(() => {
         originalTaskData.value.title !== taskData.value.title ||
         originalTaskData.value.description !== taskData.value.description ||
         originalTaskData.value.assignees !== taskData.value.assignees ||
-        originalTaskData.value.statusName !== taskData.value.statusName
+        originalTaskData.value.statusName !== taskData.value.statusName ||
+        originalTaskData.value.status !== taskData.value.status
     ) {
         isEdited.value = true
     } else {
@@ -178,12 +187,13 @@ onUpdated(() => {
  
                     <div class="font-bold">Status</div>
                     <select
-                        v-model="taskData.statusName"
+                        v-model="taskData.status"
                         class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2"
                     >
                         <option
                         v-for="(status ,index) in Store.statuss"
                         :key="index"
+                        :value="status.id"
                         >{{status.name}}</option>
                     </select>
  

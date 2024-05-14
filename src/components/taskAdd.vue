@@ -4,7 +4,7 @@ import { addData } from "../libs/fetchs.js"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from '../stores/store.js'
 import { validateTask } from '../libs/varidateTask.js';
-const route = useRoute()
+const DefualtStatus = 1
 const router = useRouter()
 const Store = useStore()
 const ID = ref(0)
@@ -12,7 +12,8 @@ let taskData = ref({
     title: '',
     description: '',
     assignees: '',
-    statusName: 'No Status'
+    status: DefualtStatus,
+    statusName:""
 })
  
 function closeModal() {
@@ -23,10 +24,14 @@ function closeModal() {
  
 function addtostore() {
     taskData.value.id = ID.value
-    console.log(taskData.value);
+    // console.log(taskData.value)
+    const statusObject = Store.statuss.find(status => status.id === taskData.value.status);
+    // console.log(statusObject.name)
+    taskData.value.statusName = statusObject.name
     Store.tasks.push(taskData.value)
     Store.successAddTask = true
-    console.log(Store.successAddTask);
+    closeModal()
+    // console.log(Store.successAddTask)
 }
  
  
@@ -34,19 +39,6 @@ async function save() {
     if (!validateTask(taskData.value)) {
         return; // Stop execution if validation fails
     }
-    // switch (taskData.value.statusName) {
-    //     case "To Do":
-    //         taskData.value.statusName = "TO_DO"
-    //         break;
-    //     case "Doing":
-    //         taskData.value.statusName = "DOING"
-    //         break;
-    //     case "Done":
-    //         taskData.value.statusName = "DONE"
-    //         break;
-    //     default:
-    //         taskData.value.statusName = "NO_STATUS"
-    // }
     // trim
         taskData.value.title = taskData.value.title.trim();
         if (taskData.value.description !== null) {
@@ -58,7 +50,6 @@ async function save() {
     let result = await addData(taskData.value,"tasks")
     ID.value = result.id
     addtostore()
-    closeModal()
 }
  
  
@@ -68,7 +59,8 @@ function clearData() {
         title: '',
         description: '',
         assignees: '',
-        status: 'No Status'
+        status: DefualtStatus,
+        statusName:""
     }
 }
  
@@ -87,7 +79,7 @@ function clearData() {
             class="fixed bg-white w-[35%] h-auto indicator flex flex-col rounded-2xl shadow-2xl shadow-white"
         >
             <div class="rounded-2xl ">
-                <h1 class="itbkk-title break-words w-[79%]">
+                <h1 class=" break-words w-[79%]">
                     <span class="font-serif text-[100%]">Add </span><span class="text-[70%] opacity-[60%] font-serif">New Task</span>
                     <!-- {{ taskData.title }} -->
             </h1>
@@ -97,7 +89,7 @@ function clearData() {
             <div class="mt-3 mb-20 ml-7">
  
                     <div class="font-bold">Title</div>
-                    <input v-model="taskData.title" class="itbkk-title w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
+                    <input v-model="taskData.title"class="itbkk-title w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2" >
  
                     <div class="font-bold">Description</div>
                     <textarea v-model="taskData.description" class="itbkk-description w-[80%] h-[80%] resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
@@ -107,12 +99,13 @@ function clearData() {
  
                     <div class="font-bold">Status</div>
                     <select
-                        v-model="taskData.statusName"
-                        class="itbkk-status w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2"
+                        v-model="taskData.status"
+                        class=" w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2 border-2"
                     >
-                        <option
+                        <option class="itbkk-status"
                             v-for="(status ,index) in Store.statuss"
                             :key="index"
+                            :value="status.id"
                         >{{status.name}}
                     </option>
                     </select>

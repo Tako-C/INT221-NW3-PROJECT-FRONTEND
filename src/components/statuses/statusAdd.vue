@@ -34,18 +34,22 @@ async function save() {
         if(checkStatusName.length === 1){
             window.alert("An error has occurred, the status could not be added.")
         }  
-        else if (statusData.value.description.length == 0) {
-            window.alert("An error description is empty.")
-        }   
+        // else if (statusData.value.description.length == 0) {
+        //     window.alert("An error description is empty.")
+        // }   
         else{
-            if(statusData.value.description.length !== 0 && statusData.value.name !== null) {
+            if (statusData.value.description.length === 0) {
+                statusData.value.description = null
+            }
+            if(statusData.value.name !== null && statusData.value.description !== null) {
                 statusData.value.name = statusData.value.name.trim()
                 statusData.value.description = statusData.value.description.trim()      
+            
+            } 
             let result = await addData(statusData.value,"statuses")
             ID.value = result.id
             addtostore()
-            closeModal()
-            }            
+            closeModal()           
     }
 }
 
@@ -82,11 +86,11 @@ function clearData() {
 
             <div class=" mt-3 ml-7">
 
-                    <div class="itbkk-status-name font-bold">Name</div>
+                    <div class=" font-bold">Name</div>
                     <input v-model="statusData.name" class="itbkk-status-name w-[90%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"></input>
 
-                    <div class="itbkk-status-description font-bold">Description</div>
-                    <textarea v-model="statusData.description" class="itbkk-description w-[90%] h-44 resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
+                    <div class=" font-bold">Description</div>
+                    <textarea v-model="statusData.description" class="itbkk-status-description  w-[90%] h-44 resize-none bg-gray-400 bg-opacity-15 rounded-lg pl-2 overflow-hidden hover:overflow-y-scroll border-2"></textarea>
 
             </div>
 

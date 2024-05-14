@@ -123,7 +123,7 @@ onMounted(fetchData)
           <p
             class="itbkk-status border-2 w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
           >
-            {{ taskData.statusName }}
+            {{ taskData.status }}
           </p>
           <div class="font-bold pt-1">TimeZone</div>
           <p
