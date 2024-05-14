@@ -192,12 +192,12 @@ onMounted(fetchData);
       <div
         class="flex text-2xl font-serif font-bold justify-between items-center"
       >
-        <div>
+        <div class="itbkk-manage-status">
           <span
             ><a href="router.push({name: 'taskTable'}" class="itbkk-button-home text-blue-500"
               >Home</a
-            ></span
-          >
+            >
+          </span>
           > Status Manage
         </div>
         <div>
@@ -233,8 +233,11 @@ onMounted(fetchData);
             </td>
 
             <td>
-              <p class="itbkk-status-description rounded-2xl m-1 p-2">
-                {{ status.description }}
+              <p class="itbkk-status-description rounded-2xl m-1 p-2"
+              :class="{
+                        'italic text-gray-400': status.description == null,                       
+                      }">
+                {{ status.description == null ? "No description is provided" : status.description }}
               </p>
             </td>
             <td>
@@ -249,12 +252,10 @@ onMounted(fetchData);
                   v-if="optionsDropDownIndex === index"
                   class="absolute w-32 bg-white border rounded-lg shadow-lg z-10"
                 >
-                  <ul class="itbkk-button-edit divide-y divide-gray-200">
-                    <li>
-                      <a
-                        href="#"
+                  <ul class="divide-y divide-gray-200">
+                    <li class="itbkk-button-edit">
+                      <a href="#"class=" itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                         @click="editModal_Status(status.id)"
-                        class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                       >
                         Edit
                       </a>
