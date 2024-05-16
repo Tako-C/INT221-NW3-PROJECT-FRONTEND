@@ -36,9 +36,7 @@ async function fetchData() {
   if (filterList.value.length > 0) {
     let endpointFilter =
       'tasks?sortBy=status.name&FilterStatuses=' +
-      filterList.value
-        .map((status) => encodeURIComponent(status))
-        .join('&FilterStatuses=')
+      filterList.value.map((status) => status.trim()).join('&FilterStatuses=')
     taskData.value = await getData(endpointFilter)
   } else {
     // If there are no filters, fetch all tasks
