@@ -31,14 +31,26 @@ const filterList = ref([])
 // new_fetch
 async function fetchData() {
   let endpoint = 'tasks'
-  if (sortStatus.value === 1) {
-    endpoint += '?sortBy=status.name&FilterStatuses'
-    taskData.value = await getData(endpoint)
-  } else if (sortStatus.value === 2) {
-    endpoint += '?sortBy=status.name&FilterStatuses'
-    taskData.value = (await getData(endpoint)).reverse()
+
+  // If there are filters, apply them
+  if (filterList.value.length > 0) {
+    let endpointFilter =
+      'tasks?sortBy=status.name&FilterStatuses=' +
+      filterList.value
+        .map((status) => encodeURIComponent(status))
+        .join('&FilterStatuses=')
+    taskData.value = await getData(endpointFilter)
   } else {
-    taskData.value = await getData(endpoint)
+    // If there are no filters, fetch all tasks
+    if (sortStatus.value === 1) {
+      endpoint += '?sortBy=status.name&FilterStatuses'
+      taskData.value = await getData(endpoint)
+    } else if (sortStatus.value === 2) {
+      endpoint += '?sortBy=status.name&FilterStatuses'
+      taskData.value = (await getData(endpoint)).reverse()
+    } else {
+      taskData.value = await getData(endpoint)
+    }
   }
 
   Store.tasks = taskData.value
@@ -125,17 +137,23 @@ function addFilter() {
   if (newFilterString.value.trim()) {
     filterList.value.push(newFilterString.value)
     newFilterString.value = ''
+    fetchData()
   }
 }
 
 function removeFilter(index) {
   filterList.value.splice(index, 1)
+  fetchData()
 }
 
 // sort
 function toggleSort() {
-  sortStatus.value = (sortStatus.value + 1) % 3
-  fetchData()
+  if (filterList.value.length === 0) {
+    sortStatus.value = (sortStatus.value + 1) % 3
+    fetchData()
+  } else {
+    window.alert('Cannot sort while filters are active. It is sorted')
+  }
 }
 
 onMounted(fetchData)
