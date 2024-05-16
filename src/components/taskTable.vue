@@ -18,14 +18,17 @@ const successDelete = ref(false)
 const openConfirmed= ref(false)
 const taskTitle = ref("")
 const taskID = ref("")
+// filter
+const newFilterString = ref("")
+const filterList = ref([])
 
 async function fetchData() {
     taskData.value = await getData("tasks")
     Store.tasks.push(...taskData.value)
     statusData.value = await getData("statuses")
     Store.statuss.push(...statusData.value)
-    console.log(Store.tasks)
-    console.log(Store.statuss)
+    // console.log(Store.tasks)
+    // console.log(Store.statuss)
     
 }
  
@@ -38,8 +41,6 @@ async function removeTask() {
     optionsDropDownIndex.value = null
     openConfirmed.value = false
     console.log(taskID.value);
-    // const confirmed = window.confirm(`Are you sure to delete task?${taskTitle}`)
- 
         let result = await removeById("tasks",taskID.value)
         console.log("result",result)
         if (result.status === 404) {
@@ -53,7 +54,6 @@ async function removeTask() {
 }
  
 function addModal() {
-    // router.push(`/task/add`)
     router.push({ name: 'taskAdd'});
 }
 function switchToManage() {
@@ -65,7 +65,6 @@ function editModal(taskId) {
     optionsDropDownIndex.value = null
 }
 function openModal(taskId) {
-    // router.push(`/task/${taskId}`)
     router.push({ name: 'taskDetail', params: { id: taskId } });
 
     optionsDropDownIndex.value = null
@@ -95,6 +94,17 @@ function checkVariable() {
     }
     return false 
 }
+// filter
+function addFilter () {
+    if (newFilterString.value.trim()) {
+    filterList.value.push(newFilterString.value);
+    newFilterString.value = '';
+  }
+}
+function removeFilter (index) {
+    filterList.value.splice(index, 1);
+}
+
 onMounted(fetchData)
 
 </script>
@@ -124,13 +134,40 @@ onMounted(fetchData)
         </header>
  
         <!-- The button to open modal -->
- 
         <main class="flex flex-col pt-[8%] h-screen ml-[10%] mr-[10%]  hover:overflow-y-auto overflow-hidden">
-            <div class="flex mt-2 ml-10 mb-3 text-xl font-serif font-bold justify-end">
-                <button class="itbkk-manage-status button-manage" @click="switchToManage()">Status Manage</button>
-                <button class="itbkk-button-add button-add" @click="addModal()">Add Task</button>
+            <div class="flex justify-between">
+                <div class="flex items-center ">
+                    <div  class="flex items-center justify-between input input-bordered w-96">
+                        <input type="text" placeholder="Search Filter something . . ."
+                            v-model="newFilterString"
+                            @keyup.enter="addFilter"
+                            class="w-96"
+                        />
+                        <img src="https://www.svgrepo.com/show/46113/magnifying-glass.svg" 
+                            alt=""
+                            class="ml-2 cursor-pointer w-4 h-4"
+                            @click="addFilter">
+                    </div>
+                    <p class="p-4">Filter Status By : </p>
+                    <div v-show="filterList.length === 0" class="italic text-gray-400 p-4">
+                        No filter yet . . .
+                    </div>
+                    
+                    <div v-show="filterList.length > 0" v-for="(filter, index) in filterList" :key="index" class="flex justify-center items-center rounded-lg bg-slate-300 w-auto m-2 p-2">
+                        <p>{{ filter }}</p>
+                        <img src="https://www.svgrepo.com/show/21045/delete-button.svg"
+                            alt="Delete"
+                            class="ml-2 cursor-pointer w-4 h-4"
+                            @click="removeFilter(index)"
+                        />
+                    </div>
+                </div>
+
+                <div class="flex mt-2 ml-10 mb-3 text-xl font-serif font-bold justify-end">
+                    <button class="itbkk-manage-status button-manage" @click="switchToManage()">Status Manage</button>
+                    <button class="itbkk-button-add button-add" @click="addModal()">Add Task</button>
+                </div>
             </div>
-            <!-- <div class="mt-2 ml-10 mb-3 text-xl font-serif font-bold text-right"><span><a href="http://localhost:5173/task" class="text-blue-500">Home</a></span> > task table</div> -->
             <table class="table table-zebra w-auto bg-white mt-2 mb-28">
                 <thead class="bg-[#818080] text-white font-serif h-20 text-2xl titleShadow">
                     <tr>
