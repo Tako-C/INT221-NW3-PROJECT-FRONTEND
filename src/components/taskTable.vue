@@ -1,15 +1,16 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useStore } from '@/stores/store.js'
-import { removeById, getData } from '@/libs/fetchs.js'
+import { ref, onMounted, watchEffect, onUpdated } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useStore } from "@/stores/store.js"
+import { removeById, getData } from "@/libs/fetchs.js"
 
-import sortDefault from '@/assets/sortDefault.svg'
-import sortDescending from '@/assets/sortDesc.svg'
-import sortAscending from '@/assets/sortAsc.svg'
+import sortDefault from "@/assets/sortDefault.svg"
+import sortDescending from "@/assets/sortDesc.svg"
+import sortAscending from "@/assets/sortAsc.svg"
 
-import modalNotification from '@/components/modals/modalNotification.vue'
-import modalconfirmed from '@/components/modals/modalConfirmed.vue'
+import modalNotification from "@/components/modals/modalNotification.vue"
+import modalconfirmed from "@/components/modals/modalConfirmed.vue"
+import { FunnelIcon } from "@heroicons/vue/24/solid"
 
 const Store = useStore()
 let taskData = ref([])
@@ -20,429 +21,573 @@ const optionsDropDownIndex = ref(null)
 const errorDelete = ref(false)
 const successDelete = ref(false)
 const openConfirmed = ref(false)
-const taskTitle = ref('')
-const taskID = ref('')
+const taskTitle = ref("")
+const taskID = ref("")
 //sort
 const sortStatus = ref(0)
 // filter
-const newFilterString = ref('')
+const newFilterString = ref("")
 const filterList = ref([])
+const showStatusList = ref(false)
+const selectedStatuses = ref([])
 
 // new_fetch
 async function fetchData() {
-  let endpoint = 'tasks'
+    let endpoint = "tasks"
 
-  // If there are filters, apply them
-  if (filterList.value.length > 0) {
-    let endpointFilter =
-      'tasks?sortBy=status.name&FilterStatuses=' +
-      filterList.value.map((status) => status.trim()).join('&FilterStatuses=')
-    taskData.value = await getData(endpointFilter)
-  } else {
-    // If there are no filters, fetch all tasks
-    if (sortStatus.value === 1) {
-      endpoint += '?sortBy=status.name&FilterStatuses'
-      taskData.value = await getData(endpoint)
-    } else if (sortStatus.value === 2) {
-      endpoint += '?sortBy=status.name&FilterStatuses'
-      taskData.value = (await getData(endpoint)).reverse()
+    // If there are filters, apply them
+    if (filterList.value.length > 0) {
+        let endpointFilter =
+            "tasks?sortBy=status.name&FilterStatuses=" +
+            filterList.value
+                .map((status) => status.trim())
+                .join("&FilterStatuses=")
+        taskData.value = await getData(endpointFilter)
     } else {
-      taskData.value = await getData(endpoint)
+        // If there are no filters, fetch all tasks
+        if (sortStatus.value === 1) {
+            endpoint += "?sortBy=status.name&FilterStatuses"
+            taskData.value = await getData(endpoint)
+        } else if (sortStatus.value === 2) {
+            endpoint += "?sortBy=status.name&FilterStatuses"
+            taskData.value = (await getData(endpoint)).reverse()
+        } else {
+            taskData.value = await getData(endpoint)
+        }
     }
-  }
 
-  Store.tasks = taskData.value
-  statusData.value = await getData('statuses')
-  Store.statuss = statusData.value
-  console.log(Store.tasks)
-  console.log(Store.statuss)
+    Store.tasks = taskData.value
+    statusData.value = await getData("statuses")
+    Store.statuss = statusData.value
+    console.log(Store.tasks)
+    console.log(Store.statuss)
 
-  //   taskData.value = await getData('tasks')
-  //   Store.tasks.push(...taskData.value)
-  //   statusData.value = await getData('statuses')
-  //   Store.statuss.push(...statusData.value)
-  //   console.log(Store.tasks)
-  //   console.log(Store.statuss)
+    //   taskData.value = await getData('tasks')
+    //   Store.tasks.push(...taskData.value)
+    //   statusData.value = await getData('statuses')
+    //   Store.statuss.push(...statusData.value)
+    //   console.log(Store.tasks)
+    //   console.log(Store.statuss)
 }
 
 function toggleDropDown(index) {
-  optionsDropDownIndex.value =
-    optionsDropDownIndex.value === index ? null : index
+    optionsDropDownIndex.value =
+        optionsDropDownIndex.value === index ? null : index
 }
 
 async function removeTask() {
-  optionsDropDownIndex.value = null
-  openConfirmed.value = false
-  console.log(taskID.value)
-  let result = await removeById('tasks', taskID.value)
-  console.log('result', result)
-  if (result.status === 404) {
-    console.log('result :', result.status)
-    errorDelete.value = true
-  }
-  Store.tasks = Store.tasks.filter((task) => task.id !== taskID.value)
-  successDelete.value = true
-  console.log(successDelete.value)
+    optionsDropDownIndex.value = null
+    openConfirmed.value = false
+    console.log(taskID.value)
+    let result = await removeById("tasks", taskID.value)
+    console.log("result", result)
+    if (result.status === 404) {
+        console.log("result :", result.status)
+        errorDelete.value = true
+    }
+    Store.tasks = Store.tasks.filter((task) => task.id !== taskID.value)
+    successDelete.value = true
+    console.log(successDelete.value)
 }
 
 function addModal() {
-  router.push({ name: 'taskAdd' })
+    router.push({ name: "taskAdd" })
 }
 function switchToManage() {
-  router.push(`/status`)
+    router.push(`/status`)
 }
 
 function editModal(taskId) {
-  router.push(`/task/${taskId}/edit`)
-  optionsDropDownIndex.value = null
+    router.push(`/task/${taskId}/edit`)
+    optionsDropDownIndex.value = null
 }
 function openModal(taskId) {
-  router.push({ name: 'taskDetail', params: { id: taskId } })
+    router.push({ name: "taskDetail", params: { id: taskId } })
 
-  optionsDropDownIndex.value = null
+    optionsDropDownIndex.value = null
 }
 
 function closeModalNotification() {
-  errorDelete.value = false
-  successDelete.value = false
-  Store.successUpdateTask = false
-  Store.errorUpdateTask = false
-  Store.successAddTask = false
-  openConfirmed.value = false
-  taskTitle.value = ''
-  taskID.value = ''
+    errorDelete.value = false
+    successDelete.value = false
+    Store.successUpdateTask = false
+    Store.errorUpdateTask = false
+    Store.successAddTask = false
+    openConfirmed.value = false
+    taskTitle.value = ""
+    taskID.value = ""
 }
 function openConfirmModal(id, title) {
-  openConfirmed.value = true
-  taskTitle.value = title
-  taskID.value = id
+    openConfirmed.value = true
+    taskTitle.value = title
+    taskID.value = id
 }
 function checkVariable() {
-  if (
-    Store.successAddTask == true ||
-    Store.errorUpdateTask == true ||
-    Store.successUpdateTask == true ||
-    errorDelete.value === true ||
-    successDelete.value === true
-  ) {
-    return true
-  }
-  return false
+    if (
+        Store.successAddTask == true ||
+        Store.errorUpdateTask == true ||
+        Store.successUpdateTask == true ||
+        errorDelete.value === true ||
+        successDelete.value === true
+    ) {
+        return true
+    }
+    return false
 }
 
 // filter
 function addFilter() {
-  if (newFilterString.value.trim()) {
-    filterList.value.push(newFilterString.value)
-    newFilterString.value = ''
+    if (newFilterString.value.trim()) {
+        filterList.value.push(newFilterString.value)
+        newFilterString.value = ""
+        fetchData()
+        showStatusList.value = false
+    }
+}
+function addFilterFromCheckbox() {
+    for (const status of selectedStatuses.value) {
+        filterList.value.push(status)
+    }
     fetchData()
-  }
+}
+function filteredStatuses() {
+    return Store.statuss.filter((status) =>
+        status.name.toLowerCase().includes(newFilterString.value.toLowerCase())
+    )
 }
 
 function removeFilter(index) {
-  filterList.value.splice(index, 1)
-  fetchData()
+    filterList.value.splice(index, 1)
+    fetchData()
 }
 
 // sort
 function toggleSort() {
-  if (filterList.value.length === 0) {
     sortStatus.value = (sortStatus.value + 1) % 3
-    fetchData()
-  } else {
-    window.alert('Cannot sort while filters are active. It is sorted')
-  }
+    if (filterList.value.length === 0) {
+        fetchData()
+    } else {
+        if (sortStatus.value === 1) {
+            Store.tasks.sort((a, b) => a.statusName.localeCompare(b.statusName))
+        } else if (sortStatus.value === 2) {
+            Store.tasks
+                .sort((a, b) => a.statusName.localeCompare(b.statusName))
+                .reverse()
+        } else {
+            Store.tasks.sort((a, b) => a.createdOn.localeCompare(b.createdOn))
+        }
+    }
 }
 
 onMounted(fetchData)
+
+onUpdated(() => console.log(newFilterString))
 </script>
 
 <template>
-  <modalNotification
-    :errorDelete="errorDelete"
-    :successDelete="successDelete"
-    @closemodal="closeModalNotification()"
-    v-show="checkVariable()"
-    class="z-30"
-  />
-  <modalconfirmed
-    v-show="openConfirmed"
-    :taskTitle="taskTitle"
-    @closemodal="closeModalNotification()"
-    @confirmed="removeTask()"
-    class="z-40"
-  />
+    <modalNotification
+        :errorDelete="errorDelete"
+        :successDelete="successDelete"
+        @closemodal="closeModalNotification()"
+        v-show="checkVariable()"
+        class="z-30"
+    />
+    <modalconfirmed
+        v-show="openConfirmed"
+        :taskTitle="taskTitle"
+        @closemodal="closeModalNotification()"
+        @confirmed="removeTask()"
+        class="z-40"
+    />
 
-  <div class="class name : itbkk-modal-task bg-white w-screen h-screen">
-    <header
-      name="header"
-      class="fixed top-0 z-10 w-screen bg-[#797979] flex justify-center items-center h-20 text-24 text-white"
-    >
-      <h1 class="text-3xl font-bold font-serif pl-[3%] titleShadow">
-        IT-Bangmod Kradan Kanban (ITB-KK)
-      </h1>
-    </header>
-
-    <!-- The button to open modal -->
-    <main
-      class="flex flex-col pt-[8%] h-screen ml-[10%] mr-[10%] hover:overflow-y-auto overflow-hidden"
-    >
-      <div class="flex justify-between">
-        <div class="flex items-center">
-          <div
-            class="flex items-center justify-between input input-bordered w-96"
-          >
-            <input
-              type="text"
-              placeholder="Search Filter something . . ."
-              v-model="newFilterString"
-              @keyup.enter="addFilter"
-              class="w-96"
-            />
-            <img
-              src="https://www.svgrepo.com/show/46113/magnifying-glass.svg"
-              alt=""
-              class="ml-2 cursor-pointer w-4 h-4"
-              @click="addFilter"
-            />
-          </div>
-          <p class="p-4">Filter Status By :</p>
-          <div
-            v-show="filterList.length === 0"
-            class="italic text-gray-400 p-4"
-          >
-            No filter yet . . .
-          </div>
-
-          <div
-            v-show="filterList.length > 0"
-            v-for="(filter, index) in filterList"
-            :key="index"
-            class="flex justify-center items-center rounded-lg bg-slate-300 w-auto m-2 p-2"
-          >
-            <p>{{ filter }}</p>
-            <img
-              src="https://www.svgrepo.com/show/21045/delete-button.svg"
-              alt="Delete"
-              class="ml-2 cursor-pointer w-4 h-4"
-              @click="removeFilter(index)"
-            />
-          </div>
-        </div>
-
-        <div
-          class="flex mt-2 ml-10 mb-3 text-xl font-serif font-bold justify-end"
+    <div class="class name : itbkk-modal-task bg-white w-screen h-screen">
+        <header
+            name="header"
+            class="fixed top-0 z-10 w-screen bg-[#797979] flex justify-center items-center h-20 text-24 text-white"
         >
-          <button
-            class="itbkk-manage-status button-manage"
-            @click="switchToManage()"
-          >
-            Status Manage
-          </button>
-          <button class="itbkk-button-add button-add" @click="addModal()">
-            Add Task
-          </button>
-        </div>
-      </div>
-      <table class="table table-zebra w-auto bg-white mt-2 mb-28">
-        <thead
-          class="bg-[#818080] text-white font-serif h-20 text-2xl titleShadow"
-        >
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Assignees</th>
-            <th class="flex items-center justify-between pt-7 pb-7">
-              <span>Status</span>
-              <img
-                :src="
-                  sortStatus === 0
-                    ? sortDefault
-                    : sortStatus === 1
-                    ? sortAscending
-                    : sortDescending
-                "
-                class="itbkk-status-sort cursor-pointer pt-1"
-                @click="toggleSort"
-              />
-            </th>
-            <th class="pr-10 pl-10">Action</th>
-          </tr>
-        </thead>
-        <tbody class="text-base">
-          <tr
-            class="itbkk-item hover-table border-[1px] rounded-2xl"
-            v-show="Store.tasks.length > 0"
-            v-for="(task, index) in Store.tasks"
-            :key="index"
-          >
-            <td @click="openModal(task.id)">{{ index + 1 }}</td>
-            <td @click="openModal(task.id)" class="itbkk-title">
-              {{ task.title }}
-            </td>
-            <td @click="openModal(task.id)">
-              <span
-                class=""
-                :class="{
-                  'italic text-gray-400': !task.assignees,
-                  'itbkk-assignees': !route.params.id,
-                }"
-              >
-                {{ !task.assignees ? 'Unassigned' : task.assignees }}</span
-              >
-            </td>
-            <td @click="openModal(task.id)">
-              <p
-                class="itbkk-status rounded-2xl m-1 p-2 font-bold font-serif"
-                :class="{
-                  'bg-gray-200': task.statusName === 'No Status',
-                  'text-yellow-500': task.statusName === 'To Do',
-                  'text-orange-400': task.statusName === 'Doing',
-                  'text-green-400': task.statusName === 'Done',
-                }"
-              >
-                {{ task.statusName }}
-              </p>
-            </td>
-            <td>
-              <div class="itbkk-button-action relative pl-[40%]">
-                <img
-                  src="@/assets/optionIcon.svg"
-                  alt="Options"
-                  @click="toggleDropDown(index)"
-                  class="cursor-pointer"
-                />
-                <div
-                  v-if="optionsDropDownIndex === index"
-                  class="absolute w-32 bg-white border rounded-lg shadow-lg z-50"
-                >
-                  <ul class="divide-y divide-gray-200">
-                    <li>
-                      <a
-                        href="#"
-                        @click="editModal(task.id)"
-                        class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
-                      >
-                        Edit
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        @click="openConfirmModal(task.id, task.title)"
-                        class="itbkk-button-delete block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
-                      >
-                        Delete
-                      </a>
-                    </li>
-                  </ul>
+            <h1 class="text-3xl font-bold font-serif pl-[3%] titleShadow">
+                IT-Bangmod Kradan Kanban (ITB-KK)
+            </h1>
+        </header>
+        <!-- The button to open modal -->
+        <main class="flex flex-col p-[8%] h-screen overflow-y-auto">
+            <div class="flex justify-between">
+                <div class="flex items-center">
+                    <!-- <funnel-icon class="icon cursor-pointer" @click="showStatusList = !showStatusList"/>
+                    <div v-show="showStatusList"
+                        class="fixed flex flex-col justify-center z-10 mt-2 ml-32 bg-white border rounded-md shadow-lg p-5"
+                    >
+                        <p class="flex justify-center font-bold text-lg">Status List</p>
+                        <label
+                            v-for="(status, index) in Store.statuss"
+                            :key="index"
+                            class="flex items-center w-40 mt-22"
+                        >
+                            <input
+                                type="checkbox"
+                                v-model="selectedStatuses"
+                                :value="status.name"
+                                class="mr-2"
+                            />
+                            {{ status.name }}
+
+                        </label>
+                        <button class="btn btn-success"  @click="showStatusList = false , addFilterFromCheckbox()">confirm</button>
+                    </div> -->
+                    <div>
+                        <div
+                            class="flex items-center justify-between input input-bordered w-96"
+                        >
+                            <input
+                                @input="showStatusList = !showStatusList"
+                                type="text"
+                                placeholder="Search Filter something . . ."
+                                v-model="newFilterString"
+                                @keyup.enter="addFilter"
+                                class="w-96"
+                            />
+                            <img
+                                src="https://www.svgrepo.com/show/46113/magnifying-glass.svg"
+                                alt=""
+                                class="ml-2 cursor-pointer w-4 h-4"
+                                @click="addFilter"
+                            />
+                        </div>
+                        <div
+                            class="fixed z-10 bg-white rounded-lg p-2"
+                            v-show="showStatusList"
+                        >
+                            <div
+                                v-for="(status, index) in filteredStatuses()"
+                                :key="index"
+                            >
+                                <p
+                                    @click="
+                                        addFilter(
+                                            (newFilterString = status.name)
+                                        )
+                                    "
+                                    class="hover:bg-slate-200 p-2"
+                                >
+                                    {{ status.name }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="p-4">Filter Status By :</p>
+                    <div
+                        v-show="filterList.length === 0"
+                        class="italic text-gray-400 p-4"
+                    >
+                        No filter yet . . .
+                    </div>
+
+                    <div
+                        v-show="filterList.length > 0"
+                        v-for="(filter, index) in filterList"
+                        :key="index"
+                        class="flex justify-center items-center rounded-lg bg-slate-300 w-auto m-2 p-2"
+                    >
+                        <p>{{ filter }}</p>
+                        <img
+                            src="https://www.svgrepo.com/show/21045/delete-button.svg"
+                            alt="Delete"
+                            class="ml-2 cursor-pointer w-4 h-4"
+                            @click="removeFilter(index)"
+                        />
+                    </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-        <tbody v-show="Store.tasks.length === 0">
-          <tr>
-            <td class="text-center" colspan="4">Don't Have Task ??</td>
-          </tr>
-        </tbody>
-      </table>
-    </main>
-  </div>
-  <router-view />
+
+                <div
+                    class="flex mt-2 ml-10 mb-3 text-xl font-serif font-bold justify-end"
+                >
+                    <button
+                        class="itbkk-manage-status button-manage"
+                        @click="switchToManage()"
+                    >
+                        Status Manage
+                    </button>
+                    <button
+                        class="itbkk-button-add button-add"
+                        @click="addModal()"
+                    >
+                        Add Task
+                    </button>
+                </div>
+            </div>
+            <table class="table table-zebra w-auto bg-white mt-2 mb-28">
+                <thead
+                    class="bg-[#818080] text-white font-serif h-20 text-2xl titleShadow"
+                >
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Assignees</th>
+                        <th class="flex items-center justify-between pt-7 pb-7">
+                            <span>Status</span>
+                            <!-- <img
+                                :src="
+                                    sortStatus === 0
+                                        ? sortDefault
+                                        : sortStatus === 1
+                                        ? sortAscending
+                                        : sortDescending
+                                "
+                                class="itbkk-status-sort cursor-pointer pt-1"
+                                @click="toggleSort"
+                            /> -->
+                            <div
+                                class="cursor-pointer pt-1"
+                                @click="toggleSort"
+                            >
+                                <template v-if="sortStatus === 0">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="w-6 h-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
+                                        />
+                                    </svg>
+                                </template>
+                                <template v-else-if="sortStatus === 1">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="w-6 h-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12"
+                                        />
+                                    </svg>
+                                </template>
+                                <template v-else>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="w-6 h-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"
+                                        />
+                                    </svg>
+                                </template>
+                            </div>
+                        </th>
+                        <th class="pr-10 pl-10">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="text-base">
+                    <tr
+                        class="itbkk-item hover-table border-[1px] rounded-2xl"
+                        v-show="Store.tasks.length > 0"
+                        v-for="(task, index) in Store.tasks"
+                        :key="index"
+                    >
+                        <td @click="openModal(task.id)">{{ index + 1 }}</td>
+                        <td @click="openModal(task.id)" class="itbkk-title">
+                            {{ task.title }}
+                        </td>
+                        <td @click="openModal(task.id)">
+                            <span
+                                class=""
+                                :class="{
+                                    'italic text-gray-400': !task.assignees,
+                                    'itbkk-assignees': !route.params.id,
+                                }"
+                            >
+                                {{
+                                    !task.assignees
+                                        ? "Unassigned"
+                                        : task.assignees
+                                }}</span
+                            >
+                        </td>
+                        <td @click="openModal(task.id)">
+                            <p
+                                class="itbkk-status rounded-2xl m-1 p-2 font-bold font-serif"
+                                :class="{
+                                    'bg-gray-200':
+                                        task.statusName === 'No Status',
+                                    'text-yellow-500':
+                                        task.statusName === 'To Do',
+                                    'text-orange-400':
+                                        task.statusName === 'Doing',
+                                    'text-green-400':
+                                        task.statusName === 'Done',
+                                }"
+                            >
+                                {{ task.statusName }}
+                            </p>
+                        </td>
+                        <td>
+                            <div class="itbkk-button-action relative pl-[40%]">
+                                <img
+                                    src="@/assets/optionIcon.svg"
+                                    alt="Options"
+                                    @click="toggleDropDown(index)"
+                                    class="cursor-pointer"
+                                />
+                                <div
+                                    v-if="optionsDropDownIndex === index"
+                                    class="absolute w-32 bg-white border rounded-lg shadow-lg z-50"
+                                >
+                                    <ul class="divide-y divide-gray-200">
+                                        <li>
+                                            <a
+                                                href="#"
+                                                @click="editModal(task.id)"
+                                                class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                            >
+                                                Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="#"
+                                                @click="
+                                                    openConfirmModal(
+                                                        task.id,
+                                                        task.title
+                                                    )
+                                                "
+                                                class="itbkk-button-delete block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                                            >
+                                                Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-show="Store.tasks.length === 0">
+                    <tr>
+                        <td class="text-center" colspan="6">
+                            Don't Have Task ??
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <router-view />
 </template>
 
 <style scoped>
 .titleShadow {
-  text-shadow: 5px 5px 3px black;
+    text-shadow: 5px 3px 10px black;
 }
 
 .hover-font-table {
-  opacity: 30%;
+    opacity: 30%;
 
-  &:hover {
-    opacity: 100%;
-    transition: 0.3s;
-    color: blue;
-  }
+    &:hover {
+        opacity: 100%;
+        transition: 0.3s;
+        color: blue;
+    }
 }
 
 .hover-table:hover {
-  background-color: rgba(207, 207, 207, 0.5);
-  transition: 0.3s;
+    background-color: rgba(207, 207, 207, 0.5);
+    transition: 0.3s;
 }
 
 .button-manage {
-  border-radius: 4px;
-  background-color: black;
-  border: none;
-  color: #fff;
-  text-align: center;
-  font-size: 20px;
-  padding: 15px;
-  width: 200px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin-right: 5px;
-  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.7);
-  position: relative;
+    border-radius: 4px;
+    background-color: black;
+    border: none;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    padding: 15px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin-right: 5px;
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.7);
+    position: relative;
 }
 
 .button-manage:hover {
-  padding-right: 24px;
-  padding-left: 8px;
+    padding-right: 24px;
+    padding-left: 8px;
 }
 
 .button-manage::after {
-  content: '»';
-  position: absolute;
-  opacity: 0;
-  top: 15px;
-  right: -20px;
-  transition: 0.5s;
+    content: "»";
+    position: absolute;
+    opacity: 0;
+    top: 15px;
+    right: -20px;
+    transition: 0.5s;
 }
 
 .button-manage:hover::after {
-  opacity: 1;
-  right: 10px;
+    opacity: 1;
+    right: 10px;
 }
 
 .button-add {
-  border-radius: 4px;
-  background-color: black;
-  border: none;
-  color: #fff;
-  text-align: center;
-  font-size: 20px;
-  padding: 15px;
-  width: 170px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin-right: 5px;
-  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.7);
-  position: relative;
+    border-radius: 4px;
+    background-color: black;
+    border: none;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    padding: 15px;
+    width: 170px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin-right: 5px;
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.7);
+    position: relative;
 }
 
 .button-add:hover {
-  padding-right: 24px;
-  padding-left: 8px;
+    padding-right: 24px;
+    padding-left: 8px;
 }
 
 .button-add::after {
-  content: '+';
-  position: absolute;
-  opacity: 0;
-  top: 15px;
-  right: -20px;
-  transition: 0.5s;
+    content: "+";
+    position: absolute;
+    opacity: 0;
+    top: 15px;
+    right: -20px;
+    transition: 0.5s;
 }
 
 .button-add:hover::after {
-  opacity: 1;
-  right: 10px;
+    opacity: 1;
+    right: 10px;
 }
 
 .div-class-name {
-  height: 50vh;
+    height: 50vh;
+}
+.icon {
+    width: 36px;
+    height: 36px;
+    color: #222;
+    margin-right: 12px;
 }
 </style>
