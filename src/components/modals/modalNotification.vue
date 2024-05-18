@@ -76,7 +76,7 @@ function checkEvent() {
         message.value.detail = "An error has occurred, the status does not exist."
     }
     else if(successDeleteStatus.value){
-        message.value.header = "Success"
+        message.value.header = "Success!"
         message.value.detail = "The status has been deleted."
     }
     else if(errorDeleteStatus.value){
@@ -96,7 +96,16 @@ onMounted(checkEvent)
         'bg-green-100 border-green-600 border-2': message.header === 'Success!',
         'bg-red-100 border-red-600 border-2': message.header === 'Error!'
     }">
-            <h3 class="text-lg font-bold">{{ message.header }}</h3>
+            <div class="flex">
+                <svg v-show="message.header === 'Error!'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+                <svg v-show="message.header === 'Success!'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>                                
+                <h3 class="text-xl font-bold p-1.5">{{ message.header }}</h3>
+            </div>
+            
             <p class="border-b mt-2"></p>
             <p class="itbkk-message py-4">{{ message.detail }}</p>
             <div class="boxButton">
