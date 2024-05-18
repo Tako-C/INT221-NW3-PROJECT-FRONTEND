@@ -18,7 +18,7 @@ import { defineStore } from 'pinia'
 
 export const useStore = defineStore('task', () => {
   const tasks = []
-  const statuss = []
+  const statuses = []
   const successAddTask = false
   const successUpdateTask = false
   const errorUpdateTask = false
@@ -26,5 +26,14 @@ export const useStore = defineStore('task', () => {
   const successAddStatus = false
   const errorUpdateStatus = false
 
-  return { tasks, statuss, successAddStatus, successAddTask, successUpdateTask, successUpdateStatus, errorUpdateStatus, errorUpdateTask}
-  })
+  return {
+    tasks,
+    statuses,
+    successAddStatus,
+    successAddTask,
+    successUpdateTask,
+    successUpdateStatus,
+    errorUpdateStatus,
+    errorUpdateTask,
+  }
+})

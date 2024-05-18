@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref } from "vue"
 import { addData } from "@/libs/fetchs.js"
-import { useRoute, useRouter } from "vue-router"
+import { useRouter } from "vue-router"
 import { useStore } from '@/stores/store.js'
-import { validateTask } from '@/libs/varidateTask.js';
-const route = useRoute()
+
 const router = useRouter()
 const Store = useStore()
 const ID = ref(0)
@@ -15,28 +14,23 @@ let statusData = ref({
 
 function closeModal() {
     router.push({name: 'StatusTable'})
-    // router.go(-1);
-
     clearData()
 }
 
-function addtostore() {
+function addToStore() {
     statusData.value.id = ID.value
     console.log(statusData.value);
-    Store.statuss.push(statusData.value)
+    Store.statuses.push(statusData.value)
     Store.successAddStatus = true
-    console.log(Store.statuss);
+    console.log(Store.statuses);
 }
 
 
-async function save() {
-    let checkStatusName = Store.statuss.filter((status) => status.name === statusData.value.name)
+async function saveTaskData() {
+    let checkStatusName = Store.statuses.filter((status) => status.name === statusData.value.name)
         if(checkStatusName.length === 1){
             window.alert("An error has occurred, the status could not be added.")
-        }  
-        // else if (statusData.value.description.length == 0) {
-        //     window.alert("An error description is empty.")
-        // }   
+        }   
         else{
             if (statusData.value.description.length === 0) {
                 statusData.value.description = null
@@ -48,7 +42,7 @@ async function save() {
             } 
             let result = await addData(statusData.value,"statuses")
             ID.value = result.id
-            addtostore()
+            addToStore()
             closeModal()           
     }
 }
@@ -106,7 +100,7 @@ function clearData() {
                     <button 
                         type="submit"
                         class="itbkk-button-confirm button buttonOK btn"
-                        @click="save()"
+                        @click="saveTaskData()"
                         :disabled="statusData.name.length === 0">
                         
                     Add

@@ -1,138 +1,135 @@
 <script setup>
-import { ref, onMounted, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useStore } from "@/stores/store.js";
-import { removeById, getData, removeAndTransfer } from "@/libs/fetchs.js";
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from '@/stores/store.js'
+import { removeById, getData, removeAndTransfer } from '@/libs/fetchs.js'
 
-import modalNotification from "@/components/modals/modalNotification.vue";
-import modalstatusDelete from "@/components/statuses/statusDelete.vue";
-import modalTransfer from "@/components/modals/modalTransfer.vue";
+import modalNotification from '@/components/modals/modalNotification.vue'
+import modalstatusDelete from '@/components/statuses/statusDelete.vue'
+import modalTransfer from '@/components/modals/modalTransfer.vue'
 
-const route = useRoute();
-const Store = useStore();
-let statusData = ref([]);
-const router = useRouter();
-const optionsDropDownIndex = ref(null);
-const successDeleteStatus = ref(false);
-const openConfirmed = ref(false);
-const statusNameDelete = ref("");
-const statusID = ref("");
-const taskData = ref([]);
-const transferModal = ref(false);
-const errorDeleteStatus = ref(false);
-console.log(Store.tasks);
-console.log(Store.statuss);
+const Store = useStore()
+let statusData = ref([])
+const router = useRouter()
+const optionsDropDownIndex = ref(null)
+const successDeleteStatus = ref(false)
+const openConfirmed = ref(false)
+const statusNameDelete = ref('')
+const statusID = ref('')
+const taskData = ref([])
+const transferModal = ref(false)
+const errorDeleteStatus = ref(false)
+// console.log(Store.tasks)
+// console.log(Store.statuses)
 
 async function fetchData() {
-  if (Store.tasks.length === 0 || Store.statuss.length === 0) {
-    taskData.value = await getData("tasks");
-    Store.tasks.push(...taskData.value);
-    statusData.value = await getData("statuses");
-    Store.statuss.push(...statusData.value);
-    console.log(Store.tasks);
-    console.log(Store.statuss);
+  if (Store.tasks.length === 0 || Store.statuses.length === 0) {
+    taskData.value = await getData('tasks')
+    Store.tasks.push(...taskData.value)
+    statusData.value = await getData('statuses')
+    Store.statuses.push(...statusData.value)
+    console.log(Store.tasks)
+    console.log(Store.statuses)
   }
 }
 
 function toggleDropDown(index) {
   optionsDropDownIndex.value =
-    optionsDropDownIndex.value === index ? null : index;
+    optionsDropDownIndex.value === index ? null : index
 }
 
 async function removeStatus() {
-  optionsDropDownIndex.value = null;
-  openConfirmed.value = false;
-  console.log(statusID.value);
+  optionsDropDownIndex.value = null
+  openConfirmed.value = false
+  console.log(statusID.value)
 
-  console.log(Store.tasks);
+  console.log(Store.tasks)
   const checkTaskUseStatus = Store.tasks.filter(
     (task) => task.statusName == statusNameDelete.value
-  );
-  console.warn(checkTaskUseStatus.length);
-  
+  )
+  console.warn(checkTaskUseStatus.length)
+
   if (checkTaskUseStatus.length == 0) {
-    Store.statuss = Store.statuss.filter(
+    Store.statuses = Store.statuses.filter(
       (status) => status.id !== statusID.value
-    );
-    let result = await removeById("statuses", statusID.value);
-    console.log("result", result);
+    )
+    let result = await removeById('statuses', statusID.value)
+    console.log('result', result)
     if (result.status === 404) {
-      console.log("result :", result.status);
-      errorDeleteStatus.value = true;
+      console.log('result :', result.status)
+      errorDeleteStatus.value = true
+    } else {
+      successDeleteStatus.value = true
+      console.log(successDeleteStatus.value)
     }
-    else{
-        successDeleteStatus.value = true;
-        console.log(successDeleteStatus.value);
-    }
-    
   } else {
     // window.alert("Have task is use status")
-    transferModal.value = true;
-
+    transferModal.value = true
   }
-  
-  openConfirmed.value = false;
-  
+
+  openConfirmed.value = false
 }
 
 async function removeStatusTransfer(data) {
-  const { removeStatus, transferStatus } = data;
+  const { removeStatus, transferStatus } = data
   // หา id จาก statusname ที่รับมา
-  const removeStatusId = Store.statuss.find(
-    (status) => status.name === removeStatus).id;
-  const transferStatusId = Store.statuss.find(
-    (status) => status.name === transferStatus).id;
+  const removeStatusId = Store.statuses.find(
+    (status) => status.name === removeStatus
+  ).id
+  const transferStatusId = Store.statuses.find(
+    (status) => status.name === transferStatus
+  ).id
 
   let removedStatus = await removeAndTransfer(
-    "statuses",
+    'statuses',
     removeStatusId,
     transferStatusId
-  );
+  )
   const tasksToTransfer = Store.tasks.filter(
     (task) => task.statusName === removeStatus
-  );
+  )
   if (tasksToTransfer.length > 0) {
     for (const task of tasksToTransfer) {
-      task.statusName = transferStatusId;
+      task.statusName = transferStatusId
     }
     // console.log('Tasks status transferred successfully.')
   }
   // not good na
-  Store.statuss = Store.statuss.filter(
+  Store.statuses = Store.statuses.filter(
     (status) => status.id !== removeStatusId
-  );
-  transferModal.value = false;
+  )
+  transferModal.value = false
 }
 
 function addModal_Status() {
-  router.push({ name: "StatusAdd" });
+  router.push({ name: 'StatusAdd' })
 }
 
 function editModal_Status(status_Id) {
-  router.push(`/status/${status_Id}/edit`);
-  optionsDropDownIndex.value = null;
+  router.push(`/status/${status_Id}/edit`)
+  optionsDropDownIndex.value = null
 }
 
 function closeModalNotification() {
-  Store.successAddStatus = false;
-  Store.successUpdateStatus = false;
-  Store.errorUpdateStatus = false;
-  openConfirmed.value = false;
-  transferModal.value = false;
-  successDeleteStatus.value = false;
-  errorDeleteStatus.value = false;
-  statusNameDelete.value = "";
-  statusID.value = "";
+  Store.successAddStatus = false
+  Store.successUpdateStatus = false
+  Store.errorUpdateStatus = false
+  openConfirmed.value = false
+  transferModal.value = false
+  successDeleteStatus.value = false
+  errorDeleteStatus.value = false
+  statusNameDelete.value = ''
+  statusID.value = ''
 }
 
 function openConfirmModal(id, name) {
-  if (name === "No Status") {
-    window.alert("You can not delete this Status.");
+  if (name === 'No Status') {
+    window.alert('You can not delete this Status.')
   } else {
-    openConfirmed.value = true;
-    statusNameDelete.value = name;
-    console.log(statusNameDelete);
-    statusID.value = id;
+    openConfirmed.value = true
+    statusNameDelete.value = name
+    console.log(statusNameDelete)
+    statusID.value = id
   }
 }
 
@@ -142,14 +139,14 @@ function checkVariable() {
     Store.successUpdateStatus == true ||
     Store.errorUpdateStatus == true ||
     successDeleteStatus.value === true ||
-    errorDeleteStatus.value === true 
+    errorDeleteStatus.value === true
   ) {
-    return true;
+    return true
   }
-  return false;
+  return false
 }
 
-onMounted(fetchData);
+onMounted(fetchData)
 </script>
 
 <template>
@@ -171,7 +168,7 @@ onMounted(fetchData);
     :statusName="statusNameDelete"
     v-show="transferModal"
     @closemodal="closeModalNotification()"
-    @confirmed="removeStatusTransfer($event),successDeleteStatus = true"
+    @confirmed="removeStatusTransfer($event), (successDeleteStatus = true)"
   ></modalTransfer>
 
   <div class="class name : itbkk- bg-white w-screen h-screen">
@@ -179,10 +176,21 @@ onMounted(fetchData);
       name="header"
       class="fixed top-0 z-10 w-screen bg-[#797979] flex justify-center items-center h-20 text-24 text-white rounded-b-3xl"
     >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 mr-2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-            </svg>
-      <h1 class="text-3xl font-bold font-serif titleShadow ">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-10 mr-2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"
+        />
+      </svg>
+      <h1 class="text-3xl font-bold font-serif titleShadow">
         IT-Bangmod Kradan Kanban (ITB-KK)
       </h1>
     </header>
@@ -196,18 +204,33 @@ onMounted(fetchData);
         class="flex text-2xl font-serif font-bold justify-between items-center"
       >
         <div class="itbkk-manage-status flex">
-          <div @click="router.push({name: 'taskTable'})" class="itbkk-button-home text-blue-500 cursor-pointer flex">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-7">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          <div
+            @click="router.push({ name: 'taskTable' })"
+            class="itbkk-button-home text-blue-500 cursor-pointer flex"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-10 h-7"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+              />
             </svg>
             <p>Home</p>
           </div>
-          <div>
-            > Status Manage
-          </div>
+          <div>> Status Manage</div>
         </div>
         <div>
-          <button class="itbkk-button-add button-add mb-2" @click="addModal_Status()">
+          <button
+            class="itbkk-button-add button-add mb-2"
+            @click="addModal_Status()"
+          >
             Add Status
           </button>
         </div>
@@ -229,8 +252,8 @@ onMounted(fetchData);
         <tbody class="text-base">
           <tr
             class="itbkk-item hover-table border-[1px] rounded-2xl"
-            v-show="Store.statuss.length > 0"
-            v-for="(status, index) in Store.statuss"
+            v-show="Store.statuses.length > 0"
+            v-for="(status, index) in Store.statuses"
             :key="index"
           >
             <td>{{ index + 1 }}</td>
@@ -239,11 +262,17 @@ onMounted(fetchData);
             </td>
 
             <td>
-              <p class="itbkk-status-description rounded-2xl m-1 p-2"
-              :class="{
-                        'italic text-gray-400': status.description == null,                       
-                      }">
-                {{ status.description == null ? "No description is provided" : status.description }}
+              <p
+                class="itbkk-status-description rounded-2xl m-1 p-2"
+                :class="{
+                  'italic text-gray-400': status.description == null,
+                }"
+              >
+                {{
+                  status.description == null
+                    ? 'No description is provided'
+                    : status.description
+                }}
               </p>
             </td>
             <td>
@@ -260,7 +289,9 @@ onMounted(fetchData);
                 >
                   <ul class="divide-y divide-gray-200">
                     <li class="itbkk-button-edit">
-                      <a href="#"class=" itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
+                      <a
+                        href="#"
+                        class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                         @click="editModal_Status(status.id)"
                       >
                         Edit
@@ -281,7 +312,7 @@ onMounted(fetchData);
             </td>
           </tr>
         </tbody>
-        <tbody v-show="Store.statuss.length === 0">
+        <tbody v-show="Store.statuses.length === 0">
           <tr>
             <td class="text-center" colspan="4">Don't Have status ??</td>
           </tr>
@@ -348,7 +379,7 @@ onMounted(fetchData);
 }
 
 .button-add::after {
-  content: "+";
+  content: '+';
   position: absolute;
   opacity: 0;
   top: 10px;
