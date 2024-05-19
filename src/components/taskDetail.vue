@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue'
 import { getData } from '../libs/fetchs.js'
 import { useRoute, useRouter } from 'vue-router'
 
- 
 let taskData = ref([])
 let createTimeInBrowserTimezone = ref(null)
 let updateTimeInBrowserTimezone = ref(null)
@@ -12,12 +11,6 @@ let fetchHaveData = ref(false)
 const route = useRoute()
 const router = useRouter()
 
-const status = {
-  TO_DO: 'To Do',
-  NO_STATUS: 'No Status',
-  DONE: 'Done',
-  DOING: 'Doing',
-}
 //Option datetime
 const options = {
   year: 'numeric',
@@ -28,7 +21,7 @@ const options = {
   second: '2-digit',
   hour12: false,
 }
- 
+
 function convertToBrowserTimezone(utcTime) {
   // สร้าง Date object จากเวลา UTC
   let date = new Date(utcTime)
@@ -36,7 +29,7 @@ function convertToBrowserTimezone(utcTime) {
   const browserTime = date.toLocaleString('en-AU', options)
   return browserTime
 }
- 
+
 async function fetchData() {
   try {
     taskData.value = await getData(`tasks/${route.params.id}`)
@@ -62,11 +55,9 @@ function closeModal() {
   router.push('/task')
   fetchHaveData.value = !fetchHaveData.value
 }
-//เรียกใช้function fetchdata
 onMounted(fetchData)
 </script>
 <template>
-  
   <div
     v-show="fetchHaveData"
     class="class name : itbkk-* fixed w-screen h-screen z-10 top-0 left-0 flex justify-center items-center"
@@ -84,7 +75,7 @@ onMounted(fetchData)
         </h1>
         <p class="border-b mt-2"></p>
       </div>
- 
+
       <div class="flex mt-3 mb-20 ml-7">
         <div class="w-1/2">
           <p class="font-bold">Description</p>
@@ -94,7 +85,7 @@ onMounted(fetchData)
             class="itbkk-description border-2 w-[80%] h-[105%] resize-none bg-gray-400 bg-opacity-15 rounded-lg p-2 overflow-hidden hover:overflow-y-scroll"
             >{{ taskData.description }}</textarea
           >
- 
+
           <textarea
             v-else
             disabled
@@ -118,7 +109,7 @@ onMounted(fetchData)
               !taskData.assignees ? 'Unassigned' : taskData.assignees
             }}</textarea
           >
- 
+
           <div class="font-bold">Status</div>
           <p
             class="itbkk-status border-2 w-[30%] h-8 bg-gray-400 bg-opacity-15 rounded-lg pl-2 pr-2"
@@ -158,7 +149,6 @@ onMounted(fetchData)
   </div>
 </template>
 <style scoped>
-
 .boxButton {
   display: flex;
   justify-content: flex-end;
@@ -179,7 +169,7 @@ onMounted(fetchData)
   transition-duration: 0.4s;
   cursor: pointer;
 }
- 
+
 .buttonClose {
   background-color: white;
   color: black;
@@ -198,11 +188,11 @@ onMounted(fetchData)
   background-color: #04aa6d;
   color: white;
 }
- 
+
 .box {
   margin-right: auto;
 }
- 
+
 .modal-overlay {
   position: absolute;
   top: 0;
@@ -212,7 +202,7 @@ onMounted(fetchData)
   z-index: 98;
   background-color: rgba(0, 0, 0, 0.3);
 }
- 
+
 h1 {
   color: black;
   font-size: 32px;
@@ -220,21 +210,20 @@ h1 {
   margin-top: 15px;
   margin-left: 25px;
   font-family: sans-serif;
-  
 }
- 
+
 .modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99;
- 
+
   width: 100%;
   max-width: 400px;
   background-color: #fff;
   border-radius: 16px;
- 
+
   padding: 25px;
 }
 </style>

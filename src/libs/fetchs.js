@@ -49,7 +49,6 @@ async function addData(data, path) {
 
       body: JSON.stringify(data),
     })
-    console.log(data)
     const result = await response.json()
     console.log('Success:', result)
     return result

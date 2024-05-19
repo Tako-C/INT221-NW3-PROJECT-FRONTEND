@@ -10,9 +10,8 @@ const props = defineProps({
 const statusData = ref([])
 const transferStatus = ref(null)
 
-
 watchEffect(() => {
-  statusData.value = [...Store.statuss]
+  statusData.value = [...Store.statuses]
   if (
     props.statusName &&
     statusData.value.some((status) => status.name === props.statusName)

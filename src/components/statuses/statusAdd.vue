@@ -1,13 +1,12 @@
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref } from "vue"
 import { addData } from "@/libs/fetchs.js"
-import { useRoute, useRouter } from "vue-router"
+import { useRouter } from "vue-router"
 import { useStore } from '@/stores/store.js'
-import { validateTask } from '@/libs/varidateTask.js';
-const route = useRoute()
+
 const router = useRouter()
 const Store = useStore()
-const ID = ref(0)
+const statusID = ref(0)
 let statusData = ref({
     name: '',
     description: '',
@@ -15,30 +14,25 @@ let statusData = ref({
 
 function closeModal() {
     router.push({name: 'StatusTable'})
-    // router.go(-1);
-
     clearData()
 }
 
-function addtostore() {
-    statusData.value.id = ID.value
+function addToStore() {
+    statusData.value.id = statusID.value
     console.log(statusData.value);
-    Store.statuss.push(statusData.value)
+    Store.statuses.push(statusData.value)
     Store.successAddStatus = true
-    console.log(Store.statuss);
+    console.log(Store.statuses);
 }
 
 
-async function save() {
-    let checkStatusName = Store.statuss.filter((status) => status.name === statusData.value.name)
+async function saveTaskData() {
+    let checkStatusName = Store.statuses.filter((status) => status.name === statusData.value.name)
         if(checkStatusName.length === 1){
             window.alert("An error has occurred, the status could not be added.")
-        }  
-        // else if (statusData.value.description.length == 0) {
-        //     window.alert("An error description is empty.")
-        // }   
+        }   
         else{
-            if (statusData.value.description.length === 0) {
+            if (!statusData.value.description) {
                 statusData.value.description = null
             }
             if(statusData.value.name !== null && statusData.value.description !== null) {
@@ -47,13 +41,11 @@ async function save() {
             
             } 
             let result = await addData(statusData.value,"statuses")
-            ID.value = result.id
-            addtostore()
+            statusID.value = result.id
+            addToStore()
             closeModal()           
     }
 }
-
-
 
 function clearData() {
     statusData.value = {
@@ -79,7 +71,6 @@ function clearData() {
             <div class=" rounded-2xl ">
                 <h1 class=" break-words w-[79%]">
                     <span class="font-serif text-[100%]">Add </span><span class="text-[70%] opacity-[60%] font-serif">New Status</span>
-                    <!-- {{ statusData.title }} -->
             </h1>
             <p class="border-b mt-2"></p>
             </div>
@@ -106,7 +97,7 @@ function clearData() {
                     <button 
                         type="submit"
                         class="itbkk-button-confirm button buttonOK btn"
-                        @click="save()"
+                        @click="saveTaskData()"
                         :disabled="statusData.name.length === 0">
                         
                     Add
