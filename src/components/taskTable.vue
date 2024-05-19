@@ -66,23 +66,23 @@ async function removeTask() {
   console.log(successDelete.value)
 }
 
-function addModal() {
+function addTaskModal() {
   router.push({ name: 'taskAdd' })
 }
 function switchToManage() {
   router.push(`/status`)
 }
 
-function editModal(taskId) {
+function editTaskModal(taskId) {
   router.push(`/task/${taskId}/edit`)
   optionsDropDownIndex.value = null
 }
-function openModal(taskId) {
+function openTaskDetailModal(taskId) {
   router.push({ name: 'taskDetail', params: { id: taskId } })
   optionsDropDownIndex.value = null
 }
 
-function closeModalNotification() {
+function closeNotificationModal() {
   errorDelete.value = false
   successDelete.value = false
   Store.successUpdateTask = false
@@ -160,14 +160,14 @@ onMounted(fetchData)
   <modalNotification
     :errorDelete="errorDelete"
     :successDelete="successDelete"
-    @closemodal="closeModalNotification()"
+    @closemodal="closeNotificationModal()"
     v-show="checkVariable()"
     class="z-30"
   />
   <modalconfirmed
     v-show="openConfirmed"
     :taskTitle="taskTitle"
-    @closemodal="closeModalNotification()"
+    @closemodal="closeNotificationModal()"
     @confirmed="removeTask()"
     class="z-40"
   />
@@ -266,7 +266,7 @@ onMounted(fetchData)
           >
             Status Manage
           </button>
-          <button class="itbkk-button-add button-add" @click="addModal()">
+          <button class="itbkk-button-add button-add" @click="addTaskModal()">
             Add Task
           </button>
         </div>
@@ -343,11 +343,11 @@ onMounted(fetchData)
             v-for="(task, index) in Store.tasks"
             :key="index"
           >
-            <td @click="openModal(task.id)">{{ index + 1 }}</td>
-            <td @click="openModal(task.id)" class="itbkk-title">
+            <td @click="openTaskDetailModal(task.id)">{{ index + 1 }}</td>
+            <td @click="openTaskDetailModal(task.id)" class="itbkk-title">
               {{ task.title }}
             </td>
-            <td @click="openModal(task.id)">
+            <td @click="openTaskDetailModal(task.id)">
               <span
                 class=""
                 :class="{
@@ -358,7 +358,7 @@ onMounted(fetchData)
                 {{ !task.assignees ? 'Unassigned' : task.assignees }}</span
               >
             </td>
-            <td @click="openModal(task.id)">
+            <td @click="openTaskDetailModal(task.id)">
               <p
                 class="itbkk-status rounded-2xl m-1 p-2 font-bold font-serif"
                 :class="{
@@ -387,7 +387,7 @@ onMounted(fetchData)
                     <li>
                       <a
                         href="#"
-                        @click="editModal(task.id)"
+                        @click="editTaskModal(task.id)"
                         class="itbkk-button-edit block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-lg"
                       >
                         Edit

@@ -55,7 +55,6 @@ function closeModal() {
   router.push('/task')
   fetchHaveData.value = !fetchHaveData.value
 }
-//เรียกใช้function fetchdata
 onMounted(fetchData)
 </script>
 <template>

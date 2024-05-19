@@ -6,7 +6,7 @@ import { useStore } from '@/stores/store.js'
 
 const router = useRouter()
 const Store = useStore()
-const ID = ref(0)
+const statusID = ref(0)
 let statusData = ref({
     name: '',
     description: '',
@@ -18,7 +18,7 @@ function closeModal() {
 }
 
 function addToStore() {
-    statusData.value.id = ID.value
+    statusData.value.id = statusID.value
     console.log(statusData.value);
     Store.statuses.push(statusData.value)
     Store.successAddStatus = true
@@ -32,7 +32,7 @@ async function saveTaskData() {
             window.alert("An error has occurred, the status could not be added.")
         }   
         else{
-            if (statusData.value.description.length === 0) {
+            if (!statusData.value.description) {
                 statusData.value.description = null
             }
             if(statusData.value.name !== null && statusData.value.description !== null) {
@@ -41,13 +41,11 @@ async function saveTaskData() {
             
             } 
             let result = await addData(statusData.value,"statuses")
-            ID.value = result.id
+            statusID.value = result.id
             addToStore()
             closeModal()           
     }
 }
-
-
 
 function clearData() {
     statusData.value = {
@@ -73,7 +71,6 @@ function clearData() {
             <div class=" rounded-2xl ">
                 <h1 class=" break-words w-[79%]">
                     <span class="font-serif text-[100%]">Add </span><span class="text-[70%] opacity-[60%] font-serif">New Status</span>
-                    <!-- {{ statusData.title }} -->
             </h1>
             <p class="border-b mt-2"></p>
             </div>

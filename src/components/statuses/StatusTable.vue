@@ -19,8 +19,6 @@ const statusID = ref('')
 const taskData = ref([])
 const transferModal = ref(false)
 const errorDeleteStatus = ref(false)
-// console.log(Store.tasks)
-// console.log(Store.statuses)
 
 async function fetchData() {
   if (Store.tasks.length === 0 || Store.statuses.length === 0) {
@@ -41,29 +39,21 @@ function toggleDropDown(index) {
 async function removeStatus() {
   optionsDropDownIndex.value = null
   openConfirmed.value = false
-  console.log(statusID.value)
-
-  console.log(Store.tasks)
   const checkTaskUseStatus = Store.tasks.filter(
     (task) => task.statusName == statusNameDelete.value
   )
-  console.warn(checkTaskUseStatus.length)
 
   if (checkTaskUseStatus.length == 0) {
     Store.statuses = Store.statuses.filter(
       (status) => status.id !== statusID.value
     )
     let result = await removeById('statuses', statusID.value)
-    console.log('result', result)
     if (result.status === 404) {
-      console.log('result :', result.status)
       errorDeleteStatus.value = true
     } else {
       successDeleteStatus.value = true
-      console.log(successDeleteStatus.value)
     }
   } else {
-    // window.alert("Have task is use status")
     transferModal.value = true
   }
 
@@ -92,9 +82,7 @@ async function removeStatusTransfer(data) {
     for (const task of tasksToTransfer) {
       task.statusName = transferStatusId
     }
-    // console.log('Tasks status transferred successfully.')
   }
-  // not good na
   Store.statuses = Store.statuses.filter(
     (status) => status.id !== removeStatusId
   )
@@ -110,7 +98,7 @@ function editModal_Status(status_Id) {
   optionsDropDownIndex.value = null
 }
 
-function closeModalNotification() {
+function closeNotificationModal() {
   Store.successAddStatus = false
   Store.successUpdateStatus = false
   Store.errorUpdateStatus = false
@@ -128,7 +116,6 @@ function openConfirmModal(id, name) {
   } else {
     openConfirmed.value = true
     statusNameDelete.value = name
-    console.log(statusNameDelete)
     statusID.value = id
   }
 }
@@ -153,21 +140,21 @@ onMounted(fetchData)
   <modalNotification
     :successDeleteStatus="successDeleteStatus"
     :errorDeleteStatus="errorDeleteStatus"
-    @closemodal="closeModalNotification()"
+    @closemodal="closeNotificationModal()"
     v-show="checkVariable()"
     class="z-30"
   />
   <modalstatusDelete
     v-show="openConfirmed"
     :statusName="statusNameDelete"
-    @closemodal="closeModalNotification()"
+    @closemodal="closeNotificationModal()"
     @confirmed="removeStatus()"
     class="z-40"
   />
   <modalTransfer
     :statusName="statusNameDelete"
     v-show="transferModal"
-    @closemodal="closeModalNotification()"
+    @closemodal="closeNotificationModal()"
     @confirmed="removeStatusTransfer($event), (successDeleteStatus = true)"
   ></modalTransfer>
 

@@ -10,7 +10,7 @@ let browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 const route = useRoute()
 const router = useRouter()
 const Store = useStore()
-const ID = ref(0)
+const TaskID = ref(0)
 const isEdited = ref(false)
 const DefualtStatus = 1
 
@@ -43,9 +43,7 @@ const options = {
 }
 
 function convertToBrowserTimezone(utcTime) {
-  // สร้าง Date object จากเวลา UTC
   let date = new Date(utcTime)
-  // แปลงเวลาให้เป็น timezone ของ browser
   const browserTime = date.toLocaleString('en-AU', options)
   return browserTime
 }
@@ -78,10 +76,9 @@ async function updateTask(taskId) {
   const statusObject = Store.statuses.find(
     (status) => status.id === taskData.value.status
   )
-  console.log(statusObject.id)
   taskData.value.statusName = statusObject.name
   let result = await editData('tasks', taskId, taskData.value)
-  ID.value = result.id
+  // TaskID.value = result.id
   Store.successUpdateTask = true
   addToStore()
   closeModal()
@@ -106,7 +103,6 @@ function closeModal() {
   router.push({ name: 'taskTable' })
 }
 
-//เรียกใช้function fetchdata
 onMounted(fetchData)
 
 onUpdated(() => {

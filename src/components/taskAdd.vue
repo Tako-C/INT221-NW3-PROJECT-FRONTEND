@@ -7,7 +7,7 @@ import { validateTask } from '../libs/varidateTask.js'
 const DefualtStatus = 1
 const router = useRouter()
 const Store = useStore()
-const ID = ref(0)
+const TaskID = ref(0)
 let taskData = ref({
   title: '',
   description: '',
@@ -17,13 +17,12 @@ let taskData = ref({
 })
 
 function closeModal() {
-  // router.push("/task")
   router.push({ name: 'taskTable' })
   clearData()
 }
 
 function addToStore() {
-  taskData.value.id = ID.value
+  taskData.value.id = TaskID.value
   const statusObject = Store.statuses.find(
     (status) => status.id === taskData.value.status
   )
@@ -46,7 +45,7 @@ async function saveTaskData() {
   }
 
   let result = await addData(taskData.value, 'tasks')
-  ID.value = result.id
+  TaskID.value = result.id
   addToStore()
 }
 

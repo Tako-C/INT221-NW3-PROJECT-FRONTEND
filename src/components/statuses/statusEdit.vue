@@ -35,11 +35,11 @@ async function fetchData() {
 }
 
 async function updateStatus(statusId) {
-  if (statusData.value.name.length == 0 || statusData.value.name === 'null') {
+  if (!statusData.value.name || statusData.value.name === 'null') {
     window.alert('Information statusName Empty or null.')
     isEdited.value = false
-  } else {
-    if (statusData.value.description.length === 0) {
+  } else {  
+    if (!statusData.value.description) {
       statusData.value.description = null
     }
     if (
@@ -52,7 +52,7 @@ async function updateStatus(statusId) {
     let result = await editData('statuses', statusId, statusData.value)
     ID.value = result.id
     Store.successUpdateStatus = true
-    console.log(Store.successUpdateStatus)
+
     addToStore()
     closeModal()
   }
@@ -94,7 +94,8 @@ onUpdated(() => {
     originalStatusData.value.description !== statusData.value.description
   ) {
     isEdited.value = true
-  } else {
+  }
+   else {
     isEdited.value = false
   }
 })
