@@ -38,7 +38,7 @@ async function fetchData() {
       endpoint += '?sortBy=status.name&FilterStatuses'
       taskData.value = (await getData(endpoint)).reverse()
     } else {
-      taskData.value = await getData(endpoint)
+      taskData.value = await getData(endpoint);
     }
   }
   Store.tasks = taskData.value
@@ -119,6 +119,7 @@ function addFilter() {
     newFilterString.value = ''
     fetchData()
     showStatusList.value = false
+    sortStatus.value = 1
   } else {
     window.alert(newFilterString.value + ' is current filter.')
     showStatusList.value = false
@@ -148,7 +149,7 @@ function toggleSort() {
         .sort((a, b) => a.statusName.localeCompare(b.statusName))
         .reverse()
     } else {
-      Store.tasks.sort((a, b) => a.createdOn.localeCompare(b.createdOn))
+      Store.tasks.sort((a, b) => a.id - b.id)
     }
   }
 }
@@ -344,7 +345,9 @@ onMounted(fetchData)
             :key="index"
           >
             <td @click="openTaskDetailModal(task.id)">{{ index + 1 }}</td>
-            <td @click="openTaskDetailModal(task.id)" class="itbkk-title">
+            <td @click="openTaskDetailModal(task.id)" class="itbkk-title"
+                style="word-break: break-word; max-width: 300px;"
+            >
               {{ task.title }}
             </td>
             <td @click="openTaskDetailModal(task.id)">

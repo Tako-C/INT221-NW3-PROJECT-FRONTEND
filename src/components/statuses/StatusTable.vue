@@ -222,7 +222,7 @@ onMounted(fetchData)
           </button>
         </div>
       </div>
-      <table class="table table-zebra bg-white mt-2 mb-28">
+      <table class="table table-zebra bg-white mt-2 mb-28 w-full">
         <thead
           class="bg-[#818080] text-white font-serif h-20 text-2xl titleShadow"
         >
@@ -250,10 +250,11 @@ onMounted(fetchData)
 
             <td>
               <p
-                class="itbkk-status-description rounded-2xl m-1 p-2"
+                class="itbkk-status-description rounded-2xl m-1 p-2 text-wrap"
                 :class="{
                   'italic text-gray-400': status.description == null,
                 }"
+                style="word-break: break-word; max-width: 600px;"
               >
                 {{
                   status.description == null
