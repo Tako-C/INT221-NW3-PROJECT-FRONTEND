@@ -83,9 +83,10 @@ function clearData() {
         <div class="font-bold">Title</div>
         <input
           v-model="taskData.title"
-          class="itbkk-title w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2"
+          class="itbkk-title w-[80%] h-8 resize-none italic bg-slate-400 bg-opacity-15 rounded-lg border-2 pl-2 "
+          maxlength="100"
         />
-
+        <div>{{ taskData.title.length }} /100</div>
         <div class="font-bold">Description</div>
         <textarea
           v-model="taskData.description"
